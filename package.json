@@ -1,0 +1,74 @@
+{
+  "name": "g9-app",
+  "version": "1.0.0",
+  "private": true,
+  "prettier": "@aplinkosministerija/biip-prettier-config",
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.8.1",
+    "@types/react": "^18.0.3",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "@vitejs/plugin-vue": "^4.5.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-query": "^3.39.3",
+    "react-redux": "^7.2.8",
+    "react-router-dom": "^6.3.0",
+    "redux": "^4.1.2",
+    "redux-persist": "^6.0.0",
+    "styled-components": "^5.3.5",
+    "typescript": "^4.6.3",
+    "vite": "^5.0.5",
+    "vite-plugin-pwa": "^0.17.4",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^0.34.6"
+  },
+  "scripts": {
+    "test": "vitest",
+    "start": "vite --port 8080",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:sarif": "set SARIF_ESLINT_EMBED=true && yarn run lint --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif",
+    "prepare": "husky install"
+  },
+  "eslintConfig": {
+    "extends": "@aplinkosministerija/eslint-config-biip-react"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@aplinkosministerija/biip-prettier-config": "^1.1.0",
+    "@aplinkosministerija/eslint-config-biip-react": "^1.0.0",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@microsoft/eslint-formatter-sarif": "^3.0.0",
+    "@types/styled-components": "^5.1.25",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react-refresh": "^0.4.4",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.2",
+    "prettier": "^2.6.2"
+  },
+  "engines": {
+    "node": ">=20.0.0 <21.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint"
+    ],
+    "*.{md,html,css}": "prettier --write"
+  }
+}
