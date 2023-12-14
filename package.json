@@ -2,7 +2,6 @@
   "name": "g9-app",
   "version": "1.0.0",
   "private": true,
-  "proxy": "https://test.g9.vmvt.lt",
   "prettier": "@aplinkosministerija/biip-prettier-config",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
