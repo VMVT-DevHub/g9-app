@@ -19,30 +19,34 @@ const LoginLayout = ({ children }: LoginLayoutProps) => {
   );
 };
 
-const Image = styled.img`
-  object-fit: cover;
+const ImageContainer = styled.div`
+  position: relative;
   height: 100%;
   width: 100%;
+  overflow: hidden;
+`;
+
+const Image = styled.img`
+  object-fit: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-`;
-
-const ImageContainer = styled.div`
   height: 100%;
   width: 100%;
 `;
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: auto;
+  overflow-y: auto;
+  width: 100vw;
+  height: 100vh;
 `;
 
 const Content = styled.div`
-  margin: auto;
-
+  overflow-y: auto;
   background-color: #ffffff;
   box-shadow: 0px 18px 41px #121a5529;
   border-radius: 8px;
@@ -54,12 +58,11 @@ const Content = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
+  max-height: 100%;
   @media ${device.mobileL} {
     padding: 32px 16px 32px 16px;
     width: 100%;
     height: 100%;
-    justify-content: center;
     border-radius: 0px;
   }
 `;
