@@ -1,0 +1,19 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-staging:
+    name: Deploy staging
+    uses: VMVT-DevHub/reusable-workflows/.github/workflows/g9-deploy.yml@main
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      environment: Staging
+      docker-image: ghcr.io/VMVT-DevHub/g9-app
+      build-args: |
+        NODE_ENV=production
