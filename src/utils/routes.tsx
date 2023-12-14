@@ -1,11 +1,12 @@
 export const slugs = {
-  page: '/page',
+  activitiesPlace: '/veiklavietes',
+  login: '/login',
 };
 
 export const routes = [
   {
-    label: 'page',
-    slug: slugs.page,
-    component: <div>page</div>,
+    label: 'Veiklavietės',
+    slug: slugs.activitiesPlace,
+    component: <div>Veiklavietės</div>,
   },
 ];
