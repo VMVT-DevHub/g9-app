@@ -11,7 +11,9 @@ const Menu = () => {
   return (
     <Header>
       <InnerContainer>
-        <Logo />
+        <LeftContainer>
+          <Logo />
+        </LeftContainer>
         <TabContainer>
           {routes.map((route, index) => {
             return (
@@ -25,7 +27,9 @@ const Menu = () => {
             );
           })}
         </TabContainer>
-        <ProfilesDropdown />
+        <RightContainer>
+          <ProfilesDropdown />
+        </RightContainer>
       </InnerContainer>
     </Header>
   );
@@ -41,6 +45,17 @@ const Tab = styled.div<{ $isActive: boolean }>`
   color: ${({ $isActive, theme }) =>
     $isActive ? theme.colors.text.active : theme.colors.text.secondary};
   cursor: pointer;
+`;
+
+const LeftContainer = styled.div`
+  flex: 1;
+  display: flex;
+`;
+
+const RightContainer = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `;
 
 const TabContainer = styled.div`
@@ -66,5 +81,4 @@ const InnerContainer = styled.div`
   flex-basis: 1200px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
 `;

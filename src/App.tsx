@@ -46,10 +46,7 @@ const App = () => {
             />
           ))}
         </Route>
-        <Route
-          path="*"
-          element={<Navigate to={loggedIn ? slugs.activitiesPlace : slugs.login} />}
-        />
+        <Route path="*" element={<Navigate to={loggedIn ? slugs.businessPlace : slugs.login} />} />
       </Routes>
       <ToastContainer />
     </>
@@ -58,7 +55,7 @@ const App = () => {
 
 const PublicRoute = ({ loggedIn }: { loggedIn: boolean }) => {
   if (loggedIn) {
-    return <Navigate to={slugs.activitiesPlace} replace />;
+    return <Navigate to={slugs.businessPlace} replace />;
   }
 
   return <Outlet />;

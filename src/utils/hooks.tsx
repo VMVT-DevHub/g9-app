@@ -3,7 +3,6 @@ import { useMutation } from 'react-query';
 import { useAppDispatch } from '../state/hooks';
 import { actions, emptyUser } from '../state/user/reducer';
 import api from './api';
-import { handleErrorToast } from './functions';
 
 export const useWindowSize = (width: string) => {
   const [isInRange, setIsInRange] = useState(false);
@@ -30,7 +29,7 @@ export const useLogoutMutation = () => {
 
   const { mutateAsync } = useMutation(() => api.logout(), {
     onError: () => {
-      handleErrorToast();
+      //handleErrorToast();
     },
     onSuccess: () => {
       dispatch(actions.setUser(emptyUser));

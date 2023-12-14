@@ -8,7 +8,7 @@ import { userReducer } from './user/reducer';
 const persistConfig = {
   key: 'g9',
   storage,
-  whitelist: ['filters'],
+  whitelist: ['filters', 'user'],
 };
 
 const reducers = combineReducers({

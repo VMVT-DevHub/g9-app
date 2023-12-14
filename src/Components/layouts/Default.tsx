@@ -27,7 +27,7 @@ const Container = styled.div`
   height: 100%;
   background-color: white;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: auto;
   @media ${device.mobileL} {
     overflow-y: auto;
     height: 100svh; //fixes iOS Safari floating address bar problem

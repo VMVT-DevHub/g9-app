@@ -49,6 +49,7 @@ const BottomRow = styled.div`
 `;
 
 const Container = styled.div`
+  max-width: fit-content;
   position: relative;
   min-width: 200px;
   &:focus {
