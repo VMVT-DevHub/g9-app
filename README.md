@@ -17,14 +17,15 @@ This repository contains the source code and documentation for the G9 App, devel
 
 ## About the Project
 
-The G9 App is designed to provide information and functionalities related to ..
+The G9 App is designed to provide information and functionalities related to drinkable water monitoring data.
 
 This is a client application that utilizes
 the [G9](https://github.com/VMVT-DevHub/G9).
 
 Key features of the WEB include:
 
-- ..
+- Providing monitoring data of drinkable water
+- Providing declarations of drinkable water monitoring data
 
 ## Getting Started
 
