@@ -28,9 +28,6 @@ export const useLogoutMutation = () => {
   const dispatch = useAppDispatch();
 
   const { mutateAsync } = useMutation(() => api.logout(), {
-    onError: () => {
-      //handleErrorToast();
-    },
     onSuccess: () => {
       dispatch(actions.setUser(emptyUser));
     },
