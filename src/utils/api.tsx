@@ -21,21 +21,9 @@ interface Post {
 
 class Api {
   private axiosApi: AxiosInstance;
-  private readonly proxy = '/proxy';
 
   constructor() {
     this.axiosApi = Axios.create();
-
-    this.axiosApi.interceptors.request.use(
-      (config) => {
-        config.url = this.proxy + config.url;
-
-        return config;
-      },
-      (error) => {
-        Promise.reject(error);
-      },
-    );
   }
 
   errorWrapper = async (endpoint: () => Promise<AxiosResponse<any, any>>) => {
