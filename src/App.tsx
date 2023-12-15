@@ -43,6 +43,8 @@ const App = () => {
             />
           ))}
         </Route>
+        <Route path="/api" element={null} />
+        <Route path="/auth" element={null} />
         <Route path="*" element={<Navigate to={loggedIn ? slugs.businessPlace : slugs.login} />} />
       </Routes>
       <ToastContainer />

@@ -10,7 +10,7 @@ const Login = () => {
 
   const handleLogin = () => {
     setLoading(true);
-    const loginUrl = `${(import.meta.env.VITE_PROXY_URL||"")}/auth/login?r=${window.location.origin}`;
+    const loginUrl = `/auth/login`;
     window.location.replace(loginUrl);
   };
 
