@@ -13,7 +13,10 @@ export default () => {
         '/api': {
           target: env.VITE_PROXY_URL,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        '/auth': {
+          target: env.VITE_PROXY_URL,
+          changeOrigin: true,
         },
       },
     },

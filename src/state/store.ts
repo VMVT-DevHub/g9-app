@@ -2,16 +2,18 @@ import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { Filters } from './filters/reducer';
+import { filters } from './filters/reducer';
+import { userReducer } from './user/reducer';
 
 const persistConfig = {
-  key: 'filters',
+  key: 'g9',
   storage,
   whitelist: ['filters'],
 };
 
 const reducers = combineReducers({
-  filters: Filters.reducer,
+  filters: filters.reducer,
+  user: userReducer.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
