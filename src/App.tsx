@@ -9,7 +9,6 @@ import Login from './Pages/Login';
 import { useAppSelector } from './state/hooks';
 import { actions } from './state/user/reducer';
 import api from './utils/api';
-import { handleErrorToast } from './utils/functions';
 import { routes, slugs } from './utils/routes';
 
 const App = () => {
@@ -18,7 +17,7 @@ const App = () => {
 
   const { isLoading } = useQuery([], () => api.getUserInfo(), {
     onSuccess: ({ Email, FName, LName, Phone, ID }) => {
-      if (!ID) return handleErrorToast();
+      if (!ID) return;
 
       const userData = { email: Email, firstName: FName, lastName: LName, phone: Phone, id: ID };
       dispatch(actions.setUser({ loggedIn: true, userData: userData }));
