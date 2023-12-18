@@ -28,7 +28,7 @@ const buttonTextColors = {
   [ButtonColors.TERTIARY]: 'white',
   [ButtonColors.DANGER]: 'white',
   [ButtonColors.SUCCESS]: 'white',
-  [ButtonColors.TRANSPARENT]: theme.colors.text.primary,
+  [ButtonColors.TRANSPARENT]: theme.colors.text.active,
 };
 export interface ButtonProps {
   variant?: ButtonColors;
@@ -52,7 +52,7 @@ const Button = ({
   variant = ButtonColors.PRIMARY,
   route,
   children,
-  height = 56,
+  height = 48,
   padding = '11px 20px',
   leftIcon,
   radius = '4px',
@@ -63,7 +63,7 @@ const Button = ({
   loading = false,
   className,
   disabled = false,
-  fontWeight = '600',
+  fontWeight = '500',
   ...rest
 }: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
@@ -111,6 +111,7 @@ const StyledButton = styled.button<{
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   width: 100%;
+  white-space: nowrap;
 `;
 
 Button.colors = ButtonColors;

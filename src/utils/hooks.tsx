@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useMutation } from 'react-query';
-import { useAppDispatch } from '../state/hooks';
+import { useMutation, useQuery } from 'react-query';
+import { matchPath, useLocation } from 'react-router-dom';
+import { Tab } from '../Components/other/TabBar';
+import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions, emptyUser } from '../state/user/reducer';
 import api from './api';
 
@@ -34,4 +36,37 @@ export const useLogoutMutation = () => {
   });
 
   return { mutateAsync };
+};
+
+export const useGetCurrentRoute = (tabs: Tab[]) => {
+  const currentLocation = useLocation();
+
+  return tabs.find((tab) => matchPath({ path: tab.slug, end: false }, currentLocation.pathname));
+};
+
+export const useBusinessPlaces = () => {
+  const adminRoles = useAppSelector((state) => state.user.userData.adminRoles);
+
+  const { data, isLoading } = useQuery(['businessPlaces'], () => api.getBusinessPlaces(), {
+    retry: false,
+  });
+
+  const getMappedData = () => {
+    if (!data?.GVTS?.Data) return [];
+
+    const mappedData = data?.GVTS?.Data?.filter((item) => adminRoles.includes(item[0])).map(
+      (item) => {
+        return {
+          id: item[0],
+          code: item[1],
+          name: item[2],
+          address: item[3],
+        };
+      },
+    );
+
+    return mappedData;
+  };
+
+  return { data: getMappedData(), isLoading };
 };

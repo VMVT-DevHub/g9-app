@@ -16,10 +16,17 @@ const App = () => {
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
 
   const { isLoading } = useQuery([], () => api.getUserInfo(), {
-    onSuccess: ({ Email, FName, LName, Phone, ID }) => {
+    onSuccess: ({ Email, FName, LName, Phone, ID, Admin }) => {
       if (!ID) return;
 
-      const userData = { email: Email, firstName: FName, lastName: LName, phone: Phone, id: ID };
+      const userData = {
+        email: Email,
+        firstName: FName,
+        lastName: LName,
+        phone: Phone,
+        id: ID,
+        adminRoles: Admin,
+      };
       dispatch(actions.setUser({ loggedIn: true, userData: userData }));
     },
     retry: false,
@@ -36,17 +43,13 @@ const App = () => {
 
         <Route element={<ProtectedRoute loggedIn={loggedIn} />}>
           {(routes || []).map((route, index) => (
-            <Route
-              key={`route-${index}`}
-              path={route.slug}
-              element={<DefaultLayout>{route.component}</DefaultLayout>}
-            />
+            <Route key={`route-${index}`} path={route.slug} element={route.component} />
           ))}
         </Route>
         <Route path="/api/*" element={null} />
         <Route path="/auth/*" element={null} />
         <Route path="/swagger/*" element={null} />
-        <Route path="*" element={<Navigate to={loggedIn ? slugs.businessPlace : slugs.login} />} />
+        <Route path="*" element={<Navigate to={loggedIn ? slugs.businessPlaces : slugs.login} />} />
       </Routes>
       <ToastContainer />
     </>
@@ -55,7 +58,7 @@ const App = () => {
 
 const PublicRoute = ({ loggedIn }: { loggedIn: boolean }) => {
   if (loggedIn) {
-    return <Navigate to={slugs.businessPlace} replace />;
+    return <Navigate to={slugs.businessPlaces} replace />;
   }
 
   return <Outlet />;
@@ -66,7 +69,11 @@ const ProtectedRoute = ({ loggedIn }: { loggedIn: boolean }) => {
     return <Navigate to={slugs.login} replace />;
   }
 
-  return <Outlet />;
+  return (
+    <DefaultLayout>
+      <Outlet />
+    </DefaultLayout>
+  );
 };
 
 export default App;
