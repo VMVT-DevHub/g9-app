@@ -76,16 +76,6 @@ const DeleteButtonContainer = styled.div`
   }
 `;
 
-const StyledIcon = styled(Icon)`
-  cursor: pointer;
-  font-size: 1.8rem;
-  color: ${({ theme }) => theme.colors.danger};
-  margin-right: 8px;
-  @media ${device.mobileL} {
-    margin: 0;
-  }
-`;
-
 const Container = styled.div`
   background-color: #ffffff;
   box-shadow: 0px 18px 41px #121a5529;

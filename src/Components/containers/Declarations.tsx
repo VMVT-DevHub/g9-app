@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../../utils/api';
 import { TagColors } from '../../utils/constants';
 import { BoldText } from '../other/CommonStyles';
@@ -19,7 +19,6 @@ const statusToColor = {
 };
 
 const Declarations = () => {
-  const navigate = useNavigate();
   const { id = '' } = useParams();
 
   const { data, isFetching } = useQuery(['declarations'], () => api.getDeclarations(id), {

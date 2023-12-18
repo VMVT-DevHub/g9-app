@@ -12,6 +12,8 @@
     "@vitejs/plugin-vue": "^4.5.0",
     "axios": "^1.6.2",
     "formik": "^2.4.5",
+    "lt-codes": "ambrazasp/lt-codes",
+    "moment": "^2.29.4",
     "react": "^18.0.0",
     "react-div-100vh": "^0.7.0",
     "react-dom": "^18.0.0",
