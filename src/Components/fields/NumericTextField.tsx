@@ -4,7 +4,7 @@ import TextFieldInput from './components/TextFieldInput';
 export interface NumericTextFieldProps {
   value?: string | number;
   name?: string;
-  error?: string;
+  error?: any;
   showError?: boolean;
   label?: string;
   icon?: JSX.Element;
@@ -20,10 +20,9 @@ export interface NumericTextFieldProps {
   readOnly?: boolean;
   onInputClick?: () => void;
   placeholder?: string;
-  wholeNumber?: boolean;
+  digitsAfterComma?: number;
   secondLabel?: JSX.Element;
   subLabel?: string;
-  inputMode?: string;
 }
 
 const NumericTextField = ({
@@ -40,10 +39,9 @@ const NumericTextField = ({
   disabled,
   height,
   showError,
-  wholeNumber = false,
+  digitsAfterComma,
   bottomLabel,
   onInputClick,
-  inputMode = 'numeric',
 }: NumericTextFieldProps) => {
   const handleBlur = (event: any) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -53,9 +51,19 @@ const NumericTextField = ({
       }
     }
   };
+  const preventNumInputFromScrolling = (e: any) =>
+    e.target.addEventListener(
+      'wheel',
+      function (e: any) {
+        e.preventDefault();
+      },
+      { passive: false },
+    );
 
   const handleChange = (input: string) => {
-    const regex = wholeNumber ? /^[0-9]{0,16}$/ : /^\d{0,100}$|(?=^.{1,10}$)^\d+[.,]\d{0,10}$/;
+    const regex = !digitsAfterComma
+      ? new RegExp(/^\d*$/)
+      : new RegExp(`^(?:\\d+)?(?:[.,]\\d{0,${digitsAfterComma}})?$`);
 
     if (regex.test(input)) onChange(input.replaceAll(',', '.'));
   };
@@ -71,9 +79,9 @@ const NumericTextField = ({
       showError={showError}
     >
       <TextFieldInput
-        inputMode={inputMode}
         value={value}
         name={name}
+        inputMode="decimal"
         error={error}
         leftIcon={leftIcon}
         rightIcon={rightIcon}

@@ -1,7 +1,8 @@
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../utils/api';
 import { TagColors } from '../../utils/constants';
+import { slugs } from '../../utils/routes';
 import { BoldText } from '../other/CommonStyles';
 import StatusTag from '../other/StatusTag';
 import Table from '../Table/Table';
@@ -20,6 +21,7 @@ const statusToColor = {
 
 const Declarations = () => {
   const { id = '' } = useParams();
+  const navigate = useNavigate();
 
   const { data, isFetching } = useQuery(['declarations'], () => api.getDeclarations(id), {
     retry: false,
@@ -32,6 +34,7 @@ const Declarations = () => {
 
     return data?.Data.map((item) => {
       return {
+        id: item[0],
         date: <BoldText>{item[2]}</BoldText>,
         type: lookUp.Stebesenos[item[3]],
         status: <StatusTag color={statusToColor[item[4]]} label={lookUp.Statusas[item[4]]} />,
@@ -40,7 +43,12 @@ const Declarations = () => {
   };
 
   return (
-    <Table loading={isFetching} onClick={() => {}} tableData={getMappedData()} labels={labels} />
+    <Table
+      loading={isFetching}
+      onClick={(item) => navigate(slugs.declaration(id, item.id))}
+      tableData={getMappedData()}
+      labels={labels}
+    />
   );
 };
 

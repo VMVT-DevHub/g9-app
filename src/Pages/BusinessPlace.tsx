@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import validations from 'lt-codes';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -29,7 +30,7 @@ export const userSchema = Yup.object().shape({
     .required(validationTexts.requireText)
     .trim()
     .test('validatePersonalCode', validationTexts.personalCode, (value) => {
-      return value.length === 11;
+      return validations.personalCode.validate(value).isValid;
     }),
 });
 
@@ -168,7 +169,7 @@ const BusinessPlace = () => {
                     >
                       {'Atšaukti'}
                     </Button>
-                    <Button loading={isSubmitLoading} disabled={isSubmitLoading}>
+                    <Button type="submit" loading={isSubmitLoading} disabled={isSubmitLoading}>
                       {'Pridėti teisę'}
                     </Button>
                   </ButtonInnerRow>

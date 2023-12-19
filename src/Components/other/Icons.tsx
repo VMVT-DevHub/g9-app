@@ -1,4 +1,5 @@
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { IoMdCalendar } from 'react-icons/io';
 import { IoCloseOutline } from 'react-icons/io5';
 import { MdExitToApp, MdKeyboardArrowDown, MdUnfoldMore } from 'react-icons/md';
 import { RiArrowDownSFill } from 'react-icons/ri';
@@ -14,6 +15,7 @@ export enum IconName {
   arrowDown = 'arrowDown',
   unfoldMore = 'unfoldMore',
   burger = 'burger',
+  calendar = 'calendar',
   close = 'close',
   dropdownArrow = 'dropdownArrow',
   deleteItem = 'deleteItem',
@@ -21,7 +23,9 @@ export enum IconName {
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
-    case 'dropdownArrow':
+    case IconName.calendar:
+      return <IoMdCalendar className={className} />;
+    case IconName.dropdownArrow:
       return <MdKeyboardArrowDown className={className} />;
     case IconName.deleteItem:
       return (

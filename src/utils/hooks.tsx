@@ -5,6 +5,7 @@ import { Tab } from '../Components/other/TabBar';
 import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions, emptyUser } from '../state/user/reducer';
 import api from './api';
+import { countDigitsAfterComma, getOptions } from './functions';
 
 export const useWindowSize = (width: string) => {
   const [isInRange, setIsInRange] = useState(false);
@@ -69,4 +70,31 @@ export const useBusinessPlaces = () => {
   };
 
   return { data: getMappedData(), isLoading };
+};
+
+export const useIndicators = () => {
+  const { data: indicators, isLoading } = useQuery(['indicators'], () => api.getIndicators(), {
+    retry: false,
+  });
+
+  if (isLoading) return { indicatorGroups: [], indicatorGroupLabels: {}, indicatorOptions: [] };
+
+  const indicatorGroups = getOptions(indicators?.Rodikliai?.Lookup?.Grupe);
+  const indicatorGroupLabels = indicators?.Rodikliai?.Lookup?.Grupe || {};
+  const indicatorOptions = indicators?.Rodikliai?.Data.map((item) => {
+    return {
+      id: item[0],
+      groupId: item[1],
+      name: item[3],
+      code: item[2],
+      min: item[5],
+      max: item[6],
+      step: item[7],
+      unit: item[8],
+      digitsAfterComma: countDigitsAfterComma(item[7]),
+      description: item[9],
+    };
+  });
+
+  return { indicatorGroups, indicatorGroupLabels, indicatorOptions, indicators };
 };

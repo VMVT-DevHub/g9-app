@@ -14,6 +14,11 @@ export const BlueText = styled.div`
   cursor: pointer;
 `;
 
+export const RedText = styled.div`
+  font-size: 1.4rem;
+  color: ${({ theme }) => theme.colors.danger};
+`;
+
 export const Title = styled.div`
   font-weight: bold;
   line-height: 39px;

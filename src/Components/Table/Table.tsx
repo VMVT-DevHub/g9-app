@@ -66,6 +66,7 @@ const Table = ({ tableData, onClick, loading, labels }: LoginLayoutProps) => {
 
 const Tbody = styled.tbody`
   width: 100%;
+  overflow-y: auto;
 `;
 
 const TableContainer = styled.div`

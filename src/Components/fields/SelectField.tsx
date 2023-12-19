@@ -11,7 +11,7 @@ export interface SelectFieldProps {
   label?: string;
   value?: any;
   placeholder?: string;
-  error?: string;
+  error?: any;
   showError?: boolean;
   options?: any[];
   left?: JSX.Element;
