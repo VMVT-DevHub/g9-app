@@ -10,7 +10,7 @@ export interface ToggleButtonProps {
   className?: string;
   label?: string;
   getOptionLabel?: (option: any) => string;
-  error?: string;
+  error?: any;
   showError?: boolean;
 }
 

@@ -1,6 +1,7 @@
 import BusinessPlace from '../Pages/BusinessPlace';
 import BusinessPlaces from '../Pages/BusinessPlaces';
 import DeclarationPage from '../Pages/Declaration';
+import Discrepancies from '../Pages/Discrepancies';
 
 export const slugs = {
   businessPlaces: '/veiklavietes',
@@ -9,6 +10,8 @@ export const slugs = {
   businessPlaceRightsDelegation: (id: string) => `/veiklavietes/${id}/teisiu-delegavimas`,
   declaration: (businessPlaceId: string, id: string) =>
     `/veiklavietes/${businessPlaceId}/deklaracijos/${id}`,
+  discrepancies: (businessPlaceId: string, id: string) =>
+    `/veiklavietes/${businessPlaceId}/deklaracijos/${id}/neatitikimai`,
 };
 
 export enum Ids {
@@ -33,5 +36,9 @@ export const routes = [
   {
     slug: slugs.declaration(Ids.BUSINESS_PLACE_ID, Ids.ID),
     component: <DeclarationPage />,
+  },
+  {
+    slug: slugs.discrepancies(Ids.BUSINESS_PLACE_ID, Ids.ID),
+    component: <Discrepancies />,
   },
 ];

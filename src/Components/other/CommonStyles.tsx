@@ -14,9 +14,15 @@ export const BlueText = styled.div`
   cursor: pointer;
 `;
 
-export const RedText = styled.div`
+export const DangerText = styled.div`
   font-size: 1.4rem;
   color: ${({ theme }) => theme.colors.danger};
+`;
+
+export const SuccessText = styled.div`
+  font-size: 1.4rem;
+  text-align: right;
+  color: ${({ theme }) => theme.colors.success};
 `;
 
 export const Title = styled.div`
@@ -42,7 +48,7 @@ export const Grid = styled.div<{ $columns?: number }>`
   display: grid;
   grid-template-columns: repeat(${({ $columns }) => $columns || 2}, 1fr);
   gap: 16px;
-  margin: 16px 0;
+  margin-bottom: 16px;
   width: 100%;
   @media ${device.mobileL} {
     grid-template-columns: repeat(1, 1fr);

@@ -1,5 +1,5 @@
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoMdCalendar } from 'react-icons/io';
+import { IoMdCalendar, IoMdCheckmark } from 'react-icons/io';
 import { IoCloseOutline } from 'react-icons/io5';
 import { MdExitToApp, MdKeyboardArrowDown, MdUnfoldMore } from 'react-icons/md';
 import { RiArrowDownSFill } from 'react-icons/ri';
@@ -19,10 +19,13 @@ export enum IconName {
   close = 'close',
   dropdownArrow = 'dropdownArrow',
   deleteItem = 'deleteItem',
+  checkMark = 'checkMark',
 }
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
+    case IconName.checkMark:
+      return <IoMdCheckmark className={className} />;
     case IconName.calendar:
       return <IoMdCalendar className={className} />;
     case IconName.dropdownArrow:

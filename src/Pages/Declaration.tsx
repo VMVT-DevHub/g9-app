@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import Button from '../Components/buttons/Button';
@@ -17,29 +17,31 @@ import InfoRow from '../Components/other/InfoRow';
 import InfoTag from '../Components/other/InfoTag';
 import { CubicMeter } from '../Components/other/MeasurmentUnits';
 import { device } from '../styles';
-import { Declaration, IndicatorOption } from '../types';
+import { IndicatorOption, ServerDeclaration } from '../types';
 import api from '../utils/api';
 import { getOptions, getYesNo, handleSuccessToast } from '../utils/functions';
 import { useBusinessPlaces, useIndicators } from '../utils/hooks';
+import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
 
 export const declarationSchema = Yup.object().shape({
   waterQuantity: Yup.string().required(validationTexts.requireText),
   usersCount: Yup.string().required(validationTexts.requireText),
   waterMaterial: Yup.number().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
-    if (isPreparedWater) {
+    if (isPreparedWater?.[0]) {
       return schema.required(validationTexts.requireSelect);
     }
     return schema.nullable();
   }),
 });
 
-const mapDeclaration = (declaration?: Declaration) => {
+const mapDeclaration = (declaration?: ServerDeclaration) => {
   if (!declaration) return {};
 
   return {
     year: declaration?.Data[0][2],
     type: declaration?.Lookup.Stebesenos[declaration.Data[0][3]],
+    status: declaration?.Lookup.Statusas[declaration.Data[0][4]],
     waterQuantity: declaration?.Data?.[0]?.[5],
     usersCount: declaration?.Data[0]?.[6],
     waterMaterial: declaration?.Data?.[0]?.[7]?.[0],
@@ -49,17 +51,17 @@ const mapDeclaration = (declaration?: Declaration) => {
 const mapValues = (indicatorOptions?: IndicatorOption[], values?: any) => {
   if (!values || !indicatorOptions) return [];
 
-  const groupedValues = values?.Data.reduce((prev, curr) => {
-    prev[curr[2]] = prev[curr?.[2]] || [];
+  const groupedValues = values?.Data.reduce((groupedValues, currentValue) => {
+    groupedValues[currentValue[2]] = groupedValues[currentValue?.[2]] || [];
 
-    prev[curr[2]].push({
-      id: curr[0],
-      indicatorId: curr[2],
-      date: curr[3],
-      value: curr[4],
+    groupedValues[currentValue[2]].push({
+      id: currentValue[0],
+      indicatorId: currentValue[2],
+      date: currentValue[3],
+      value: currentValue[4],
     });
 
-    return prev;
+    return groupedValues;
   }, {});
 
   return indicatorOptions.reduce((prev: any, curr) => {
@@ -72,30 +74,34 @@ const mapValues = (indicatorOptions?: IndicatorOption[], values?: any) => {
 };
 
 const DeclarationPage = () => {
-  const { businessPlaceId, id = '' } = useParams();
+  const { businessPlaceId = '', id = '' } = useParams();
   const [selectedIndicatorGroup, setSelectedIndicatorGroup] = useState('');
+  const navigate = useNavigate();
 
-  const { data: businessPlaces, isLoading } = useBusinessPlaces();
+  const { data: businessPlaces, isLoading: businessPlaceLoading } = useBusinessPlaces();
 
   const currentBusinessPlace = businessPlaces.find(
     (item) => item?.id?.toString() === businessPlaceId,
   );
 
-  const { data } = useQuery(['declaration'], () => api.getDeclaration(id), {
+  const { data, isLoading: declarationLoading } = useQuery(
+    ['declaration'],
+    () => api.getDeclaration(id),
+    {
+      retry: false,
+    },
+  );
+
+  const { data: values, isLoading: valuesLoading } = useQuery(['values'], () => api.getValues(id), {
     retry: false,
   });
-
-  const { data: values } = useQuery(['values'], () => api.getValues(id), {
-    retry: false,
-  });
-
-  const { data: violations } = useQuery(['violations'], () => api.getViolations(id), {
-    retry: false,
-  });
-
-  console.log(violations, 'violations');
 
   const mappedDeclaration = mapDeclaration(data);
+
+  const disabled = mappedDeclaration.status === 'Deklaruota';
+
+  const hideButton = disabled || mappedDeclaration.status === 'Pildoma';
+
   const [showPopup, setShowPopup] = useState(false);
   const waterMaterialOptions = getOptions(data?.Lookup?.RuosimoMedziagos);
   const waterMaterialLabels = data?.Lookup?.RuosimoMedziagos || {};
@@ -146,6 +152,9 @@ const DeclarationPage = () => {
 
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
 
+  const isLoading = [valuesLoading, businessPlaceLoading, declarationLoading].some(
+    (loading) => loading,
+  );
   if (isLoading) return <FullscreenLoader />;
 
   return (
@@ -166,9 +175,16 @@ const DeclarationPage = () => {
             ]}
           />
         </div>
-        <FlexItem $flex={0.25}>
-          <Button type="button">{'Tikrinti neatitikimus'}</Button>
-        </FlexItem>
+        {!hideButton && (
+          <FlexItem $flex={0.25}>
+            <Button
+              onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
+              type="button"
+            >
+              {'Tikrinti neatitikimus'}
+            </Button>
+          </FlexItem>
+        )}
       </TopRow>
       <MainCard>
         <Image src="/formImage.webp" />
@@ -191,6 +207,7 @@ const DeclarationPage = () => {
                         label={'Vandens kiekis'}
                         value={values.waterQuantity}
                         error={errors.waterQuantity}
+                        disabled={disabled}
                         name="waterQuantity"
                         onChange={(phone) => setFieldValue('waterQuantity', phone)}
                         showError={false}
@@ -201,6 +218,7 @@ const DeclarationPage = () => {
                         label={'Vartotojų skaičius'}
                         name="usersCount"
                         value={values.usersCount}
+                        disabled={disabled}
                         error={errors.usersCount}
                         onChange={(email) => setFieldValue('usersCount', email)}
                         showError={false}
@@ -211,6 +229,7 @@ const DeclarationPage = () => {
                         options={[true, false]}
                         label={'Ar vanduo ruošiamas?'}
                         onChange={(option) => setFieldValue('isPreparedWater', option)}
+                        disabled={disabled}
                         getOptionLabel={getYesNo}
                         isSelected={(option) => option === values.isPreparedWater}
                       />
@@ -234,6 +253,7 @@ const DeclarationPage = () => {
                     <SecondGrid>
                       <FlexItem $flex={1.5}>
                         <SelectField
+                          disabled={disabled}
                           options={waterMaterialOptions}
                           showError={false}
                           getOptionLabel={(option) => waterMaterialLabels[option]}
@@ -285,12 +305,14 @@ const DeclarationPage = () => {
           {selectedIndicators
             .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
             .map((indicator) => (
-              <IndicatorContainer indicator={indicator} />
+              <IndicatorContainer disabled={disabled} indicator={indicator} />
             ))}
 
-          <AddIndicatorButton onClick={() => setShowPopup(true)}>
-            + Pridėti rodiklį
-          </AddIndicatorButton>
+          {!disabled && (
+            <AddIndicatorButton onClick={() => setShowPopup(true)}>
+              + Pridėti rodiklį
+            </AddIndicatorButton>
+          )}
         </Column>
         <PopUpWithTitles
           title={'Pridėti rodiklį'}
@@ -439,7 +461,7 @@ const IndicatorLine = styled.div`
   cursor: pointer;
 `;
 
-export const IndicatorText = styled.div<{ $isActive: boolean }>`
+const IndicatorText = styled.div<{ $isActive: boolean }>`
   font-size: 1.4rem;
   color: ${({ $isActive, theme }) =>
     $isActive ? theme.colors.text.active : theme.colors.text.secondary};

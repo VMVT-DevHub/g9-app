@@ -12,7 +12,7 @@ import ButtonsGroup from '../buttons/ButtonGroup';
 import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
 import Table from '../Table/Table';
-import { BlueText, RedText } from './CommonStyles';
+import { BlueText, DangerText } from './CommonStyles';
 import Icon, { IconName } from './Icons';
 
 const labels = {
@@ -21,7 +21,13 @@ const labels = {
   delete: '',
 };
 
-const IndicatorContainer = ({ indicator }: { indicator: IndicatorOption }) => {
+const IndicatorContainer = ({
+  indicator,
+  disabled,
+}: {
+  indicator: IndicatorOption;
+  disabled: boolean;
+}) => {
   const [open, setOpen] = useState(false);
   const { id = '' } = useParams();
   const queryClient = useQueryClient();
@@ -43,9 +49,11 @@ const IndicatorContainer = ({ indicator }: { indicator: IndicatorOption }) => {
         ) : inRange(item.value, indicator.min, indicator.max) ? (
           value
         ) : (
-          <RedText>{value}</RedText>
+          <DangerText>{value}</DangerText>
         ),
-        delete: <BlueText onClick={() => deleteUserMutation(item.id)}>Trinti</BlueText>,
+        ...(!disabled && {
+          delete: <BlueText onClick={() => deleteUserMutation(item.id)}>Trinti</BlueText>,
+        }),
       };
     }) || [];
 

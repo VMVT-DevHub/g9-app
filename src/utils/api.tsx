@@ -1,5 +1,5 @@
 import Axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Declaration } from '../types';
+import { ServerDeclaration, ServerDiscrepancy } from '../types';
 
 interface GetAll {
   resource: string;
@@ -138,21 +138,21 @@ class Api {
     });
   };
 
-  getDeclarations = async (id: string): Promise<Declaration> => {
+  getDeclarations = async (id: string): Promise<ServerDeclaration> => {
     return this.getOne({
       resource: 'api/deklaracijos',
       id,
     });
   };
 
-  getDeclaration = async (id: string): Promise<Declaration> => {
+  getDeclaration = async (id: string): Promise<ServerDeclaration> => {
     return this.getOne({
       resource: `api/deklaracija`,
       id,
     });
   };
 
-  updateDeclaration = async (id: string, params: any): Promise<Declaration> => {
+  updateDeclaration = async (id: string, params: any): Promise<ServerDeclaration> => {
     return this.post({
       resource: `api/deklaracija`,
       params,
@@ -160,9 +160,17 @@ class Api {
     });
   };
 
-  getViolations = async (id: string): Promise<Declaration> => {
+  getDiscrepancies = async (id: string): Promise<ServerDiscrepancy> => {
     return this.getOne({
       resource: `api/neatitiktys`,
+      id,
+    });
+  };
+
+  updateDiscrepancies = async (id: string, params: any): Promise<ServerDiscrepancy> => {
+    return this.post({
+      resource: `api/neatitiktys`,
+      params,
       id,
     });
   };

@@ -8,16 +8,17 @@ export interface TableRow {
   [key: string]: any;
 }
 
-export interface LoginLayoutProps {
+export interface TableProps {
   tableData: TableRow[];
   labels: { [key: string]: string };
   onClick?: (item: any) => void;
   tableRowStyle?: any;
   loading?: boolean;
   rightButtons?: JSX.Element;
+  className?: string;
 }
 
-const Table = ({ tableData, onClick, loading, labels }: LoginLayoutProps) => {
+const Table = ({ tableData, onClick, loading, labels, className }: TableProps) => {
   const keys = Object.keys(labels);
 
   const handleRowClick = (row: TableRow) => {
@@ -47,7 +48,7 @@ const Table = ({ tableData, onClick, loading, labels }: LoginLayoutProps) => {
   if (loading) return <FullscreenLoader />;
 
   return (
-    <Container>
+    <Container className={className}>
       <TableContainer>
         <CustomTable>
           <THEAD>
@@ -81,7 +82,7 @@ const CustomTable = styled.table`
 const TH = styled.th`
   text-align: left;
   font-size: 1.4rem;
-  padding: 15px 84px 15px 16px;
+  padding: 15px 42px 15px 16px;
   font-weight: normal;
   color: ${({ theme }) => theme.colors.text.labels};
   border-bottom: 1px solid #cdd5df;
