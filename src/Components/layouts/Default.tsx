@@ -36,26 +36,14 @@ const Container = styled.div`
   }
 `;
 
-const InnerContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  height: 100%;
-
-  @media ${device.mobileL} {
-    padding: 20px 16px;
-  }
-`;
+const InnerContainer = styled.div``;
 
 const Content = styled.div`
-  flex-basis: 1200px;
+  max-width: 1250px;
+  width: 100%;
+  margin: auto;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 
-  @media ${device.mobileL} {
-    padding: 20px 16px;
-  }
+  padding: 20px;
 `;
 export default DefaultLayout;

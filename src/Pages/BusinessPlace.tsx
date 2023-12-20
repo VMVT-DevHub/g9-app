@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import { isEmpty } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -46,8 +47,10 @@ const BusinessPlace = () => {
   const currentBusinessPlace = data.find((item) => item?.id?.toString() === id);
 
   useEffect(() => {
+    if (isEmpty(data)) return;
+
     if (!currentBusinessPlace) navigate(slugs.businessPlaces);
-  }, [currentBusinessPlace]);
+  }, [currentBusinessPlace, data]);
 
   const tabs = [
     {

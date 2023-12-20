@@ -30,7 +30,7 @@ const Declarations = () => {
 
     const lookUp = data.Lookup;
 
-    return data?.Data.map((item) => {
+    return data?.Data.sort((a, b) => b[2] - a[2]).map((item) => {
       return {
         date: <BoldText>{item[2]}</BoldText>,
         type: lookUp.Stebesenos[item[3]],

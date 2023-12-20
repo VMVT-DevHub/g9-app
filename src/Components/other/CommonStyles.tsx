@@ -24,6 +24,7 @@ export const Title = styled.div`
 export const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 32px;
 `;
 
