@@ -1,16 +1,22 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-const Logo = ({ className }: any) => (
-  <Container className={className}>
-    <Title>G9</Title>
-    <Description>Geriamo vandens stebėsenos duomenų deklaravimas</Description>
-  </Container>
-);
+const Logo = ({ className }: any) => {
+  const navigate = useNavigate();
+
+  return (
+    <Container onClick={() => navigate('/')} className={className}>
+      <Title>G9</Title>
+      <Description>Geriamo vandens stebėsenos duomenų deklaravimas</Description>
+    </Container>
+  );
+};
 const Container = styled.div`
   display: grid;
   align-items: center;
   gap: 12px;
   grid-template-columns: 45px 200px;
+  cursor: pointer;
 `;
 
 const Title = styled.div`

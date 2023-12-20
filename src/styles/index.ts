@@ -64,7 +64,7 @@ export const theme: Theme = {
       primary: '#231f20',
       secondary: '#121926',
       tertiary: '#4B5565',
-      labels: '#697586',
+      labels: '#121926',
       accent: '#102EB1',
       error: '#FE5B78',
       input: '#231f20',
@@ -86,6 +86,7 @@ export const GlobalStyle = createGlobalStyle`
  *{
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
+ 
   }
   html { 
     font-size: 62.5%; 

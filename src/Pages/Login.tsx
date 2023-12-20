@@ -10,7 +10,7 @@ const Login = () => {
 
   const handleLogin = () => {
     setLoading(true);
-    const loginUrl = `/auth/login`;
+    const loginUrl = `/auth/login?r=${window.location.origin}`;
     window.location.replace(loginUrl);
   };
 

@@ -16,7 +16,9 @@ const DefaultLayout = ({ children }: DefaultLayoutProps) => {
     <Container>
       {!isMobile ? <Navbar /> : <MobileNavBar />}
 
-      <Content>{children}</Content>
+      <InnerContainer>
+        <Content>{children}</Content>
+      </InnerContainer>
     </Container>
   );
 };
@@ -34,15 +36,14 @@ const Container = styled.div`
   }
 `;
 
+const InnerContainer = styled.div``;
+
 const Content = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 1250px;
+  width: 100%;
+  margin: auto;
+  height: 100%;
+
   padding: 20px;
-
-  @media ${device.mobileL} {
-    padding: 20px 16px;
-  }
 `;
-
 export default DefaultLayout;

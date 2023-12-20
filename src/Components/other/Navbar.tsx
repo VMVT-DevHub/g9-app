@@ -15,17 +15,21 @@ const Menu = () => {
           <Logo />
         </LeftContainer>
         <TabContainer>
-          {routes.map((route, index) => {
-            return (
-              <Tab
-                $isActive={!!matchPath({ path: route.slug, end: false }, currentLocation.pathname)}
-                key={`menu-${index}`}
-                onClick={() => navigate(route.slug)}
-              >
-                {route.label}
-              </Tab>
-            );
-          })}
+          {routes
+            .filter((route) => !!route.label)
+            .map((route, index) => {
+              return (
+                <Tab
+                  $isActive={
+                    !!matchPath({ path: route.slug, end: false }, currentLocation.pathname)
+                  }
+                  key={`menu-${index}`}
+                  onClick={() => navigate(route.slug)}
+                >
+                  {route.label}
+                </Tab>
+              );
+            })}
         </TabContainer>
         <RightContainer>
           <ProfilesDropdown />

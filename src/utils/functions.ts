@@ -19,3 +19,5 @@ export const handleSuccessToast = (message = 'Atnaujinta') => {
     pauseOnHover: true,
   });
 };
+
+export const getRole = (isAdmin: boolean) => (isAdmin ? 'Administratorius' : 'Naudotojas');

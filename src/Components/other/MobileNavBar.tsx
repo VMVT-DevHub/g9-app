@@ -34,17 +34,19 @@ const MobileNavBar = () => {
                 <ExitIcon name={IconName.close} />
               </div>
             </SecondRow>
-            {(routes || []).map((route, index) => {
-              return (
-                <Tab
-                  isActive={location.pathname.includes(route.slug)}
-                  onClick={() => handleNavigate(route.slug)}
-                  key={`tab-${index}`}
-                >
-                  {route.label}
-                </Tab>
-              );
-            })}
+            {(routes || [])
+              .filter((route) => !!route.label)
+              .map((route, index) => {
+                return (
+                  <Tab
+                    isActive={location.pathname.includes(route.slug)}
+                    onClick={() => handleNavigate(route.slug)}
+                    key={`tab-${index}`}
+                  >
+                    {route.label}
+                  </Tab>
+                );
+              })}
           </InfoContainer>
           <MobileProfilesDropdown />
         </Container>
