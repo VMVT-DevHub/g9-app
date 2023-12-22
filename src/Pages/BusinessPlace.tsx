@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
-import validations from 'lt-codes';
+import { personalCode } from 'lt-codes';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -31,7 +31,7 @@ export const userSchema = Yup.object().shape({
     .required(validationTexts.requireText)
     .trim()
     .test('validatePersonalCode', validationTexts.personalCode, (value) => {
-      return validations.personalCode.validate(value).isValid;
+      return personalCode.validate(value).isValid;
     }),
 });
 
