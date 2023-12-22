@@ -1,11 +1,15 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
 import { useState } from 'react';
+import { useMutation } from 'react-query';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { device } from '../../styles';
 import { Exceeded, ServerDiscrepancy } from '../../types';
+import api from '../../utils/api';
 import { getOptions, getYesNo } from '../../utils/functions';
+import { useSuccess } from '../../utils/hooks';
 import { validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import ButtonsGroup from '../buttons/ButtonGroup';
@@ -15,78 +19,147 @@ import TextAreaField from '../fields/TextAreaField';
 import InfoContainer from '../layouts/InfoContainer';
 import PopUpWithTitles from '../layouts/PopUpWithTitle';
 import { BlueText, Grid } from '../other/CommonStyles';
+import Loader from '../other/Loader';
 import Table from '../Table/Table';
 
-const labels = {
-  dateFrom: 'Data nuo',
-  dateTo: 'Data iki',
-  max: 'Maksimali reikšmė',
-  edit: '',
-};
-
 export const exceededSchema = Yup.object().shape({
-  LOQValue: Yup.string().required(validationTexts.requireText),
-  userCount: Yup.string().required(validationTexts.requireText),
+  LOQValue: Yup.number()
+    .required(validationTexts.requireText)
+    .min(1, validationTexts.positiveNumber),
+  userCount: Yup.number()
+    .required(validationTexts.requireText)
+    .min(1, validationTexts.positiveNumber),
   isBelowLOQ: Yup.boolean().required(validationTexts.requireSelect),
   type: Yup.number().required(validationTexts.requireText),
   status: Yup.number().required(validationTexts.requireSelect),
-  notes: Yup.string().required(validationTexts.requireText),
+  notes: Yup.string()
+    .required(validationTexts.requireText)
+    .test('notes', validationTexts.shortDescription, (val) => val.length > 5),
   insignificant: Yup.boolean().required(validationTexts.requireSelect),
-  insignificantDescription: Yup.number().when(['insignificant'], (insignificant: any, schema) => {
+  insignificantDescription: Yup.string().when(['insignificant'], (insignificant: any, schema) => {
     if (insignificant[0]) {
-      return schema.required(validationTexts.requireSelect);
+      return schema
+        .required(validationTexts.requireText)
+        .test('iDes', validationTexts.shortDescription, (val) => val.length > 5);
     }
     return schema.nullable();
   }),
 });
 
+const mapPayload = (item) => {
+  return {
+    ID: item.id,
+    Nereiksmingas: item.insignificant,
+    NereiksmApras: item.insignificantDescription || null,
+    Zmones: parseInt(`${item.userCount}`),
+    Tipas: parseInt(`${item.type}`),
+    LOQVerte: item.isBelowLOQ,
+    LOQReiksme: parseInt(`${item.LOQValue}`),
+    Statusas: parseInt(`${item.status}`),
+    Patvirtinta: true,
+    Pastabos: item.notes,
+  };
+};
+
 const ExceededContainer = ({
   exceeded,
   unit,
   options,
-  onUpdate,
-  onUpdateAll,
+  description,
 }: {
+  description: string;
   exceeded: Exceeded[];
   unit: string;
   options?: ServerDiscrepancy['Virsijimas']['Lookup'];
-  onUpdate: (item: Exceeded) => void;
-  onUpdateAll: (item: Exceeded) => void;
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [currentExceeded, setCurrentExceeded] = useState<Exceeded | any>({});
+  const { id = '' } = useParams();
+  const { handleSuccess } = useSuccess();
+
+  const isButton = unit === 'T/N';
+
+  const [rowLoadingId, setRowLoadingId] = useState('');
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+
+  const { mutateAsync: updateRepeat } = useMutation(
+    (values: any) => api.updateDiscrepancies(id, values),
+    {},
+  );
+
+  const handleUpdateRepeat = async (values) => {
+    setRowLoadingId(values.id);
+    setDisabled(true);
+    await updateRepeat({ Virsijimas: [mapPayload(values)] });
+    setDisabled(false);
+    setRowLoadingId('');
+    handleSuccess();
+  };
+
+  const handleUpdateAllRepeat = async (values) => {
+    setDisabled(true);
+    setButtonLoading(true);
+    await Promise.all(
+      exceeded.map(async (item) => {
+        await updateRepeat({ Virsijimas: [mapPayload({ ...item, ...values, id: item.id })] });
+      }),
+    );
+    handleSuccess();
+    setDisabled(false);
+    setButtonLoading(false);
+  };
 
   const typeOptions = getOptions(options?.Tipas);
   const statusOptions = getOptions(options?.Statusas);
   const typeLabels = options?.Tipas;
   const statusLabels = options?.Statusas;
 
+  const handleRenderApprove = (item) => {
+    if (rowLoadingId == item.id) {
+      return (
+        <LoaderComponent>
+          <Loader size={20} />;
+        </LoaderComponent>
+      );
+    }
+
+    return (
+      <BlueText
+        disabled={disabled}
+        onClick={() => {
+          setCurrentExceeded(item);
+          setShowPopup(true);
+        }}
+      >
+        {item.notes ? 'Redaguoti' : 'Įvesti pastabas'}
+      </BlueText>
+    );
+  };
+
   const mapValues =
     exceeded?.map((item) => {
       return {
         ...item,
-        max: `${item.max} ${unit}`,
-        edit: (
-          <BlueText
-            onClick={() => {
-              setCurrentExceeded(item);
-              setShowPopup(true);
-            }}
-          >
-            {item.notes ? 'Redaguoti' : 'Įvesti pastabas'}
-          </BlueText>
-        ),
+        max: `${item.max} ${!isButton ? unit : ''}`,
+        edit: handleRenderApprove(item),
       };
     }) || [];
   const handleSubmit = (values: Exceeded) => {
-    values.approved = true;
     setShowPopup(false);
 
     if (isEmpty(currentExceeded)) {
-      return onUpdateAll(values);
+      return handleUpdateAllRepeat(values);
     }
 
-    onUpdate(values);
+    handleUpdateRepeat(values);
+  };
+
+  const labels = {
+    dateFrom: 'Data nuo',
+    dateTo: 'Data iki',
+    max: isButton ? description : 'Maksimali reikšmė',
+    edit: '',
   };
 
   return (
@@ -99,7 +172,13 @@ const ExceededContainer = ({
       >
         <Column>
           <div>
-            <Button height={40} variant={ButtonColors.ALL} onClick={() => setShowPopup(true)}>
+            <Button
+              disabled={disabled || buttonLoading}
+              loading={buttonLoading}
+              height={40}
+              variant={ButtonColors.ALL}
+              onClick={() => setShowPopup(true)}
+            >
               Įvesti visiems
             </Button>
           </div>
@@ -182,7 +261,7 @@ const ExceededContainer = ({
                   />
                 </Grid>
                 <Grid $columns={1}>
-                  <TextAreaField
+                  <NumericTextField
                     label="Kiekybinio nustatymo ribos LOQ reikšmė"
                     value={values?.LOQValue}
                     error={errors?.LOQValue}
@@ -233,6 +312,10 @@ const ExceededContainer = ({
 
 const StyledTable = styled(Table)`
   width: 550px;
+
+  @media ${device.mobileL} {
+    width: 100%;
+  }
 `;
 
 const ButtonRow = styled.div`
@@ -257,11 +340,16 @@ const FormContainer = styled(Form)`
 `;
 
 const Column = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
+
   align-items: flex-end;
+`;
+
+const LoaderComponent = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
 
 export default ExceededContainer;

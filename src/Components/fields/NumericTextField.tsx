@@ -26,7 +26,7 @@ export interface NumericTextFieldProps {
 }
 
 const NumericTextField = ({
-  value,
+  value = '',
   name,
   error,
   label,
@@ -51,16 +51,8 @@ const NumericTextField = ({
       }
     }
   };
-  const preventNumInputFromScrolling = (e: any) =>
-    e.target.addEventListener(
-      'wheel',
-      function (e: any) {
-        e.preventDefault();
-      },
-      { passive: false },
-    );
 
-  const handleChange = (input: string) => {
+  const handleChange = (input = '') => {
     const regex = !digitsAfterComma
       ? new RegExp(/^\d*$/)
       : new RegExp(`^(?:\\d+)?(?:[.,]\\d{0,${digitsAfterComma}})?$`);
@@ -79,7 +71,7 @@ const NumericTextField = ({
       showError={showError}
     >
       <TextFieldInput
-        value={value}
+        value={value || ''}
         name={name}
         inputMode="decimal"
         error={error}

@@ -2,6 +2,7 @@ import BusinessPlace from '../Pages/BusinessPlace';
 import BusinessPlaces from '../Pages/BusinessPlaces';
 import DeclarationPage from '../Pages/Declaration';
 import Discrepancies from '../Pages/Discrepancies';
+import SubmitDeclaration from '../Pages/SubmitDeclaration';
 
 export const slugs = {
   businessPlaces: '/veiklavietes',
@@ -10,6 +11,8 @@ export const slugs = {
   businessPlaceRightsDelegation: (id: string) => `/veiklavietes/${id}/teisiu-delegavimas`,
   declaration: (businessPlaceId: string, id: string) =>
     `/veiklavietes/${businessPlaceId}/deklaracijos/${id}`,
+  submitDeclaration: (businessPlaceId: string, id: string) =>
+    `/veiklavietes/${businessPlaceId}/deklaracijos/${id}/pateikti`,
   discrepancies: (businessPlaceId: string, id: string) =>
     `/veiklavietes/${businessPlaceId}/deklaracijos/${id}/neatitikimai`,
 };
@@ -40,5 +43,9 @@ export const routes = [
   {
     slug: slugs.discrepancies(Ids.BUSINESS_PLACE_ID, Ids.ID),
     component: <Discrepancies />,
+  },
+  {
+    slug: slugs.submitDeclaration(Ids.BUSINESS_PLACE_ID, Ids.ID),
+    component: <SubmitDeclaration />,
   },
 ];

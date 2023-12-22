@@ -52,6 +52,7 @@ export interface IndicatorOption {
   unit: string;
   digitsAfterComma: number | undefined;
   description: string;
+
   tableData?: { id: string; indicatorId: any; date: string; value: number }[];
 }
 
@@ -73,6 +74,8 @@ export interface IndicatorOptionWithDiscrepancies {
   id: any;
   name: string;
   code: string;
+  description: string;
+  index: number;
   min: number;
   max: number;
   step: number;
@@ -88,6 +91,7 @@ export interface IndicatorOptionWithDiscrepancies {
     lack?: {
       id: any;
       notes: string;
+      approved: boolean;
     };
     exceeded?: Exceeded[];
   };

@@ -51,10 +51,8 @@ export interface ButtonProps {
   type?: string;
   loading?: boolean;
   padding?: string;
-  buttonPadding?: string;
   signature?: boolean;
   disabled?: boolean;
-  color?: string;
   fontWeight?: string;
   radius?: string;
 }
@@ -67,9 +65,7 @@ const Button = ({
   padding = '11px 20px',
   leftIcon,
   radius = '4px',
-  buttonPadding,
   rightIcon,
-  color,
   type,
   loading = false,
   className,

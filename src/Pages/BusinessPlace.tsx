@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import { isEmpty } from 'lodash';
 import validations from 'lt-codes';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
@@ -19,7 +20,7 @@ import TabBar from '../Components/other/TabBar';
 import { device } from '../styles';
 import api from '../utils/api';
 import { getRole } from '../utils/functions';
-import { useBusinessPlaces, useGetCurrentRoute } from '../utils/hooks';
+import { useBusinessPlaces, useGetCurrentRoute, useIsAdmin } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
 
@@ -46,22 +47,36 @@ const BusinessPlace = () => {
 
   const currentBusinessPlace = data.find((item) => item?.id?.toString() === id);
 
+  const isAdmin = useIsAdmin();
+
   useEffect(() => {
+    if (isEmpty(data)) return;
+
     if (!currentBusinessPlace) navigate(slugs.businessPlaces);
-  }, [currentBusinessPlace]);
+  }, [currentBusinessPlace, data]);
 
   const tabs = [
     {
       label: 'Deklaracijos',
       slug: slugs.businessPlaceDeclarations(id),
     },
-    {
-      label: 'Teisių delegavimas',
-      slug: slugs.businessPlaceRightsDelegation(id),
-    },
+    ...(isAdmin
+      ? [
+          {
+            label: 'Teisių delegavimas',
+            slug: slugs.businessPlaceRightsDelegation(id),
+          },
+        ]
+      : []),
   ];
 
   const currentTab = useGetCurrentRoute(tabs);
+
+  useEffect(() => {
+    if (!currentTab?.slug) {
+      navigate(slugs.businessPlaceDeclarations(id));
+    }
+  }, [currentTab?.slug]);
 
   const containers = {
     [slugs.businessPlaceDeclarations(id)]: <Declarations />,

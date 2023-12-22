@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { device } from '../../styles';
 
 export interface LoginLayoutProps {
   children?: React.ReactNode;
@@ -31,6 +32,12 @@ const Container = styled.div`
   border-bottom: 1px solid #cdd5df;
   width: 100%;
   padding: 32px 0;
+
+  @media ${device.mobileL} {
+    display: block;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 const Column = styled.div`
   display: flex;

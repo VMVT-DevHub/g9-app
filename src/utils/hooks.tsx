@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
-import { matchPath, useLocation } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { Tab } from '../Components/other/TabBar';
 import { useAppDispatch, useAppSelector } from '../state/hooks';
 import { actions, emptyUser } from '../state/user/reducer';
 import api from './api';
-import { countDigitsAfterComma, getOptions } from './functions';
+import {
+  countDigitsAfterComma,
+  getOptions,
+  getUniqueIndicatorIds,
+  handleErrorToast,
+  handleIsApproved,
+  handleSuccessToast,
+  mapDeclaration,
+} from './functions';
 
 export const useWindowSize = (width: string) => {
   const [isInRange, setIsInRange] = useState(false);
@@ -46,8 +54,6 @@ export const useGetCurrentRoute = (tabs: Tab[]) => {
 };
 
 export const useBusinessPlaces = () => {
-  const adminRoles = useAppSelector((state) => state.user.userData.adminRoles);
-
   const { data, isLoading } = useQuery(['businessPlaces'], () => api.getBusinessPlaces(), {
     retry: false,
   });
@@ -55,16 +61,14 @@ export const useBusinessPlaces = () => {
   const getMappedData = () => {
     if (!data?.GVTS?.Data) return [];
 
-    const mappedData = data?.GVTS?.Data?.filter((item) => adminRoles.includes(item[0])).map(
-      (item) => {
-        return {
-          id: item[0],
-          code: item[1],
-          name: item[2],
-          address: item[3],
-        };
-      },
-    );
+    const mappedData = data?.GVTS?.Data?.map((item) => {
+      return {
+        id: item[0],
+        code: item[1],
+        name: item[2],
+        address: item[3],
+      };
+    });
 
     return mappedData;
   };
@@ -97,4 +101,88 @@ export const useIndicators = () => {
   });
 
   return { indicatorGroups, indicatorGroupLabels, indicatorOptions, indicators };
+};
+
+export const useSuccess = () => {
+  const queryClient = useQueryClient();
+
+  const handleSuccess = async () => {
+    await queryClient.invalidateQueries(['discrepancies']);
+    await queryClient.invalidateQueries(['indicators']);
+    handleSuccessToast();
+  };
+
+  return { handleSuccess };
+};
+
+export const useMappedIndicatorsWithDiscrepancies = () => {
+  const { id = '' } = useParams();
+
+  const { data: discrepancies, isLoading } = useQuery(
+    ['discrepancies', id],
+    () => api.getDiscrepancies(id),
+    {
+      retry: false,
+      onError: ({ response }) => {
+        handleErrorToast();
+      },
+    },
+  );
+
+  const { indicatorOptions, indicators } = useIndicators();
+
+  const [mappedIndicators, setMappedIndicators] = useState(
+    getUniqueIndicatorIds(discrepancies, indicatorOptions),
+  );
+
+  useEffect(() => {
+    setMappedIndicators(getUniqueIndicatorIds(discrepancies, indicatorOptions));
+  }, [discrepancies, indicators]);
+
+  const isAllApproved =
+    mappedIndicators.filter((item) => handleIsApproved(item)).length === mappedIndicators.length;
+
+  return { mappedIndicators, isLoading, indicatorOptions, discrepancies, isAllApproved };
+};
+
+export const useIsAdmin = () => {
+  const { id = '' } = useParams();
+
+  const adminRoles = useAppSelector((state) => state.user.userData.adminRoles);
+
+  const isAdmin = adminRoles.includes(Number(id));
+
+  return isAdmin;
+};
+
+export const useGetAdmin = () => {
+  const { id = '' } = useParams();
+
+  const adminRoles = useAppSelector((state) => state.user.userData.adminRoles);
+
+  const isAdmin = adminRoles.includes(Number(id));
+
+  return isAdmin;
+};
+
+export const useDeclaration = () => {
+  const { id = '' } = useParams();
+
+  const { data, isLoading: declarationLoading } = useQuery(
+    ['declaration', id],
+    () => api.getDeclaration(id),
+    {
+      retry: false,
+    },
+  );
+
+  const mappedDeclaration = mapDeclaration(data);
+
+  //disable if declared
+  const disabled = mappedDeclaration.status == 3;
+
+  //check if the form can be declared
+  const canDeclare = mappedDeclaration.status == 2 && mappedDeclaration?.usersCount;
+
+  return { mappedDeclaration, declarationLoading, lookup: data?.Lookup, disabled, canDeclare };
 };

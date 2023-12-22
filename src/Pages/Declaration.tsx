@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
@@ -17,16 +17,20 @@ import InfoRow from '../Components/other/InfoRow';
 import InfoTag from '../Components/other/InfoTag';
 import { CubicMeter } from '../Components/other/MeasurmentUnits';
 import { device } from '../styles';
-import { IndicatorOption, ServerDeclaration } from '../types';
+import { IndicatorOption } from '../types';
 import api from '../utils/api';
-import { getOptions, getYesNo, handleSuccessToast } from '../utils/functions';
-import { useBusinessPlaces, useIndicators } from '../utils/hooks';
+import { getOptions, getYearRange, getYesNo, handleSuccessToast } from '../utils/functions';
+import { useBusinessPlaces, useDeclaration, useIndicators } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
 
 export const declarationSchema = Yup.object().shape({
-  waterQuantity: Yup.string().required(validationTexts.requireText),
-  usersCount: Yup.string().required(validationTexts.requireText),
+  waterQuantity: Yup.number()
+    .min(1, validationTexts.positiveNumber)
+    .required(validationTexts.requireText),
+  usersCount: Yup.number()
+    .min(1, validationTexts.positiveNumber)
+    .required(validationTexts.requireText),
   waterMaterial: Yup.number().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
     if (isPreparedWater?.[0]) {
       return schema.required(validationTexts.requireSelect);
@@ -34,19 +38,6 @@ export const declarationSchema = Yup.object().shape({
     return schema.nullable();
   }),
 });
-
-const mapDeclaration = (declaration?: ServerDeclaration) => {
-  if (!declaration) return {};
-
-  return {
-    year: declaration?.Data[0][2],
-    type: declaration?.Lookup.Stebesenos[declaration.Data[0][3]],
-    status: declaration?.Lookup.Statusas[declaration.Data[0][4]],
-    waterQuantity: declaration?.Data?.[0]?.[5],
-    usersCount: declaration?.Data[0]?.[6],
-    waterMaterial: declaration?.Data?.[0]?.[7]?.[0],
-  };
-};
 
 const mapValues = (indicatorOptions?: IndicatorOption[], values?: any) => {
   if (!values || !indicatorOptions) return [];
@@ -77,34 +68,22 @@ const DeclarationPage = () => {
   const { businessPlaceId = '', id = '' } = useParams();
   const [selectedIndicatorGroup, setSelectedIndicatorGroup] = useState('');
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   const { data: businessPlaces, isLoading: businessPlaceLoading } = useBusinessPlaces();
 
   const currentBusinessPlace = businessPlaces.find(
     (item) => item?.id?.toString() === businessPlaceId,
   );
 
-  const { data, isLoading: declarationLoading } = useQuery(
-    ['declaration'],
-    () => api.getDeclaration(id),
-    {
-      retry: false,
-    },
-  );
-
   const { data: values, isLoading: valuesLoading } = useQuery(['values'], () => api.getValues(id), {
     retry: false,
   });
 
-  const mappedDeclaration = mapDeclaration(data);
-
-  const disabled = mappedDeclaration.status === 'Deklaruota';
-
-  const hideButton = disabled || mappedDeclaration.status === 'Pildoma';
+  const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
 
   const [showPopup, setShowPopup] = useState(false);
-  const waterMaterialOptions = getOptions(data?.Lookup?.RuosimoMedziagos);
-  const waterMaterialLabels = data?.Lookup?.RuosimoMedziagos || {};
+  const waterMaterialOptions = getOptions(lookup?.RuosimoMedziagos);
+  const waterMaterialLabels = lookup?.RuosimoMedziagos || {};
 
   const { indicatorGroupLabels, indicatorGroups, indicatorOptions, indicators } = useIndicators();
 
@@ -119,7 +98,9 @@ const DeclarationPage = () => {
   }, [values, indicators]);
 
   const filteredIndicatorOptions = indicatorOptions?.filter(
-    (indicator) => indicator.groupId == selectedIndicatorGroup,
+    (indicator) =>
+      indicator.groupId == selectedIndicatorGroup &&
+      !selectedIndicators.some((i) => i.id == indicator.id),
   );
 
   const handleSubmit = (values: typeof formValues) => {
@@ -138,6 +119,7 @@ const DeclarationPage = () => {
       onError: () => {},
       onSuccess: async () => {
         handleSuccessToast();
+        await queryClient.invalidateQueries(['declaration', id]);
       },
       retry: false,
     },
@@ -155,6 +137,9 @@ const DeclarationPage = () => {
   const isLoading = [valuesLoading, businessPlaceLoading, declarationLoading].some(
     (loading) => loading,
   );
+
+  const yearRange = getYearRange(mappedDeclaration.year);
+
   if (isLoading) return <FullscreenLoader />;
 
   return (
@@ -175,8 +160,8 @@ const DeclarationPage = () => {
             ]}
           />
         </div>
-        {!hideButton && (
-          <FlexItem $flex={0.25}>
+        {canDeclare ? (
+          <FlexItem>
             <Button
               onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
               type="button"
@@ -184,6 +169,8 @@ const DeclarationPage = () => {
               {'Tikrinti neatitikimus'}
             </Button>
           </FlexItem>
+        ) : (
+          ''
         )}
       </TopRow>
       <MainCard>
@@ -201,47 +188,41 @@ const DeclarationPage = () => {
               return (
                 <FormContainer>
                   <Grid>
-                    <FlexItem $flex={0.25}>
-                      <NumericTextField
-                        rightIcon={<CubicMeter />}
-                        label={'Vandens kiekis'}
-                        value={values.waterQuantity}
-                        error={errors.waterQuantity}
-                        disabled={disabled}
-                        name="waterQuantity"
-                        onChange={(phone) => setFieldValue('waterQuantity', phone)}
-                        showError={false}
-                      />
-                    </FlexItem>
-                    <FlexItem $flex={0.25}>
-                      <NumericTextField
-                        label={'Vartotojų skaičius'}
-                        name="usersCount"
-                        value={values.usersCount}
-                        disabled={disabled}
-                        error={errors.usersCount}
-                        onChange={(email) => setFieldValue('usersCount', email)}
-                        showError={false}
-                      />
-                    </FlexItem>
-                    <FlexItem $flex={0.5}>
-                      <ButtonsGroup
-                        options={[true, false]}
-                        label={'Ar vanduo ruošiamas?'}
-                        onChange={(option) => setFieldValue('isPreparedWater', option)}
-                        disabled={disabled}
-                        getOptionLabel={getYesNo}
-                        isSelected={(option) => option === values.isPreparedWater}
-                      />
-                    </FlexItem>
+                    <StyledNumericTextField
+                      rightIcon={<CubicMeter />}
+                      label={'Vandens kiekis'}
+                      value={values.waterQuantity}
+                      error={errors.waterQuantity}
+                      disabled={disabled}
+                      name="waterQuantity"
+                      onChange={(phone) => setFieldValue('waterQuantity', phone)}
+                      showError={false}
+                    />
+                    <StyledNumericTextField
+                      label={'Vartotojų skaičius'}
+                      name="usersCount"
+                      value={values.usersCount}
+                      disabled={disabled}
+                      error={errors.usersCount}
+                      onChange={(email) => setFieldValue('usersCount', email)}
+                      showError={false}
+                    />
+                    <StyledButtonGroup
+                      options={[true, false]}
+                      label={'Ar vanduo ruošiamas?'}
+                      onChange={(option) => setFieldValue('isPreparedWater', option)}
+                      disabled={disabled}
+                      getOptionLabel={getYesNo}
+                      isSelected={(option) => option === values.isPreparedWater}
+                    />
 
                     {!values.isPreparedWater && (
-                      <FlexItem $flex={0.5}>
+                      <FlexItem>
                         <ButtonRow>
                           <Button
                             type="submit"
                             loading={isSubmitLoading}
-                            disabled={isSubmitLoading}
+                            disabled={isSubmitLoading || disabled}
                           >
                             {'Saugoti'}
                           </Button>
@@ -251,26 +232,26 @@ const DeclarationPage = () => {
                   </Grid>
                   {values.isPreparedWater && (
                     <SecondGrid>
-                      <FlexItem $flex={1.5}>
-                        <SelectField
-                          disabled={disabled}
-                          options={waterMaterialOptions}
-                          showError={false}
-                          getOptionLabel={(option) => waterMaterialLabels[option]}
-                          value={values.waterMaterial}
-                          label={'Vandens ruošimui naudojamos medžiagos'}
-                          name="waterMaterials"
-                          onChange={(value) => setFieldValue('waterMaterial', value)}
-                          error={errors.waterMaterial}
-                        />
-                      </FlexItem>
-                      <FlexItem $flex={0.5}>
-                        <ButtonRow>
-                          <Button type="submit" loading={false} disabled={false}>
-                            {'Saugoti'}
-                          </Button>
-                        </ButtonRow>
-                      </FlexItem>
+                      <StyledFormSelectField
+                        disabled={disabled}
+                        options={waterMaterialOptions}
+                        showError={false}
+                        getOptionLabel={(option) => waterMaterialLabels[option]}
+                        value={values.waterMaterial}
+                        label={'Vandens ruošimui naudojamos medžiagos'}
+                        name="waterMaterials"
+                        onChange={(value) => setFieldValue('waterMaterial', value)}
+                        error={errors.waterMaterial}
+                      />
+                      <ButtonRow>
+                        <Button
+                          type="submit"
+                          loading={isSubmitLoading}
+                          disabled={isSubmitLoading || disabled}
+                        >
+                          {'Saugoti'}
+                        </Button>
+                      </ButtonRow>
                     </SecondGrid>
                   )}
                 </FormContainer>
@@ -304,12 +285,26 @@ const DeclarationPage = () => {
         <Column>
           {selectedIndicators
             .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
-            .map((indicator) => (
-              <IndicatorContainer disabled={disabled} indicator={indicator} />
+            .map((indicator, index) => (
+              <div key={`indicator-group-${index}`}>
+                <IndicatorContainer
+                  onDelete={(id) =>
+                    setSelectedIndicators(
+                      selectedIndicators.filter((indicator) => indicator.id !== id),
+                    )
+                  }
+                  yearRange={yearRange}
+                  disabled={disabled}
+                  indicator={indicator}
+                />
+              </div>
             ))}
 
           {!disabled && (
-            <AddIndicatorButton onClick={() => setShowPopup(true)}>
+            <AddIndicatorButton
+              disabled={!selectedIndicatorGroup}
+              onClick={() => selectedIndicatorGroup && setShowPopup(true)}
+            >
               + Pridėti rodiklį
             </AddIndicatorButton>
           )}
@@ -370,6 +365,30 @@ const ButtonInnerRow = styled.div`
   }
 `;
 
+const StyledNumericTextField = styled(NumericTextField)`
+  width: 100%;
+  max-width: 150px;
+  @media ${device.mobileL} {
+    max-width: 100%;
+  }
+`;
+
+const StyledButtonGroup = styled(ButtonsGroup)`
+  width: 100%;
+  min-width: 250px;
+  @media ${device.mobileL} {
+    min-width: 100%;
+  }
+`;
+
+const StyledFormSelectField = styled(SelectField)`
+  width: 100%;
+  max-width: 500px;
+  @media ${device.mobileL} {
+    max-width: 100%;
+  }
+`;
+
 const StyledSelectField = styled(SelectField)`
   margin: 24px 0px;
 `;
@@ -380,7 +399,6 @@ const Grid = styled.div`
   gap: 16px;
   align-items: flex-end;
   width: 100%;
-  max-width: 450px;
   @media ${device.mobileL} {
     max-width: 100%;
   }
@@ -388,23 +406,18 @@ const Grid = styled.div`
 
 const SecondGrid = styled.div`
   display: flex;
-  flex-wrap: wrap;
   gap: 16px;
   margin: 16px 0;
   align-items: flex-end;
   width: 100%;
-  max-width: 700px;
   @media ${device.mobileL} {
     max-width: 100%;
+    flex-wrap: wrap;
   }
 `;
 
-const FlexItem = styled.div<{ $flex }>`
-  flex: ${({ $flex }) => $flex};
-
-  @media ${device.mobileL} {
-    flex: 1;
-  }
+const FlexItem = styled.div`
+  display: flex;
 `;
 const ButtonRow = styled.div`
   display: flex;
@@ -423,10 +436,14 @@ const Image = styled.img`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  height: 100%;
   width: 100%;
   max-width: 290px;
   border-radius: 12px 0 0 12px;
+
+  @media ${device.mobileL} {
+    max-width: 100%;
+    border-radius: 12px 12px 0 0px;
+  }
 `;
 
 const MainCard = styled.div`
@@ -435,6 +452,9 @@ const MainCard = styled.div`
   min-height: 176px;
   width: 100%;
   display: flex;
+  @media ${device.mobileL} {
+    flex-direction: column;
+  }
 `;
 
 const MainCardContainer = styled.div`
@@ -475,14 +495,15 @@ const IndicatorGroupContainer = styled.div`
   gap: 16px;
 `;
 
-const AddIndicatorButton = styled.div`
+const AddIndicatorButton = styled.div<{ disabled: boolean }>`
   border: 1px dashed #e5e7eb;
   width: 100%;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   height: 56px;
   border-radius: 4px;
   position: relative;
   background-color: white;
-  cursor: pointer;
   color: ${({ theme }) => theme.colors.text.active};
   font-size: 1.6rem;
   line-height: 18px;
@@ -495,6 +516,9 @@ const AddIndicatorButton = styled.div`
 const InfoContainer = styled.div`
   display: flex;
   gap: 50px;
+  @media ${device.mobileL} {
+    flex-direction: column;
+  }
 `;
 
 const Column = styled.div`
@@ -508,6 +532,7 @@ const TopRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 `;
 
 export default DeclarationPage;

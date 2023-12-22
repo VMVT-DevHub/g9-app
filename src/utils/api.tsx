@@ -175,6 +175,13 @@ class Api {
     });
   };
 
+  submitDeclaration = async (id: string): Promise<ServerDeclaration> => {
+    return this.post({
+      resource: `api/deklaruoti`,
+      id,
+    });
+  };
+
   getValues = async (
     id: string,
   ): Promise<{ Data: any[]; Fields: ['ID', 'Deklaracija', 'Rodiklis', 'Data', 'Reiksme'] }> => {

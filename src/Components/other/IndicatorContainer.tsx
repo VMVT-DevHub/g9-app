@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { device } from '../../styles';
 import { IndicatorOption } from '../../types';
 import api from '../../utils/api';
-import { formatDate, handleSuccessToast, inRange } from '../../utils/functions';
+import { formatDate, handleErrorToast, handleSuccessToast, inRange } from '../../utils/functions';
 import Button from '../buttons/Button';
 import ButtonsGroup from '../buttons/ButtonGroup';
 import DateField from '../fields/DateField';
@@ -14,43 +15,48 @@ import NumericTextField from '../fields/NumericTextField';
 import Table from '../Table/Table';
 import { BlueText, DangerText } from './CommonStyles';
 import Icon, { IconName } from './Icons';
-
-const labels = {
-  date: 'Mėginio paėmimo data',
-  value: 'Reikšmė',
-  delete: '',
-};
+import InfoPopUp from './InfoPopUp';
 
 const IndicatorContainer = ({
   indicator,
   disabled,
+  onDelete,
+  yearRange,
 }: {
+  yearRange: {
+    minDate: Date;
+    maxDate: Date;
+  };
   indicator: IndicatorOption;
   disabled: boolean;
+  onDelete: (id: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
   const { id = '' } = useParams();
   const queryClient = useQueryClient();
+  const [showPopup, setsSowPopup] = useState(false);
 
   const isButton = indicator.unit === 'T/N';
 
+  const renderValue = (item) => {
+    if (isButton) {
+      if (item.value === 0) return 'Ne';
+
+      return 'Taip';
+    }
+
+    const value = `${item.value} ${indicator.unit}`;
+
+    if (inRange(item.value, indicator.min, indicator.max)) return value;
+
+    return <DangerText>{value}</DangerText>;
+  };
+
   const tableData =
     indicator.tableData?.map((item) => {
-      const value = `${item.value} ${indicator.unit}`;
-
       return {
         ...item,
-        value: isButton ? (
-          item.value === 0 ? (
-            'Ne'
-          ) : (
-            'Taip'
-          )
-        ) : inRange(item.value, indicator.min, indicator.max) ? (
-          value
-        ) : (
-          <DangerText>{value}</DangerText>
-        ),
+        value: renderValue(item),
         ...(!disabled && {
           delete: <BlueText onClick={() => deleteUserMutation(item.id)}>Trinti</BlueText>,
         }),
@@ -60,7 +66,9 @@ const IndicatorContainer = ({
   const { mutateAsync: updateDeclarationValuesMutation, isLoading: isSubmitLoading } = useMutation(
     (values: any) => api.postValue(id, values),
     {
-      onError: () => {},
+      onError: () => {
+        handleErrorToast();
+      },
       onSuccess: async () => {
         await queryClient.invalidateQueries(['values']);
         handleSuccessToast();
@@ -93,14 +101,35 @@ const IndicatorContainer = ({
     resetForm();
   };
 
+  const labels = {
+    date: 'Mėginio paėmimo data',
+    value: isButton ? indicator.description : 'Reikšmė',
+    delete: '',
+  };
+
+  const showTable = !isEmpty(tableData);
+
   return (
     <>
       <Expander onClick={() => setOpen(!open)} $isActive={open}>
-        <IndicatorValue $isActive={open}>{indicator?.name}</IndicatorValue>
+        <TitleContainer>
+          <IndicatorValue $isActive={open}>
+            {`${indicator?.name} ${tableData.length ? `(${tableData.length})` : ''}`}{' '}
+          </IndicatorValue>
+          {!showTable && (
+            <Delete onClick={() => onDelete(indicator.id)} $isActive={open}>
+              Panaikinti
+            </Delete>
+          )}
+        </TitleContainer>
         <StyledIcon $isActive={open} name={IconName.dropdownArrow} />
       </Expander>
       {open && (
         <>
+          <InfoRow onClick={() => setsSowPopup(true)}>
+            <BookIcon name={IconName.bookOpen} />
+            <BlueText>Skaityti rodiklio aprašymą</BlueText>
+          </InfoRow>
           <Formik
             enableReinitialize={true}
             initialValues={{ date: undefined, value: undefined }}
@@ -114,8 +143,11 @@ const IndicatorContainer = ({
                     value={values.date}
                     label={'Mėginio paėmimo data'}
                     name="indicator"
+                    disabled={disabled}
                     onChange={(value) => setFieldValue('date', value)}
                     error={errors.date}
+                    maxDate={yearRange.maxDate}
+                    minDate={yearRange.minDate}
                   />
                   {isButton ? (
                     <ButtonsGroup
@@ -123,6 +155,7 @@ const IndicatorContainer = ({
                       label={indicator.description}
                       onChange={(option) => setFieldValue('value', option)}
                       getOptionLabel={(option) => option}
+                      disabled={disabled}
                       isSelected={(option) => option === values.value}
                     />
                   ) : (
@@ -133,6 +166,7 @@ const IndicatorContainer = ({
                       onChange={(value) => setFieldValue('value', value)}
                       rightIcon={<Unit>{indicator.unit}</Unit>}
                       error={errors.value}
+                      disabled={disabled}
                       digitsAfterComma={indicator.digitsAfterComma}
                     />
                   )}
@@ -140,7 +174,7 @@ const IndicatorContainer = ({
                   <Button
                     type="submit"
                     loading={isSubmitLoading}
-                    disabled={isSubmitLoading || !values.value || !values.date}
+                    disabled={isSubmitLoading || !values.value || !values.date || disabled}
                   >
                     {'Pridėti rodiklį'}
                   </Button>
@@ -148,7 +182,8 @@ const IndicatorContainer = ({
               );
             }}
           </Formik>
-          {!isEmpty(tableData) && <Table tableData={tableData} labels={labels} />}
+          {showTable && <Table maxHeight="300px" tableData={tableData} labels={labels} />}
+          <InfoPopUp setShowPopup={setsSowPopup} showPopup={showPopup} indicator={indicator} />
         </>
       )}
     </>
@@ -165,6 +200,11 @@ const FormContainer = styled(Form)`
   background: #f3f4f6;
   border-radius: 4px;
   padding: 12px;
+  margin-bottom: 12px;
+
+  @media ${device.mobileL} {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const StyledIcon = styled(Icon)<{ $isActive: boolean }>`
@@ -181,6 +221,25 @@ const Unit = styled.div`
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
+const BookIcon = styled(Icon)`
+  font-size: 1.4rem;
+  color: ${({ theme }) => theme.colors.text.active};
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+  gap: 4px;
+  justify-content: flex-end;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
 const Expander = styled.div<{ $isActive: boolean }>`
   padding: 18px 14px;
   background-color: ${({ $isActive, theme }) => ($isActive ? theme.colors.primary : '#f3f4f6')};
@@ -191,7 +250,13 @@ const Expander = styled.div<{ $isActive: boolean }>`
 `;
 
 const IndicatorValue = styled.div<{ $isActive: boolean }>`
+  font-weight: 600;
   color: ${({ $isActive, theme }) => (!$isActive ? theme.colors.text.primary : 'white')};
+`;
+
+const Delete = styled.div<{ $isActive: boolean }>`
+  margin-left: 10px;
+  color: ${({ $isActive, theme }) => (!$isActive ? theme.colors.text.active : 'white')};
 `;
 
 export default IndicatorContainer;

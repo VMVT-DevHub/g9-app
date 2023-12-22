@@ -77,8 +77,8 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  padding: 18px 24px;
   z-index: 5;
+  padding: 18px 24px;
   overflow-y: auto;
 `;
 

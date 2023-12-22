@@ -1,5 +1,11 @@
-import { format } from 'date-fns';
+import { endOfYear, format, startOfYear } from 'date-fns';
 import { toast } from 'react-toastify';
+import {
+  IndicatorOption,
+  IndicatorOptionWithDiscrepancies,
+  ServerDeclaration,
+  ServerDiscrepancy,
+} from '../types';
 
 export const handleErrorToast = (message = 'Įvyko klaida, pabandykite vėliau') => {
   toast.error(message, {
@@ -48,4 +54,105 @@ export const formatDate = (date?: Date | string) =>
 
 export const inRange = (num: number, start: number, end: number) => {
   return num >= start && num <= end;
+};
+
+export const getUniqueIndicatorIds = (
+  discrepancies?: ServerDiscrepancy,
+  indicatorOptions?: IndicatorOption[],
+): IndicatorOptionWithDiscrepancies[] => {
+  if (!discrepancies || !indicatorOptions) return [];
+
+  const indicators: any = {};
+
+  discrepancies.Kartojasi.Data.forEach((item) => {
+    indicators[item[1]] = {
+      ...indicators[item[1]],
+      repeats: indicators[item[1]]?.repeats || [],
+    };
+
+    indicators[item[1]].repeats.push({
+      id: item[0],
+      date: item[2],
+      value: item[3],
+      approved: item[4],
+    });
+  });
+
+  discrepancies.Trukumas.Data.forEach((item) => {
+    indicators[item[1]] = {
+      ...indicators[item[1]],
+      lack: {
+        id: item[0],
+        approved: item[5],
+        notes: item[6] || '',
+      },
+    };
+  });
+
+  discrepancies.Virsijimas.Data.forEach((item) => {
+    indicators[item[1]] = {
+      ...indicators[item[1]],
+      exceeded: indicators?.[item[1]]?.exceeded || [],
+    };
+
+    indicators[item[1]].exceeded.push({
+      id: item[0],
+      dateFrom: item[2],
+      dateTo: item[3],
+      max: item[4],
+      insignificant: item[6],
+      insignificantDescription: item[7],
+      userCount: item[8],
+      type: item[9],
+      isBelowLOQ: item[10],
+      LOQValue: item[11],
+      status: item[12],
+      approved: item[13],
+      notes: item[14],
+    });
+  });
+
+  return indicatorOptions
+    .reduce((filteredIndicators: any[], currentIndicator) => {
+      if (indicators[currentIndicator.id]) {
+        filteredIndicators.push({
+          ...currentIndicator,
+          data: indicators[currentIndicator.id],
+        });
+      }
+
+      return filteredIndicators;
+    }, [])
+    .map((item, index) => ({ ...item, index }));
+};
+
+export const handleIsApproved = (indicator: IndicatorOptionWithDiscrepancies) => {
+  const isApproved =
+    (!indicator?.data?.exceeded || indicator?.data?.exceeded?.every((item) => item.approved)) &&
+    (!indicator?.data?.repeats || indicator?.data?.repeats?.every((item) => item.approved)) &&
+    (!indicator?.data?.lack || indicator?.data?.lack?.approved);
+
+  return isApproved;
+};
+
+export const mapDeclaration = (declaration?: ServerDeclaration) => {
+  if (!declaration) return {};
+
+  return {
+    year: declaration?.Data[0][2],
+    type: declaration?.Lookup.Stebesenos[declaration.Data[0][3]],
+    status: declaration.Data[0][4],
+    waterQuantity: declaration?.Data?.[0]?.[5],
+    usersCount: declaration?.Data[0]?.[6],
+    waterMaterial: declaration?.Data?.[0]?.[7]?.[0],
+  };
+};
+
+export const getYearRange = (year: string) => {
+  const yearDate = new Date(`${year}-01-01`);
+
+  const minDate = startOfYear(yearDate);
+  const maxDate = endOfYear(yearDate);
+
+  return { minDate, maxDate };
 };

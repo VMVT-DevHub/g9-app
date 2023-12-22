@@ -7,11 +7,22 @@ export const BoldText = styled.div`
   color: #121926;
 `;
 
-export const BlueText = styled.div`
+export const BlueText = styled.div<{
+  disabled?: boolean;
+}>`
   font-size: 1.4rem;
   text-align: right;
   color: ${({ theme }) => theme.colors.text.active};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   cursor: pointer;
+`;
+
+export const DisableText = styled.div`
+  font-size: 1.4rem;
+  text-align: right;
+  color: ${({ theme }) => theme.colors.text.active};
+  cursor: not-allowed;
 `;
 
 export const DangerText = styled.div`
@@ -35,6 +46,7 @@ export const Title = styled.div`
 export const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 32px;
 `;
 

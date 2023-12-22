@@ -12,6 +12,8 @@ const PopUpWithTitles = ({ title, subTitle, children, onClose, visible = true }:
 
 const Title = styled.div`
   font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
 `;
 
 export default PopUpWithTitles;

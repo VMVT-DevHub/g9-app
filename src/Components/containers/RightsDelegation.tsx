@@ -66,7 +66,7 @@ const RightsDelegations = () => {
 
         role: (
           <TableSelect
-            disabled={isCurrentUser}
+            disabled={true}
             optionLabel={getRole}
             onChange={() => {}}
             value={getRole(item[4])}

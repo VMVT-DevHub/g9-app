@@ -16,9 +16,17 @@ export interface TableProps {
   loading?: boolean;
   rightButtons?: JSX.Element;
   className?: string;
+  maxHeight?: string;
 }
 
-const Table = ({ tableData, onClick, loading, labels, className }: TableProps) => {
+const Table = ({
+  tableData,
+  onClick,
+  loading,
+  labels,
+  className,
+  maxHeight = '100%',
+}: TableProps) => {
   const keys = Object.keys(labels);
 
   const handleRowClick = (row: TableRow) => {
@@ -49,7 +57,7 @@ const Table = ({ tableData, onClick, loading, labels, className }: TableProps) =
 
   return (
     <Container className={className}>
-      <TableContainer>
+      <TableContainer $maxHeight={maxHeight}>
         <CustomTable>
           <THEAD>
             <TR $hide_border={true} $pointer={false}>
@@ -70,8 +78,9 @@ const Tbody = styled.tbody`
   overflow-y: auto;
 `;
 
-const TableContainer = styled.div`
+const TableContainer = styled.div<{ $maxHeight?: string }>`
   width: 100%;
+  max-height: ${({ $maxHeight }) => $maxHeight};
 `;
 
 const CustomTable = styled.table`
@@ -111,6 +120,8 @@ const TdSecond = styled.td`
 
 const THEAD = styled.thead`
   width: 100%;
+  position: sticky;
+  top: 0;
   background-color: #f9fafb;
 `;
 
