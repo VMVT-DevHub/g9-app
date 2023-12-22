@@ -30,6 +30,7 @@ const Container = styled.div`
   background-color: white;
   flex-direction: column;
   overflow-y: auto;
+
   @media ${device.mobileL} {
     overflow-y: auto;
     height: 100svh; //fixes iOS Safari floating address bar problem
@@ -43,7 +44,6 @@ const Content = styled.div`
   width: 100%;
   margin: auto;
   height: 100%;
-
   padding: 20px;
 `;
 export default DefaultLayout;

@@ -1,7 +1,11 @@
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
+import { IoMdCalendar, IoMdCheckmark } from 'react-icons/io';
 import { IoCloseOutline } from 'react-icons/io5';
 import { MdExitToApp, MdKeyboardArrowDown, MdUnfoldMore } from 'react-icons/md';
 import { RiArrowDownSFill } from 'react-icons/ri';
+import { SlBookOpen } from 'react-icons/sl';
 
 export interface IconProps {
   name: IconName | string;
@@ -14,14 +18,29 @@ export enum IconName {
   arrowDown = 'arrowDown',
   unfoldMore = 'unfoldMore',
   burger = 'burger',
+  calendar = 'calendar',
   close = 'close',
   dropdownArrow = 'dropdownArrow',
   deleteItem = 'deleteItem',
+  checkMark = 'checkMark',
+  info = 'info',
+  arrowNext = 'arrowNext',
+  bookOpen = 'bookOpen',
 }
 
 const Icon = ({ name, className }: IconProps) => {
   switch (name) {
-    case 'dropdownArrow':
+    case IconName.bookOpen:
+      return <SlBookOpen className={className} />;
+    case IconName.arrowNext:
+      return <HiOutlineArrowNarrowRight className={className} />;
+    case IconName.info:
+      return <AiOutlineInfoCircle className={className} />;
+    case IconName.checkMark:
+      return <IoMdCheckmark className={className} />;
+    case IconName.calendar:
+      return <IoMdCalendar className={className} />;
+    case IconName.dropdownArrow:
       return <MdKeyboardArrowDown className={className} />;
     case IconName.deleteItem:
       return (

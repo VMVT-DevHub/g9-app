@@ -1,5 +1,6 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
+import { personalCode } from 'lt-codes';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,7 +20,7 @@ import TabBar from '../Components/other/TabBar';
 import { device } from '../styles';
 import api from '../utils/api';
 import { getRole } from '../utils/functions';
-import { useBusinessPlaces, useGetCurrentRoute } from '../utils/hooks';
+import { useBusinessPlaces, useGetCurrentRoute, useIsAdmin } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
 
@@ -30,7 +31,7 @@ export const userSchema = Yup.object().shape({
     .required(validationTexts.requireText)
     .trim()
     .test('validatePersonalCode', validationTexts.personalCode, (value) => {
-      return value.length === 11;
+      return personalCode.validate(value).isValid;
     }),
 });
 
@@ -46,6 +47,8 @@ const BusinessPlace = () => {
 
   const currentBusinessPlace = data.find((item) => item?.id?.toString() === id);
 
+  const isAdmin = useIsAdmin();
+
   useEffect(() => {
     if (isEmpty(data)) return;
 
@@ -57,13 +60,23 @@ const BusinessPlace = () => {
       label: 'Deklaracijos',
       slug: slugs.businessPlaceDeclarations(id),
     },
-    {
-      label: 'Teisių delegavimas',
-      slug: slugs.businessPlaceRightsDelegation(id),
-    },
+    ...(isAdmin
+      ? [
+          {
+            label: 'Teisių delegavimas',
+            slug: slugs.businessPlaceRightsDelegation(id),
+          },
+        ]
+      : []),
   ];
 
   const currentTab = useGetCurrentRoute(tabs);
+
+  useEffect(() => {
+    if (!currentTab?.slug) {
+      navigate(slugs.businessPlaceDeclarations(id));
+    }
+  }, [currentTab?.slug]);
 
   const containers = {
     [slugs.businessPlaceDeclarations(id)]: <Declarations />,
@@ -171,7 +184,7 @@ const BusinessPlace = () => {
                     >
                       {'Atšaukti'}
                     </Button>
-                    <Button loading={isSubmitLoading} disabled={isSubmitLoading}>
+                    <Button type="submit" loading={isSubmitLoading} disabled={isSubmitLoading}>
                       {'Pridėti teisę'}
                     </Button>
                   </ButtonInnerRow>

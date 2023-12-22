@@ -74,9 +74,6 @@ const Label = styled.label`
   font-size: 1.4rem;
   color: ${({ theme }) => theme.colors.label};
   opacity: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const LabelContainer = styled.div`

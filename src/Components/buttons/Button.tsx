@@ -10,7 +10,8 @@ export enum ButtonColors {
   DANGER = 'danger',
   SUCCESS = 'success',
   TRANSPARENT = 'transparent',
-  POWDER = 'powder',
+  BACK = 'back',
+  ALL = 'all',
 }
 
 const buttonColors = {
@@ -19,7 +20,9 @@ const buttonColors = {
   [ButtonColors.TERTIARY]: theme.colors.tertiary,
   [ButtonColors.DANGER]: theme.colors.error,
   [ButtonColors.SUCCESS]: theme.colors.success,
-  [ButtonColors.TRANSPARENT]: 'transparent',
+  [ButtonColors.TRANSPARENT]: theme.colors.transparent,
+  [ButtonColors.BACK]: theme.colors.transparent,
+  [ButtonColors.ALL]: theme.colors.transparent,
 };
 
 const buttonTextColors = {
@@ -29,7 +32,15 @@ const buttonTextColors = {
   [ButtonColors.DANGER]: 'white',
   [ButtonColors.SUCCESS]: 'white',
   [ButtonColors.TRANSPARENT]: theme.colors.text.active,
+  [ButtonColors.BACK]: theme.colors.text.active,
+  [ButtonColors.ALL]: theme.colors.text.primary,
 };
+
+const buttonBorderColor = {
+  [ButtonColors.BACK]: theme.colors.primary,
+  [ButtonColors.ALL]: theme.colors.border,
+};
+
 export interface ButtonProps {
   variant?: ButtonColors;
   route?: string;
@@ -40,10 +51,8 @@ export interface ButtonProps {
   type?: string;
   loading?: boolean;
   padding?: string;
-  buttonPadding?: string;
   signature?: boolean;
   disabled?: boolean;
-  color?: string;
   fontWeight?: string;
   radius?: string;
 }
@@ -56,9 +65,7 @@ const Button = ({
   padding = '11px 20px',
   leftIcon,
   radius = '4px',
-  buttonPadding,
   rightIcon,
-  color,
   type,
   loading = false,
   className,
@@ -102,7 +109,10 @@ const StyledButton = styled.button<{
   background-color: ${({ variant }) => buttonColors[variant]};
   color: ${({ variant }) => buttonTextColors[variant]};
   border: ${({ variant }) => (variant === ButtonColors.TRANSPARENT ? '0' : '1px')} solid
-    ${({ variant }) => (variant !== ButtonColors.TRANSPARENT ? 'transparent' : ' rgb(35, 31, 32)')};
+    ${({ variant }) =>
+      variant !== ButtonColors.TRANSPARENT
+        ? buttonBorderColor[variant] || 'transparent'
+        : ' rgb(35, 31, 32)'};
   font-weight: ${({ fontWeight }) => fontWeight};
   font-size: 1.6rem;
   :hover {
@@ -113,7 +123,5 @@ const StyledButton = styled.button<{
   width: 100%;
   white-space: nowrap;
 `;
-
-Button.colors = ButtonColors;
 
 export default Button;

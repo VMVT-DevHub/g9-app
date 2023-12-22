@@ -31,7 +31,7 @@ const TextFieldInput = ({
   type = 'text',
   disabled,
   inputMode = 'text',
-  height,
+  height = 48,
   selectedValue = false,
   onInputClick,
   ...rest
@@ -61,12 +61,7 @@ const TextFieldInput = ({
 
   return (
     <Container onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <InputContainer
-        error={!!error}
-        height={height || 40}
-        onBlur={onBlur}
-        disabled={disabled || false}
-      >
+      <InputContainer error={!!error} height={height} onBlur={onBlur} disabled={disabled || false}>
         {leftIcon}
         <TextInput
           aria-label={name}
@@ -152,7 +147,7 @@ const InputContainer = styled.div<{
 
 const TextInput = styled.input<{ readOnly: boolean; selectedValue: boolean }>`
   border: none;
-  padding: 4px 12px 4px 4px;
+  padding: 4px 12px 4px 12px;
 
   width: 100%;
   height: 100%;

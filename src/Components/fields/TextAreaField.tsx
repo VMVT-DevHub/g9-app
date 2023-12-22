@@ -40,7 +40,7 @@ const TextAreaField = (props: TextFieldProps) => {
   const { width, ref } = useResizeDetector();
 
   useEffect(() => {
-    if (rows * 20 < ref.current.scrollHeight) {
+    if (rows * 20 < ref?.current?.scrollHeight) {
       ref.current.style.height = 'auto';
       ref.current.style.height = ref.current.scrollHeight + 'px';
     }

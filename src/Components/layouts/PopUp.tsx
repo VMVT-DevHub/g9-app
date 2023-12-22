@@ -25,12 +25,8 @@ const Container = styled.div<{ width?: string }>`
   background-color: white;
   position: relative;
   width: 100%;
-  height: 100%;
-  overflow-y: auto;
   margin: auto;
   max-width: 580px;
-  height: auto;
-  min-height: auto;
   padding: 24px;
   flex-basis: auto;
 

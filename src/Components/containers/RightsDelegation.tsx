@@ -53,28 +53,30 @@ const RightsDelegations = () => {
 
     if (!users) return [];
 
-    return users.Data.filter((item) => item[0].toString() === id).map((item) => {
-      const fullName = `${item[2]} ${item[3]}`;
-      const isCurrentUser = currentUser.id === item[1];
-      return {
-        fullName: <BoldText>{fullName}</BoldText>,
-        ...(!isCurrentUser && {
-          delete: (
-            <BlueText onClick={() => setSelectedUser({ fullName, id: item[1] })}>Trinti</BlueText>
-          ),
-        }),
+    return users.Data.filter((item) => item[0].toString() === id)
+      .sort((a, b) => `${a[2]} ${a[3]}`.localeCompare(`${b[2]} ${b[3]}`))
+      .map((item) => {
+        const fullName = `${item[2]} ${item[3]}`;
+        const isCurrentUser = currentUser.id === item[1];
+        return {
+          fullName: <BoldText>{fullName}</BoldText>,
+          ...(!isCurrentUser && {
+            delete: (
+              <BlueText onClick={() => setSelectedUser({ fullName, id: item[1] })}>Trinti</BlueText>
+            ),
+          }),
 
-        role: (
-          <TableSelect
-            disabled={true}
-            optionLabel={getRole}
-            onChange={() => {}}
-            value={getRole(item[4])}
-            options={[!item[4]]}
-          />
-        ),
-      };
-    });
+          role: (
+            <TableSelect
+              disabled={true}
+              optionLabel={getRole}
+              onChange={() => {}}
+              value={getRole(item[4])}
+              options={[!item[4]]}
+            />
+          ),
+        };
+      });
   };
 
   return (

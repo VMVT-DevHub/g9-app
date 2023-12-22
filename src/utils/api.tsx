@@ -1,4 +1,5 @@
 import Axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { ServerDeclaration, ServerDiscrepancy } from '../types';
 
 interface GetAll {
   resource: string;
@@ -12,6 +13,7 @@ interface GetOne {
 
 interface Delete {
   resource: string;
+  params?: any;
   id: string;
 }
 
@@ -51,8 +53,8 @@ class Api {
     );
   };
 
-  delete = async ({ resource, id }: Delete) => {
-    return this.errorWrapper(() => this.axiosApi.delete(`/${resource}/${id}`));
+  delete = async ({ resource, id, params }: Delete) => {
+    return this.errorWrapper(() => this.axiosApi.delete(`/${resource}/${id}`, params));
   };
 
   post = async ({ resource, id, params }: Post) => {
@@ -103,32 +105,104 @@ class Api {
     });
   };
 
-  getDeclarations = async (
-    id: string,
-  ): Promise<{
-    Fields: [
-      'ID',
-      'GVTS',
-      'Metai',
-      'Stebesenos',
-      'Statusas',
-      'Kiekis',
-      'Vartotojai',
-      'RuosimoMedziagos',
-      'DeklarDate',
-      'DeklarUser',
-      'RedagDate',
-      'RedagUser',
-    ];
-    Data: any[];
-    Lookup: {
-      Stebesenos: { [key: string]: string };
-      Statusas: { [key: string]: string };
-      RuosimoMedziagos: { [key: string]: string };
+  getIndicators = async (): Promise<{
+    Rodikliai: {
+      Fields: [
+        'ID',
+        'Grupe',
+        'Kodas',
+        'Pavadinimas',
+        'Daznumas',
+        'Min',
+        'Max',
+        'Step',
+        'Vnt',
+        'Aprasymas',
+      ];
+      Data: any[];
+      Lookup: {
+        Grupe: {
+          [key: string]: string;
+        };
+        GrupesValidacija: {
+          [key: string]: string;
+        };
+        Daznumas: {
+          [key: string]: string;
+        };
+      };
     };
   }> => {
+    return this.get({
+      resource: `api/rodikliai`,
+    });
+  };
+
+  getDeclarations = async (id: string): Promise<ServerDeclaration> => {
     return this.getOne({
       resource: 'api/deklaracijos',
+      id,
+    });
+  };
+
+  getDeclaration = async (id: string): Promise<ServerDeclaration> => {
+    return this.getOne({
+      resource: `api/deklaracija`,
+      id,
+    });
+  };
+
+  updateDeclaration = async (id: string, params: any): Promise<ServerDeclaration> => {
+    return this.post({
+      resource: `api/deklaracija`,
+      params,
+      id,
+    });
+  };
+
+  getDiscrepancies = async (id: string): Promise<ServerDiscrepancy> => {
+    return this.getOne({
+      resource: `api/neatitiktys`,
+      id,
+    });
+  };
+
+  updateDiscrepancies = async (id: string, params: any): Promise<ServerDiscrepancy> => {
+    return this.post({
+      resource: `api/neatitiktys`,
+      params,
+      id,
+    });
+  };
+
+  submitDeclaration = async (id: string): Promise<ServerDeclaration> => {
+    return this.post({
+      resource: `api/deklaruoti`,
+      id,
+    });
+  };
+
+  getValues = async (
+    id: string,
+  ): Promise<{ Data: any[]; Fields: ['ID', 'Deklaracija', 'Rodiklis', 'Data', 'Reiksme'] }> => {
+    return this.getOne({
+      resource: `api/reiksmes`,
+      id,
+    });
+  };
+
+  postValue = async (id: string, params: any): Promise<any> => {
+    return this.post({
+      resource: `api/reiksmes`,
+      params,
+      id,
+    });
+  };
+
+  deleteValue = async (id: string, params: any): Promise<any> => {
+    return this.delete({
+      resource: `api/reiksmes`,
+      params: { data: params },
       id,
     });
   };

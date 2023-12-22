@@ -7,11 +7,33 @@ export const BoldText = styled.div`
   color: #121926;
 `;
 
-export const BlueText = styled.div`
+export const BlueText = styled.div<{
+  disabled?: boolean;
+}>`
   font-size: 1.4rem;
   text-align: right;
   color: ${({ theme }) => theme.colors.text.active};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   cursor: pointer;
+`;
+
+export const DisableText = styled.div`
+  font-size: 1.4rem;
+  text-align: right;
+  color: ${({ theme }) => theme.colors.text.active};
+  cursor: not-allowed;
+`;
+
+export const DangerText = styled.div`
+  font-size: 1.4rem;
+  color: ${({ theme }) => theme.colors.danger};
+`;
+
+export const SuccessText = styled.div`
+  font-size: 1.4rem;
+  text-align: right;
+  color: ${({ theme }) => theme.colors.success};
 `;
 
 export const Title = styled.div`
@@ -38,7 +60,7 @@ export const Grid = styled.div<{ $columns?: number }>`
   display: grid;
   grid-template-columns: repeat(${({ $columns }) => $columns || 2}, 1fr);
   gap: 16px;
-  margin: 16px 0;
+  margin-bottom: 16px;
   width: 100%;
   @media ${device.mobileL} {
     grid-template-columns: repeat(1, 1fr);

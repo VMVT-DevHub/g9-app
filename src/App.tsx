@@ -15,7 +15,7 @@ const App = () => {
   const dispatch = useDispatch();
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
 
-  const { isLoading } = useQuery([], () => api.getUserInfo(), {
+  const { isLoading } = useQuery(['userInfo'], () => api.getUserInfo(), {
     onSuccess: ({ Email, FName, LName, Phone, ID, Admin }) => {
       if (!ID) return;
 

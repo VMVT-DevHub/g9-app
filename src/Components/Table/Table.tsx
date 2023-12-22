@@ -8,16 +8,25 @@ export interface TableRow {
   [key: string]: any;
 }
 
-export interface LoginLayoutProps {
+export interface TableProps {
   tableData: TableRow[];
   labels: { [key: string]: string };
   onClick?: (item: any) => void;
   tableRowStyle?: any;
   loading?: boolean;
   rightButtons?: JSX.Element;
+  className?: string;
+  maxHeight?: string;
 }
 
-const Table = ({ tableData, onClick, loading, labels }: LoginLayoutProps) => {
+const Table = ({
+  tableData,
+  onClick,
+  loading,
+  labels,
+  className,
+  maxHeight = '100%',
+}: TableProps) => {
   const keys = Object.keys(labels);
 
   const handleRowClick = (row: TableRow) => {
@@ -47,8 +56,8 @@ const Table = ({ tableData, onClick, loading, labels }: LoginLayoutProps) => {
   if (loading) return <FullscreenLoader />;
 
   return (
-    <Container>
-      <TableContainer>
+    <Container className={className}>
+      <TableContainer $maxHeight={maxHeight}>
         <CustomTable>
           <THEAD>
             <TR $hide_border={true} $pointer={false}>
@@ -66,10 +75,12 @@ const Table = ({ tableData, onClick, loading, labels }: LoginLayoutProps) => {
 
 const Tbody = styled.tbody`
   width: 100%;
+  overflow-y: auto;
 `;
 
-const TableContainer = styled.div`
+const TableContainer = styled.div<{ $maxHeight?: string }>`
   width: 100%;
+  max-height: ${({ $maxHeight }) => $maxHeight};
 `;
 
 const CustomTable = styled.table`
@@ -80,7 +91,7 @@ const CustomTable = styled.table`
 const TH = styled.th`
   text-align: left;
   font-size: 1.4rem;
-  padding: 15px 84px 15px 16px;
+  padding: 15px 42px 15px 16px;
   font-weight: normal;
   color: ${({ theme }) => theme.colors.text.labels};
   border-bottom: 1px solid #cdd5df;
@@ -109,6 +120,8 @@ const TdSecond = styled.td`
 
 const THEAD = styled.thead`
   width: 100%;
+  position: sticky;
+  top: 0;
   background-color: #f9fafb;
 `;
 
