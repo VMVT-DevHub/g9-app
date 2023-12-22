@@ -3217,9 +3217,10 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
-lt-codes@ambrazasp/lt-codes:
-  version "1.0.2"
-  resolved "https://codeload.github.com/ambrazasp/lt-codes/tar.gz/967bb6b239d5c9b9fbdd0b3c644817e48e5588c8"
+lt-codes@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/lt-codes/-/lt-codes-1.0.3.tgz#38270ba31c31ac90624fd7ecfbaf3f13c56b9506"
+  integrity sha512-I7DXiGgKXkduNb+t2H1XixsnxFDhaBx96lmSSEeUrkxX22BEdnNV3FbDK6AugXSU0HVIOFbH0k2pLFW1fye9YQ==
   dependencies:
     moment "^2.29.4"
 

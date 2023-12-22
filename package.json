@@ -14,7 +14,7 @@
     "date-fns": "^3.0.0",
     "formik": "^2.4.5",
     "lodash": "^4.17.21",
-    "lt-codes": "ambrazasp/lt-codes",
+    "lt-codes": "1.0.3",
     "moment": "^2.29.4",
     "react": "^18.0.0",
     "react-datepicker": "^4.25.0",
