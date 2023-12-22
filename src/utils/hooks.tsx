@@ -68,7 +68,7 @@ export const useBusinessPlaces = () => {
         name: item[2],
         address: item[3],
       };
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name));
 
     return mappedData;
   };

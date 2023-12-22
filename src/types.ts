@@ -52,7 +52,7 @@ export interface IndicatorOption {
   unit: string;
   digitsAfterComma: number | undefined;
   description: string;
-
+  initialOpen?: boolean;
   tableData?: { id: string; indicatorId: any; date: string; value: number }[];
 }
 

@@ -123,6 +123,7 @@ export const getUniqueIndicatorIds = (
 
       return filteredIndicators;
     }, [])
+    .sort((a, b) => a.name.localeCompare(b.name))
     .map((item, index) => ({ ...item, index }));
 };
 
@@ -155,4 +156,19 @@ export const getYearRange = (year: string) => {
   const maxDate = endOfYear(yearDate);
 
   return { minDate, maxDate };
+};
+
+export const getGroupedIndicatorValues = (values: any) => {
+  return values?.Data.reduce((groupedValues, currentValue) => {
+    groupedValues[currentValue[2]] = groupedValues[currentValue?.[2]] || [];
+
+    groupedValues[currentValue[2]].push({
+      id: currentValue[0],
+      indicatorId: currentValue[2],
+      date: currentValue[3],
+      value: currentValue[4],
+    });
+
+    return groupedValues;
+  }, {});
 };

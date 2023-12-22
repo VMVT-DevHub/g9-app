@@ -19,7 +19,13 @@ import { CubicMeter } from '../Components/other/MeasurmentUnits';
 import { device } from '../styles';
 import { IndicatorOption } from '../types';
 import api from '../utils/api';
-import { getOptions, getYearRange, getYesNo, handleSuccessToast } from '../utils/functions';
+import {
+  getGroupedIndicatorValues,
+  getOptions,
+  getYearRange,
+  getYesNo,
+  handleSuccessToast,
+} from '../utils/functions';
 import { useBusinessPlaces, useDeclaration, useIndicators } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
@@ -42,22 +48,13 @@ export const declarationSchema = Yup.object().shape({
 const mapValues = (indicatorOptions?: IndicatorOption[], values?: any) => {
   if (!values || !indicatorOptions) return [];
 
-  const groupedValues = values?.Data.reduce((groupedValues, currentValue) => {
-    groupedValues[currentValue[2]] = groupedValues[currentValue?.[2]] || [];
-
-    groupedValues[currentValue[2]].push({
-      id: currentValue[0],
-      indicatorId: currentValue[2],
-      date: currentValue[3],
-      value: currentValue[4],
-    });
-
-    return groupedValues;
-  }, {});
+  const groupedValues = getGroupedIndicatorValues(values);
 
   return indicatorOptions.reduce((prev: any, curr) => {
     if (groupedValues[curr.id]) {
       prev.push({ ...curr, tableData: groupedValues[curr.id] });
+
+      return prev;
     }
 
     return prev;
@@ -87,21 +84,44 @@ const DeclarationPage = () => {
 
   const { indicatorGroupLabels, indicatorGroups, indicatorOptions, indicators } = useIndicators();
 
+  useEffect(() => {
+    if (!selectedIndicatorGroup && indicatorGroups?.[0]) {
+      setSelectedIndicatorGroup(indicatorGroups[0]);
+    }
+  }, [selectedIndicatorGroup, indicatorGroups]);
+
   const [selectedIndicators, setSelectedIndicators] = useState<IndicatorOption[]>([]);
 
+  const updateIndicatorTable = async (indicatorId: string) => {
+    const values = await api.getValues(id);
+
+    setSelectedIndicators(
+      selectedIndicators.map((item) => {
+        if (item.id === indicatorId) {
+          item.tableData = getGroupedIndicatorValues(values)[indicatorId];
+        }
+
+        return item;
+      }),
+    );
+    handleSuccessToast();
+  };
+
   useEffect(() => {
-    if (isEmpty(values) || isEmpty(indicators)) return;
+    if (isEmpty(values) || isEmpty(indicators) || !isEmpty(selectedIndicators)) return;
 
     const mappedValues = mapValues(indicatorOptions, values);
 
     setSelectedIndicators(mappedValues);
   }, [values, indicators]);
 
-  const filteredIndicatorOptions = indicatorOptions?.filter(
-    (indicator) =>
-      indicator.groupId == selectedIndicatorGroup &&
-      !selectedIndicators.some((i) => i.id == indicator.id),
-  );
+  const filteredIndicatorOptions = indicatorOptions
+    ?.filter(
+      (indicator) =>
+        indicator.groupId == selectedIndicatorGroup &&
+        !selectedIndicators.some((i) => i.id == indicator.id),
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleSubmit = (values: typeof formValues) => {
     const params = {
@@ -285,14 +305,16 @@ const DeclarationPage = () => {
         <Column>
           {selectedIndicators
             .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
-            .map((indicator, index) => (
-              <div key={`indicator-group-${index}`}>
+            .map((indicator) => (
+              <div key={`indicator-group-${indicator.id}`}>
                 <IndicatorContainer
                   onDelete={(id) =>
                     setSelectedIndicators(
                       selectedIndicators.filter((indicator) => indicator.id !== id),
                     )
                   }
+                  initialOpen={indicator.initialOpen}
+                  updateIndicatorTable={(id) => updateIndicatorTable(id)}
                   yearRange={yearRange}
                   disabled={disabled}
                   indicator={indicator}
@@ -320,7 +342,10 @@ const DeclarationPage = () => {
             onSubmit={({ indicator }) => {
               if (!indicator) return;
 
-              setSelectedIndicators((prev) => [...prev, indicator]);
+              setSelectedIndicators((prev) => [
+                ...prev.map((indicator) => ({ ...indicator, initialOpen: false })),
+                { ...indicator, initialOpen: true },
+              ]);
               setShowPopup(false);
             }}
             validateOnChange={false}

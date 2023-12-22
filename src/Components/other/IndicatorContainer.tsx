@@ -1,13 +1,13 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation } from 'react-query';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { device } from '../../styles';
 import { IndicatorOption } from '../../types';
 import api from '../../utils/api';
-import { formatDate, handleErrorToast, handleSuccessToast, inRange } from '../../utils/functions';
+import { formatDate, handleErrorToast, inRange } from '../../utils/functions';
 import Button from '../buttons/Button';
 import ButtonsGroup from '../buttons/ButtonGroup';
 import DateField from '../fields/DateField';
@@ -22,18 +22,21 @@ const IndicatorContainer = ({
   disabled,
   onDelete,
   yearRange,
+  updateIndicatorTable,
+  initialOpen = false,
 }: {
   yearRange: {
     minDate: Date;
     maxDate: Date;
   };
+  initialOpen?: boolean;
+  updateIndicatorTable: (id: string) => Promise<void>;
   indicator: IndicatorOption;
   disabled: boolean;
   onDelete: (id: string) => void;
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const { id = '' } = useParams();
-  const queryClient = useQueryClient();
   const [showPopup, setsSowPopup] = useState(false);
 
   const isButton = indicator.unit === 'T/N';
@@ -70,8 +73,7 @@ const IndicatorContainer = ({
         handleErrorToast();
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries(['values']);
-        handleSuccessToast();
+        updateIndicatorTable(indicator.id);
       },
       retry: false,
     },
@@ -81,8 +83,7 @@ const IndicatorContainer = ({
     (valueId: any) => api.deleteValue(id, [valueId]),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(['values']);
-        handleSuccessToast();
+        updateIndicatorTable(indicator.id);
       },
       retry: false,
     },
