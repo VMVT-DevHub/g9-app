@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import * as Yup from 'yup';
 import Button from '../Components/buttons/Button';
 import ButtonsGroup from '../Components/buttons/ButtonGroup';
+import MultiSelect from '../Components/fields/MultiSelect';
 import NumericTextField from '../Components/fields/NumericTextField';
 import SelectField from '../Components/fields/SelectField';
 import PopUpWithTitles from '../Components/layouts/PopUpWithTitle';
@@ -127,7 +128,7 @@ const DeclarationPage = () => {
     const params = {
       Kiekis: values.waterQuantity,
       Vartotojai: values.usersCount,
-      ...(values.isPreparedWater && { RuosimoMedziagos: [values.waterMaterial] }),
+      ...(values.isPreparedWater && { RuosimoMedziagos: values.waterMaterial }),
     };
 
     updateDeclarationMutation(params);
@@ -149,7 +150,7 @@ const DeclarationPage = () => {
     waterMaterial: mappedDeclaration?.waterMaterial || undefined,
     waterQuantity: mappedDeclaration?.waterQuantity || '',
     usersCount: mappedDeclaration.usersCount || '',
-    isPreparedWater: typeof mappedDeclaration?.waterMaterial !== 'undefined',
+    isPreparedWater: !!mappedDeclaration?.waterMaterial,
   };
 
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
@@ -159,6 +160,8 @@ const DeclarationPage = () => {
   );
 
   const yearRange = getYearRange(mappedDeclaration.year);
+
+  const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
 
   if (isLoading) return <FullscreenLoader />;
 
@@ -207,73 +210,65 @@ const DeclarationPage = () => {
             {({ values, errors, setFieldValue }) => {
               return (
                 <FormContainer>
-                  <Grid>
-                    <StyledNumericTextField
-                      rightIcon={<CubicMeter />}
-                      label={'Vandens kiekis'}
-                      value={values.waterQuantity}
-                      error={errors.waterQuantity}
-                      disabled={disabled}
-                      name="waterQuantity"
-                      onChange={(phone) => setFieldValue('waterQuantity', phone)}
-                      showError={false}
-                    />
-                    <StyledNumericTextField
-                      label={'Vartotojų skaičius'}
-                      name="usersCount"
-                      value={values.usersCount}
-                      disabled={disabled}
-                      error={errors.usersCount}
-                      onChange={(email) => setFieldValue('usersCount', email)}
-                      showError={false}
-                    />
-                    <StyledButtonGroup
-                      options={[true, false]}
-                      label={'Ar vanduo ruošiamas?'}
-                      onChange={(option) => setFieldValue('isPreparedWater', option)}
-                      disabled={disabled}
-                      getOptionLabel={getYesNo}
-                      isSelected={(option) => option === values.isPreparedWater}
-                    />
+                  <ContainerLine>
+                    <InnerContainerLine>
+                      <FormLine>
+                        <StyledNumericTextField
+                          rightIcon={<CubicMeter />}
+                          label={'Vandens kiekis'}
+                          value={values.waterQuantity}
+                          error={errors.waterQuantity}
+                          disabled={disabled}
+                          name="waterQuantity"
+                          onChange={(phone) => setFieldValue('waterQuantity', phone)}
+                          showError={false}
+                        />
+                        <StyledNumericTextField
+                          label={'Vartotojų skaičius'}
+                          name="usersCount"
+                          value={values.usersCount}
+                          disabled={disabled}
+                          error={errors.usersCount}
+                          onChange={(email) => setFieldValue('usersCount', email)}
+                          showError={false}
+                        />
+                        <StyledButtonGroup
+                          options={[true, false]}
+                          label={'Ar vanduo ruošiamas?'}
+                          onChange={(option) => setFieldValue('isPreparedWater', option)}
+                          disabled={disabled}
+                          getOptionLabel={getYesNo}
+                          isSelected={(option) => option === values.isPreparedWater}
+                        />
+                      </FormLine>
+                      {values.isPreparedWater && (
+                        <FormLine>
+                          <StyledFormMultiSelectField
+                            disabled={disabled}
+                            options={waterMaterialOptions}
+                            showError={false}
+                            getOptionLabel={(option) => waterMaterialLabels[option]}
+                            getOptionValue={(option) => option}
+                            values={values.waterMaterial}
+                            label={'Vandens ruošimui naudojamos medžiagos'}
+                            name="waterMaterials"
+                            onChange={(value) => setFieldValue('waterMaterial', value)}
+                            error={errors.waterMaterial}
+                          />
+                        </FormLine>
+                      )}
+                    </InnerContainerLine>
 
-                    {!values.isPreparedWater && (
-                      <FlexItem>
-                        <ButtonRow>
-                          <Button
-                            type="submit"
-                            loading={isSubmitLoading}
-                            disabled={isSubmitLoading || disabled}
-                          >
-                            {'Saugoti'}
-                          </Button>
-                        </ButtonRow>
-                      </FlexItem>
-                    )}
-                  </Grid>
-                  {values.isPreparedWater && (
-                    <SecondGrid>
-                      <StyledFormSelectField
-                        disabled={disabled}
-                        options={waterMaterialOptions}
-                        showError={false}
-                        getOptionLabel={(option) => waterMaterialLabels[option]}
-                        value={values.waterMaterial}
-                        label={'Vandens ruošimui naudojamos medžiagos'}
-                        name="waterMaterials"
-                        onChange={(value) => setFieldValue('waterMaterial', value)}
-                        error={errors.waterMaterial}
-                      />
-                      <ButtonRow>
-                        <Button
-                          type="submit"
-                          loading={isSubmitLoading}
-                          disabled={isSubmitLoading || disabled}
-                        >
-                          {'Saugoti'}
-                        </Button>
-                      </ButtonRow>
-                    </SecondGrid>
-                  )}
+                    <ButtonLine>
+                      <Button
+                        type="submit"
+                        loading={isSubmitLoading}
+                        disabled={isSubmitLoading || disabled}
+                      >
+                        {'Saugoti'}
+                      </Button>
+                    </ButtonLine>
+                  </ContainerLine>
                 </FormContainer>
               );
             }}
@@ -322,7 +317,7 @@ const DeclarationPage = () => {
               </div>
             ))}
 
-          {!disabled && (
+          {showAddIndicatorButton && (
             <AddIndicatorButton
               disabled={!selectedIndicatorGroup}
               onClick={() => selectedIndicatorGroup && setShowPopup(true)}
@@ -331,54 +326,55 @@ const DeclarationPage = () => {
             </AddIndicatorButton>
           )}
         </Column>
-        <PopUpWithTitles
-          title={'Pridėti rodiklį'}
-          visible={showPopup}
-          onClose={() => setShowPopup(false)}
-        >
-          <Formik
-            enableReinitialize={true}
-            initialValues={indicatorInitialValues}
-            onSubmit={({ indicator }) => {
-              if (!indicator) return;
-
-              setSelectedIndicators((prev) => [
-                ...prev.map((indicator) => ({ ...indicator, initialOpen: false })),
-                { ...indicator, initialOpen: true },
-              ]);
-              setShowPopup(false);
-            }}
-            validateOnChange={false}
-          >
-            {({ values, errors, setFieldValue }) => {
-              return (
-                <FormContainer>
-                  <StyledSelectField
-                    options={filteredIndicatorOptions}
-                    getOptionLabel={(option) => option?.name}
-                    value={values.indicator}
-                    label={'Rodiklis'}
-                    name="indicator"
-                    onChange={(value) => setFieldValue('indicator', value)}
-                    error={errors.indicator}
-                  />
-                  <ButtonRow>
-                    <ButtonInnerRow>
-                      <Button
-                        type="submit"
-                        loading={isSubmitLoading}
-                        disabled={!values.indicator || isSubmitLoading}
-                      >
-                        {'Pridėti rodiklį'}
-                      </Button>
-                    </ButtonInnerRow>
-                  </ButtonRow>
-                </FormContainer>
-              );
-            }}
-          </Formik>
-        </PopUpWithTitles>
       </InfoContainer>
+
+      <PopUpWithTitles
+        title={'Pridėti rodiklį'}
+        visible={showPopup}
+        onClose={() => setShowPopup(false)}
+      >
+        <Formik
+          enableReinitialize={true}
+          initialValues={indicatorInitialValues}
+          onSubmit={({ indicator }) => {
+            if (!indicator) return;
+
+            setSelectedIndicators((prev) => [
+              ...prev.map((indicator) => ({ ...indicator, initialOpen: false })),
+              { ...indicator, initialOpen: true },
+            ]);
+            setShowPopup(false);
+          }}
+          validateOnChange={false}
+        >
+          {({ values, errors, setFieldValue }) => {
+            return (
+              <FormContainer>
+                <StyledSelectField
+                  options={filteredIndicatorOptions}
+                  getOptionLabel={(option) => option?.name}
+                  value={values.indicator}
+                  label={'Rodiklis'}
+                  name="indicator"
+                  onChange={(value) => setFieldValue('indicator', value)}
+                  error={errors.indicator}
+                />
+                <ButtonRow>
+                  <ButtonInnerRow>
+                    <Button
+                      type="submit"
+                      loading={isSubmitLoading}
+                      disabled={!values.indicator || isSubmitLoading}
+                    >
+                      {'Pridėti rodiklį'}
+                    </Button>
+                  </ButtonInnerRow>
+                </ButtonRow>
+              </FormContainer>
+            );
+          }}
+        </Formik>
+      </PopUpWithTitles>
     </PageContainer>
   );
 };
@@ -391,53 +387,72 @@ const ButtonInnerRow = styled.div`
 `;
 
 const StyledNumericTextField = styled(NumericTextField)`
-  width: 100%;
-  max-width: 150px;
+  min-width: 150px;
+  flex: 1;
   @media ${device.mobileL} {
-    max-width: 100%;
+    width: 100%;
   }
 `;
 
 const StyledButtonGroup = styled(ButtonsGroup)`
-  width: 100%;
   min-width: 250px;
+  flex: 2;
   @media ${device.mobileL} {
-    min-width: 100%;
+    flex: 1;
+    width: 100%;
   }
 `;
 
-const StyledFormSelectField = styled(SelectField)`
+const StyledFormMultiSelectField = styled(MultiSelect)`
   width: 100%;
-  max-width: 500px;
-  @media ${device.mobileL} {
-    max-width: 100%;
-  }
+  flex: 1;
 `;
 
 const StyledSelectField = styled(SelectField)`
   margin: 24px 0px;
 `;
 
-const Grid = styled.div`
+const FormLine = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
-  width: 100%;
+  max-width: 616px;
   @media ${device.mobileL} {
+    flex-direction: column;
     max-width: 100%;
+    width: 100%;
   }
 `;
 
-const SecondGrid = styled.div`
+const ContainerLine = styled.div`
   display: flex;
-  gap: 16px;
-  margin: 16px 0;
   align-items: flex-end;
-  width: 100%;
+  gap: 16px;
+  max-width: 800px;
   @media ${device.mobileL} {
     max-width: 100%;
-    flex-wrap: wrap;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const InnerContainerLine = styled.div`
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+  @media ${device.mobileL} {
+    width: 100%;
+  }
+`;
+
+const ButtonLine = styled.div`
+  display: flex;
+
+  max-width: 200px;
+  @media ${device.mobileL} {
+    width: 100%;
   }
 `;
 
@@ -504,6 +519,9 @@ const IndicatorLine = styled.div`
   display: flex;
   gap: 59px;
   cursor: pointer;
+  @media ${device.mobileL} {
+    justify-content: space-between;
+  }
 `;
 
 const IndicatorText = styled.div<{ $isActive: boolean }>`
