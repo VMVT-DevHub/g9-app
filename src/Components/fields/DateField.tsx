@@ -50,8 +50,6 @@ const DateField = ({
     const checkVisibility = (entries) => {
       const isDivBottomVisible = entries[0].isIntersecting;
 
-      console.log(entries[0], 'entries', entries[0].isVisible);
-
       setIsVisible(isDivBottomVisible);
     };
 
