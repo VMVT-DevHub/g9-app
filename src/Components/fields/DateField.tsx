@@ -56,9 +56,6 @@ const DateField = ({
     const observer = new IntersectionObserver(checkVisibility, {
       root: null,
       rootMargin: '0px',
-      //@ts-ignore
-      trackVisibility: true,
-      delay: 100,
       threshold: 1,
     });
 
