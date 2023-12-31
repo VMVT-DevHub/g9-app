@@ -38,7 +38,7 @@ const TextFieldInput = ({
 }: TextFieldProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [delayHandler, setDelayHandler] = useState<any>(null);
-  const canShowTooltip = disabled && (typeof value !== 'undefined' || selectedValue);
+  const canShowTooltip = disabled && (!!value || selectedValue);
 
   const handleMouseEnter = () => {
     if (!canShowTooltip) return;

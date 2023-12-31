@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import lt from 'date-fns/locale/lt';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
@@ -24,7 +24,6 @@ export interface DateFieldProps {
   className?: string;
   maxDate?: Date | string;
   minDate?: Date | string;
-  bottom?: boolean;
 }
 
 const DateField = ({
@@ -37,12 +36,40 @@ const DateField = ({
   className,
   maxDate,
   minDate,
-  bottom = false,
 }: DateFieldProps) => {
   const daterRegex = /^\d{4}-\d{2}-\d{2}$/;
   const isMobile = useWindowSize(device.mobileL);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [isVisible, setIsVisible] = useState(true);
+  const invisibleDivRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const checkVisibility = (entries) => {
+      const isDivBottomVisible = entries[0].isIntersecting;
+
+      setIsVisible(isDivBottomVisible);
+    };
+
+    const observer = new IntersectionObserver(checkVisibility, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1,
+    });
+
+    if (invisibleDivRef.current) {
+      observer.observe(invisibleDivRef.current);
+    }
+
+    return () => {
+      if (invisibleDivRef.current) {
+        observer.unobserve(invisibleDivRef.current);
+      }
+    };
+  }, [open]);
+
   const handleBlur = (event: any) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       setOpen(false);
@@ -96,7 +123,13 @@ const DateField = ({
   const textValue = validDate(inputValue) ? format(new Date(inputValue), 'yyyy-MM-dd') : inputValue;
 
   return (
-    <Container $bottom={bottom} tabIndex={1} onBlur={handleBlur} $disabled={disabled}>
+    <Container
+      className={className}
+      $bottom={!isVisible}
+      tabIndex={1}
+      onBlur={handleBlur}
+      $disabled={disabled}
+    >
       <div tabIndex={2} onBlur={handleBlurInput}>
         <TextField
           placeholder="2000-01-01"
@@ -156,6 +189,7 @@ const DateField = ({
           ></DatePicker>
         </DateContainer>
       ) : null}
+      <InvisibleContainer ref={invisibleDivRef} />
     </Container>
   );
 };
@@ -204,8 +238,16 @@ const IconContainer = styled.div<{ $disabled: boolean }>`
   cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 `;
 
+const InvisibleContainer = styled.div`
+  height: 0px;
+  top: 400px;
+  position: absolute;
+  width: 10px;
+  z-index: 9999999;
+`;
+
 const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
-  width: 100%;
+  position: relative;
   &:focus {
     outline: none;
   }
@@ -235,12 +277,12 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
     position: relative;
     font-size: 1.5rem;
     &:hover {
-      background-color: ${({ theme }) => theme.colors.text.royalBlue};
+      background-color: ${({ theme }) => theme.colors.primary};
       color: white;
       &::before {
         content: '';
         position: absolute;
-        background-color: ${({ theme }) => theme.colors.text.royalBlue};
+        background-color: ${({ theme }) => theme.colors.primary};
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -268,7 +310,7 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
   .react-datepicker {
     width: 364px;
     position: absolute;
-    top: ${({ $bottom }) => ($bottom ? '-450px' : '0px')};
+    top: ${({ $bottom }) => ($bottom ? '-370px' : '5px')};
     z-index: 8;
     background-color: #ffffff;
     box-shadow: 0px 2px 16px #121a5529;
@@ -318,7 +360,7 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
     transform: translate(-50%, -50%);
     z-index: -1;
 
-    background-color: ${({ theme }) => theme.colors.text.royalBlue};
+    background-color: ${({ theme }) => theme.colors.primary};
     width: 50px;
     height: 50px;
     border-radius: 25px;

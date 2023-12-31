@@ -26,8 +26,8 @@ const ButtonsGroup = ({
   showError = false,
 }: ToggleButtonProps) => {
   return (
-    <FieldWrapper error={error} showError={showError} label={label}>
-      <Container className={className}>
+    <FieldWrapper className={className} error={error} showError={showError} label={label}>
+      <Container>
         {map(options, (option, index) => (
           <StyledButton
             type="button"

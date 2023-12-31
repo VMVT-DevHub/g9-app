@@ -140,7 +140,7 @@ const IndicatorContainer = ({
             {({ values, errors, setFieldValue }) => {
               return (
                 <FormContainer>
-                  <DateField
+                  <StyledDatePicker
                     value={values.date}
                     label={'Mėginio paėmimo data'}
                     name="indicator"
@@ -151,7 +151,7 @@ const IndicatorContainer = ({
                     minDate={yearRange.minDate}
                   />
                   {isButton ? (
-                    <ButtonsGroup
+                    <StyledButtonGroup
                       options={['Taip', 'Ne']}
                       label={indicator.description}
                       onChange={(option) => setFieldValue('value', option)}
@@ -160,7 +160,7 @@ const IndicatorContainer = ({
                       isSelected={(option) => option === values.value}
                     />
                   ) : (
-                    <NumericTextField
+                    <StyledNumericTextField
                       value={values.value}
                       label={'Reikšmė'}
                       name="value"
@@ -172,13 +172,15 @@ const IndicatorContainer = ({
                     />
                   )}
 
-                  <Button
-                    type="submit"
-                    loading={isSubmitLoading}
-                    disabled={isSubmitLoading || !values.value || !values.date || disabled}
-                  >
-                    {'Pridėti rodiklį'}
-                  </Button>
+                  <ButtonLine>
+                    <Button
+                      type="submit"
+                      loading={isSubmitLoading}
+                      disabled={isSubmitLoading || !values.value || !values.date || disabled}
+                    >
+                      {'Pridėti rodiklį'}
+                    </Button>
+                  </ButtonLine>
                 </FormContainer>
               );
             }}
@@ -192,19 +194,51 @@ const IndicatorContainer = ({
 };
 
 const FormContainer = styled(Form)`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 250px 1fr 150px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
-  gap: 16px;
+
   background: #f3f4f6;
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 12px;
 
   @media ${device.mobileL} {
-    grid-template-columns: 1fr;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100%;
+  }
+`;
+
+const ButtonLine = styled.div`
+  @media ${device.mobileL} {
+    width: 100%;
+    max-width: 100%;
+  }
+`;
+
+const StyledButtonGroup = styled(ButtonsGroup)`
+  max-width: 300px;
+  @media ${device.mobileL} {
+    max-width: 100%;
+    width: 100%;
+  }
+`;
+
+const StyledNumericTextField = styled(NumericTextField)`
+  max-width: 300px;
+  @media ${device.mobileL} {
+    max-width: 100%;
+    width: 100%;
+  }
+`;
+
+const StyledDatePicker = styled(DateField)`
+  max-width: 300px;
+  @media ${device.mobileL} {
+    max-width: 100%;
+    width: 100%;
   }
 `;
 

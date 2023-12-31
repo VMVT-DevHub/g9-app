@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { device } from '../../styles';
 import { IndicatorOption } from '../../types';
 import Button from '../buttons/Button';
 import PopUpWithTitles from '../layouts/PopUpWithTitle';
@@ -37,7 +38,7 @@ const InfoPopUp = ({
 
   return (
     <PopUpWithTitles
-      title={'Rodiklio pavadinimas'}
+      title={indicator?.name || '-'}
       visible={showPopup}
       onClose={() => setShowPopup(false)}
     >
@@ -85,6 +86,10 @@ const Column = styled.div`
   flex-direction: column;
   gap: 5px;
   flex-basis: 33.333333%;
+
+  @media ${device.mobileM} {
+    flex-basis: 100%;
+  }
 `;
 
 const Container = styled.div`
@@ -94,6 +99,9 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   margin-bottom: 32px;
+  @media ${device.mobileM} {
+    height: auto;
+  }
 `;
 
 export default InfoPopUp;

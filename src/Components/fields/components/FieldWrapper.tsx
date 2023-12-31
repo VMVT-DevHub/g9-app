@@ -81,9 +81,6 @@ const LabelContainer = styled.div`
   align-items: center;
   min-height: 2.4rem;
   max-height: 5rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const SubLabel = styled.div`
