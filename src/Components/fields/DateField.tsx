@@ -45,8 +45,6 @@ const DateField = ({
   const invisibleDivRef = useRef(null);
 
   useEffect(() => {
-    if (!open) return;
-
     const checkVisibility = (entries) => {
       const isDivBottomVisible = entries[0].isIntersecting;
 
