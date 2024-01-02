@@ -171,18 +171,22 @@ const ExceededContainer = ({
         }
       >
         <Column>
-          <div>
-            <Button
-              disabled={disabled || buttonLoading}
-              loading={buttonLoading}
-              height={40}
-              variant={ButtonColors.ALL}
-              onClick={() => setShowPopup(true)}
-            >
-              Įvesti visiems
-            </Button>
-          </div>
-          <StyledTable tableData={mapValues} labels={labels} />
+          <ButtonContainer>
+            <div>
+              <Button
+                disabled={disabled || buttonLoading}
+                loading={buttonLoading}
+                height={40}
+                variant={ButtonColors.ALL}
+                onClick={() => setShowPopup(true)}
+              >
+                Įvesti visiems
+              </Button>
+            </div>
+          </ButtonContainer>
+          <TableContainer>
+            <StyledTable tableData={mapValues} labels={labels} />
+          </TableContainer>
         </Column>
       </InfoContainer>
       <PopUpWithTitles
@@ -343,11 +347,21 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+`;
 
-  align-items: flex-end;
+const TableContainer = styled.div`
+  min-width: 0;
+  overflow-x: auto;
 `;
 
 const LoaderComponent = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
 `;

@@ -104,19 +104,23 @@ const RepeatContainer = ({
     >
       <Column>
         {!isAllApproved && (
-          <div>
-            <Button
-              loading={buttonLoading}
-              disabled={disabled || buttonLoading}
-              height={40}
-              variant={ButtonColors.ALL}
-              onClick={() => handleUpdateAllRepeat()}
-            >
-              Patvirtinti visus
-            </Button>
-          </div>
+          <ButtonContainer>
+            <div>
+              <Button
+                loading={buttonLoading}
+                disabled={disabled || buttonLoading}
+                height={40}
+                variant={ButtonColors.ALL}
+                onClick={() => handleUpdateAllRepeat()}
+              >
+                Patvirtinti visus
+              </Button>
+            </div>
+          </ButtonContainer>
         )}
-        <StyledTable tableData={mapValues} labels={labels} />
+        <TableContainer>
+          <StyledTable tableData={mapValues} labels={labels} />
+        </TableContainer>
       </Column>
     </InfoContainer>
   );
@@ -132,11 +136,21 @@ const LoaderComponent = styled.div`
 `;
 
 const Column = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-items: flex-end;
+  min-width: 0;
+  overflow-x: auto;
+`;
+
+const TableContainer = styled.div`
+  min-width: 0;
+  overflow-x: auto;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
 
 export default RepeatContainer;
