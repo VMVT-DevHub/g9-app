@@ -569,6 +569,7 @@ const Column = styled.div`
   flex-direction: column;
   width: 100%;
   gap: 12px;
+  min-width: 0;
 `;
 
 const TopRow = styled.div`
