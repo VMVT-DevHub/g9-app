@@ -32,6 +32,8 @@ const Container = styled.div`
   border-bottom: 1px solid #cdd5df;
   width: 100%;
   padding: 32px 0;
+  overflow-x: auto;
+  min-width: 0;
 
   @media ${device.mobileL} {
     display: block;
@@ -50,6 +52,9 @@ const Description = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   opacity: 1;
   max-width: 280px;
+  @media ${device.mobileL} {
+    margin: 16px 0;
+  }
 `;
 
 export default InfoContainer;

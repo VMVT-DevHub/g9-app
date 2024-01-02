@@ -227,6 +227,11 @@ const Column = styled.div`
 
 const ContainersColumn = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+  min-width: 0;
 `;
 
 export default Discrepancies;
