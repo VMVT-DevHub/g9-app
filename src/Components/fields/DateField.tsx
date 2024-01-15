@@ -24,6 +24,7 @@ export interface DateFieldProps {
   className?: string;
   maxDate?: Date | string;
   minDate?: Date | string;
+  placeHolder?: string;
 }
 
 const DateField = ({
@@ -32,6 +33,7 @@ const DateField = ({
   onChange,
   label,
   disabled = false,
+  placeHolder = '2000-01-01',
   padding,
   className,
   maxDate,
@@ -130,7 +132,7 @@ const DateField = ({
     >
       <div tabIndex={2} onBlur={handleBlurInput}>
         <TextField
-          placeholder="2000-01-01"
+          placeholder={placeHolder}
           className={className}
           onChange={handleChange}
           label={label}

@@ -47,7 +47,7 @@ const LackContainer = ({ lack }: { lack: IndicatorOptionWithDiscrepancies['data'
     <InfoContainer
       title={'Trūksta duomenų'}
       description={
-        'Pagal planą reikia įvesti 15 tyrimų. Įveskite trūkstamus mėginius arba nurodykite pastabas'
+        'Pagal planą reikia įvesti 1 tyrimų. Įveskite trūkstamus mėginius arba nurodykite pastabas'
       }
     >
       <Column>

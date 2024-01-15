@@ -80,7 +80,6 @@ const LabelContainer = styled.div`
   display: flex;
   align-items: center;
   min-height: 2.4rem;
-  max-height: 5rem;
 `;
 
 const SubLabel = styled.div`

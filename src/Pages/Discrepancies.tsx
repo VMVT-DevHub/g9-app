@@ -12,7 +12,7 @@ import Icon, { IconName } from '../Components/other/Icons';
 import InfoRow from '../Components/other/InfoRow';
 import { device, theme } from '../styles';
 import { IndicatorOptionWithDiscrepancies } from '../types';
-import { handleIsApproved } from '../utils/functions';
+import { getIndicatorLabel, handleIsApproved } from '../utils/functions';
 import { useDeclaration, useMappedIndicatorsWithDiscrepancies } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 
@@ -121,7 +121,7 @@ const Discrepancies = () => {
                 <Circle $status={status}>
                   {isApproved && <Verified name={IconName.checkMark} />}
                 </Circle>
-                <IndicatorText $status={status}>{indicator.name}</IndicatorText>
+                <IndicatorText $status={status}>{getIndicatorLabel(indicator)}</IndicatorText>
               </IndicatorLine>
             );
           })}

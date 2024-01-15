@@ -1,5 +1,6 @@
 import { map } from 'lodash';
 import styled from 'styled-components';
+import { device } from '../../styles';
 import FieldWrapper from '../fields/components/FieldWrapper';
 
 export interface ToggleButtonProps {
@@ -50,6 +51,9 @@ const ButtonsGroup = ({
 const Container = styled.div`
   border-radius: 4px;
   display: flex;
+  @media ${device.mobileM} {
+    flex-direction: column;
+  }
 `;
 
 const StyledButton = styled.button<{

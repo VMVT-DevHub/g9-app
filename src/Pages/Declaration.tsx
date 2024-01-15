@@ -22,6 +22,7 @@ import { IndicatorOption } from '../types';
 import api from '../utils/api';
 import {
   getGroupedIndicatorValues,
+  getIndicatorLabel,
   getOptions,
   getYearRange,
   getYesNo,
@@ -46,14 +47,25 @@ export const declarationSchema = Yup.object().shape({
   }),
 });
 
-const mapValues = (indicatorOptions?: IndicatorOption[], values?: any) => {
+const mapValues = (
+  indicatorOptions?: IndicatorOption[],
+  values?: any,
+  mandatoryIndicators?: any,
+) => {
   if (!values || !indicatorOptions) return [];
+  const deficiencyData = mandatoryIndicators?.Trukumas?.Data;
 
   const groupedValues = getGroupedIndicatorValues(values);
 
   return indicatorOptions.reduce((prev: any, curr) => {
     if (groupedValues[curr.id]) {
       prev.push({ ...curr, tableData: groupedValues[curr.id] });
+
+      return prev;
+    }
+
+    if (!!deficiencyData && deficiencyData.some((item) => item[1] == curr.id)) {
+      prev.push({ ...curr, tableData: [] });
 
       return prev;
     }
@@ -78,12 +90,22 @@ const DeclarationPage = () => {
   });
 
   const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
+  const { data: mandatoryIndicators, isFetching: mandatoryIndicatorsLoading } = useQuery(
+    ['mandatory', mappedDeclaration.waterQuantity],
+    () => api.getMandatoryIndicators(id),
+    {
+      retry: false,
+      enabled: !!mappedDeclaration.waterQuantity,
+    },
+  );
 
   const [showPopup, setShowPopup] = useState(false);
   const waterMaterialOptions = getOptions(lookup?.RuosimoMedziagos);
   const waterMaterialLabels = lookup?.RuosimoMedziagos || {};
 
-  const { indicatorGroupLabels, indicatorGroups, indicatorOptions, indicators } = useIndicators();
+  const { indicatorGroupLabels, indicatorGroups, indicatorOptions, indicators } = useIndicators(
+    mappedDeclaration.type?.value,
+  );
 
   useEffect(() => {
     if (!selectedIndicatorGroup && indicatorGroups?.[0]) {
@@ -109,12 +131,18 @@ const DeclarationPage = () => {
   };
 
   useEffect(() => {
-    if (isEmpty(values) || isEmpty(indicators) || !isEmpty(selectedIndicators)) return;
+    if (
+      isEmpty(values) ||
+      isEmpty(indicators) ||
+      !isEmpty(selectedIndicators) ||
+      mandatoryIndicatorsLoading
+    )
+      return;
 
-    const mappedValues = mapValues(indicatorOptions, values);
+    const mappedValues = mapValues(indicatorOptions, values, mandatoryIndicators);
 
     setSelectedIndicators(mappedValues);
-  }, [values, indicators]);
+  }, [values, indicators, mandatoryIndicatorsLoading]);
 
   const filteredIndicatorOptions = indicatorOptions
     ?.filter(
@@ -155,9 +183,12 @@ const DeclarationPage = () => {
 
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
 
-  const isLoading = [valuesLoading, businessPlaceLoading, declarationLoading].some(
-    (loading) => loading,
-  );
+  const isLoading = [
+    valuesLoading,
+    businessPlaceLoading,
+    declarationLoading,
+    mandatoryIndicatorsLoading,
+  ].some((loading) => loading);
 
   const yearRange = getYearRange(mappedDeclaration.year);
 
@@ -171,7 +202,7 @@ const DeclarationPage = () => {
         <div>
           <InfoTagRow>
             <InfoTag label={mappedDeclaration.year} />
-            <InfoTag label={mappedDeclaration.type} />
+            <InfoTag label={mappedDeclaration?.type?.label} />
           </InfoTagRow>
           <Title>{'Deklaracija'}</Title>
 
@@ -300,22 +331,26 @@ const DeclarationPage = () => {
         <Column>
           {selectedIndicators
             .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
-            .map((indicator) => (
-              <div key={`indicator-group-${indicator.id}`}>
-                <IndicatorContainer
-                  onDelete={(id) =>
-                    setSelectedIndicators(
-                      selectedIndicators.filter((indicator) => indicator.id !== id),
-                    )
-                  }
-                  initialOpen={indicator.initialOpen}
-                  updateIndicatorTable={(id) => updateIndicatorTable(id)}
-                  yearRange={yearRange}
-                  disabled={disabled}
-                  indicator={indicator}
-                />
-              </div>
-            ))}
+            .map((indicator, index) => {
+              const initialOpen = indicator.initialOpen || index === 0;
+
+              return (
+                <div key={`indicator-group-${indicator.id}`}>
+                  <IndicatorContainer
+                    onDelete={(id) =>
+                      setSelectedIndicators(
+                        selectedIndicators.filter((indicator) => indicator.id !== id),
+                      )
+                    }
+                    initialOpen={initialOpen}
+                    updateIndicatorTable={(id) => updateIndicatorTable(id)}
+                    yearRange={yearRange}
+                    disabled={disabled}
+                    indicator={indicator}
+                  />
+                </div>
+              );
+            })}
 
           {showAddIndicatorButton && (
             <AddIndicatorButton
@@ -352,7 +387,7 @@ const DeclarationPage = () => {
               <FormContainer>
                 <StyledSelectField
                   options={filteredIndicatorOptions}
-                  getOptionLabel={(option) => option?.name}
+                  getOptionLabel={getIndicatorLabel}
                   value={values.indicator}
                   label={'Rodiklis'}
                   name="indicator"
@@ -400,6 +435,10 @@ const StyledButtonGroup = styled(ButtonsGroup)`
   @media ${device.mobileL} {
     flex: 1;
     width: 100%;
+  }
+
+  @media ${device.mobileM} {
+    min-width: 100%;
   }
 `;
 
