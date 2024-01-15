@@ -141,7 +141,10 @@ export const mapDeclaration = (declaration?: ServerDeclaration) => {
 
   return {
     year: declaration?.Data[0][2],
-    type: declaration?.Lookup.Stebesenos[declaration.Data[0][3]],
+    type: {
+      value: declaration.Data[0][3],
+      label: declaration?.Lookup.Stebesenos[declaration.Data[0][3]],
+    },
     status: declaration.Data[0][4],
     waterQuantity: declaration?.Data?.[0]?.[5],
     usersCount: declaration?.Data[0]?.[6],
@@ -172,3 +175,6 @@ export const getGroupedIndicatorValues = (values: any) => {
     return groupedValues;
   }, {});
 };
+
+export const getIndicatorLabel = (indicator: any) =>
+  `${indicator?.name?.trim()}, (Kodas: ${indicator.code?.trim()})`;

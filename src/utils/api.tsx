@@ -132,6 +132,11 @@ class Api {
         };
       };
     };
+    Stebesenos: {
+      ID: number;
+      Pavadinimas: string;
+      Rodikliai: number[];
+    }[];
   }> => {
     return this.get({
       resource: `api/rodikliai`,
@@ -164,6 +169,12 @@ class Api {
     return this.getOne({
       resource: `api/neatitiktys`,
       id,
+    });
+  };
+
+  getMandatoryIndicators = async (id: string): Promise<ServerDiscrepancy> => {
+    return this.get({
+      resource: `api/neatitiktys/${id}/Trukumas`,
     });
   };
 

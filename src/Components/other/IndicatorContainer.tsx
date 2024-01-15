@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { device } from '../../styles';
 import { IndicatorOption } from '../../types';
 import api from '../../utils/api';
-import { formatDate, handleErrorToast, inRange } from '../../utils/functions';
+import { formatDate, getIndicatorLabel, handleErrorToast, inRange } from '../../utils/functions';
 import Button from '../buttons/Button';
 import ButtonsGroup from '../buttons/ButtonGroup';
 import DateField from '../fields/DateField';
@@ -115,7 +115,7 @@ const IndicatorContainer = ({
       <Expander onClick={() => setOpen(!open)} $isActive={open}>
         <TitleContainer>
           <IndicatorValue $isActive={open}>
-            {`${indicator?.name} ${tableData.length ? `(${tableData.length})` : ''}`}{' '}
+            {`${getIndicatorLabel(indicator)} ${tableData.length ? `(${tableData.length})` : ''}`}{' '}
           </IndicatorValue>
           {!showTable && (
             <Delete onClick={() => onDelete(indicator.id)} $isActive={open}>

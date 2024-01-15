@@ -76,16 +76,20 @@ export const useBusinessPlaces = () => {
   return { data: getMappedData(), isLoading };
 };
 
-export const useIndicators = () => {
+export const useIndicators = (declarationType: any) => {
   const { data: indicators, isLoading } = useQuery(['indicators'], () => api.getIndicators(), {
     retry: false,
   });
 
   if (isLoading) return { indicatorGroups: [], indicatorGroupLabels: {}, indicatorOptions: [] };
+  const currentDeclaration = indicators?.Stebesenos.find(
+    (monitoring) => monitoring.ID === declarationType,
+  );
 
-  const indicatorGroups = getOptions(indicators?.Rodikliai?.Lookup?.Grupe);
   const indicatorGroupLabels = indicators?.Rodikliai?.Lookup?.Grupe || {};
-  const indicatorOptions = indicators?.Rodikliai?.Data.map((item) => {
+  const indicatorOptions = indicators?.Rodikliai?.Data.filter(
+    (item) => !currentDeclaration || currentDeclaration?.Rodikliai.includes(item[0]),
+  ).map((item) => {
     return {
       id: item[0],
       groupId: item[1],
@@ -99,6 +103,10 @@ export const useIndicators = () => {
       description: item[9],
     };
   });
+
+  const indicatorGroups = getOptions(indicators?.Rodikliai?.Lookup?.Grupe).filter((groupId) =>
+    indicatorOptions?.some((item) => item.groupId == groupId),
+  );
 
   return { indicatorGroups, indicatorGroupLabels, indicatorOptions, indicators };
 };
@@ -123,13 +131,13 @@ export const useMappedIndicatorsWithDiscrepancies = () => {
     () => api.getDiscrepancies(id),
     {
       retry: false,
-      onError: ({ response }) => {
+      onError: () => {
         handleErrorToast();
       },
     },
   );
 
-  const { indicatorOptions, indicators } = useIndicators();
+  const { indicatorOptions, indicators } = useIndicators('');
 
   const [mappedIndicators, setMappedIndicators] = useState(
     getUniqueIndicatorIds(discrepancies, indicatorOptions),
