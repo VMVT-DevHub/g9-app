@@ -147,6 +147,7 @@ const IndicatorContainer = ({
                     disabled={disabled}
                     onChange={(value) => setFieldValue('date', value)}
                     error={errors.date}
+                    placeHolder={formatDate(yearRange.minDate)}
                     maxDate={yearRange.maxDate}
                     minDate={yearRange.minDate}
                   />
@@ -178,7 +179,7 @@ const IndicatorContainer = ({
                       loading={isSubmitLoading}
                       disabled={isSubmitLoading || !values.value || !values.date || disabled}
                     >
-                      {'Pridėti rodiklį'}
+                      {'Pridėti rezultatą'}
                     </Button>
                   </ButtonLine>
                 </FormContainer>

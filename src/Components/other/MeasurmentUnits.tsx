@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const CubicMeter = () => (
   <Container>
     <MeasurementUnit>
-      m<Sup>3</Sup>
+      m<Sup>3</Sup>/d
     </MeasurementUnit>
   </Container>
 );
