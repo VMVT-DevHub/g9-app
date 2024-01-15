@@ -8,7 +8,7 @@ import FullscreenLoader from '../Components/other/FullscreenLoader';
 import InfoRow from '../Components/other/InfoRow';
 import Notification from '../Components/other/Notification';
 import api from '../utils/api';
-import { useDeclaration, useMappedIndicatorsWithDiscrepancies } from '../utils/hooks';
+import { useMappedIndicatorsWithDiscrepancies } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 
 const SubmitDeclaration = () => {
