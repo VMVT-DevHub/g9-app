@@ -85,9 +85,14 @@ const DeclarationPage = () => {
     (item) => item?.id?.toString() === businessPlaceId,
   );
 
-  const { data: values, isLoading: valuesLoading } = useQuery(['values'], () => api.getValues(id), {
-    retry: false,
-  });
+  const { data: values, isLoading: valuesLoading } = useQuery(
+    ['values', id],
+    () => api.getValues(id),
+    {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
   const { data: mandatoryIndicators, isFetching: mandatoryIndicatorsLoading } = useQuery(
@@ -96,6 +101,7 @@ const DeclarationPage = () => {
     {
       retry: false,
       enabled: !!mappedDeclaration.waterQuantity,
+      refetchOnWindowFocus: false,
     },
   );
 
@@ -131,13 +137,7 @@ const DeclarationPage = () => {
   };
 
   useEffect(() => {
-    if (
-      isEmpty(values) ||
-      isEmpty(indicators) ||
-      !isEmpty(selectedIndicators) ||
-      mandatoryIndicatorsLoading
-    )
-      return;
+    if (isEmpty(values) || isEmpty(indicators) || mandatoryIndicatorsLoading) return;
 
     const mappedValues = mapValues(indicatorOptions, values, mandatoryIndicators);
 
