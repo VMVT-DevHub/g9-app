@@ -56,6 +56,7 @@ export const useGetCurrentRoute = (tabs: Tab[]) => {
 export const useBusinessPlaces = () => {
   const { data, isLoading } = useQuery(['businessPlaces'], () => api.getBusinessPlaces(), {
     retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const getMappedData = () => {
@@ -181,6 +182,7 @@ export const useDeclaration = () => {
     () => api.getDeclaration(id),
     {
       retry: false,
+      refetchOnWindowFocus: false,
     },
   );
 
