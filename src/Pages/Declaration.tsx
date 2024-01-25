@@ -100,7 +100,7 @@ const DeclarationPage = () => {
     () => api.getMandatoryIndicators(id),
     {
       retry: false,
-      enabled: !!mappedDeclaration.waterQuantity,
+      enabled: !!mappedDeclaration?.waterQuantity,
       refetchOnWindowFocus: false,
     },
   );
@@ -177,7 +177,7 @@ const DeclarationPage = () => {
   const formValues = {
     waterMaterial: mappedDeclaration?.waterMaterial || undefined,
     waterQuantity: mappedDeclaration?.waterQuantity || '',
-    usersCount: mappedDeclaration.usersCount || '',
+    usersCount: mappedDeclaration?.usersCount || '',
     isPreparedWater: !!mappedDeclaration?.waterMaterial,
   };
 
@@ -190,7 +190,7 @@ const DeclarationPage = () => {
     mandatoryIndicatorsLoading,
   ].some((loading) => loading);
 
-  const yearRange = getYearRange(mappedDeclaration.year);
+  const yearRange = getYearRange(mappedDeclaration?.year);
 
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
 
@@ -201,7 +201,7 @@ const DeclarationPage = () => {
       <TopRow>
         <div>
           <InfoTagRow>
-            <InfoTag label={mappedDeclaration.year} />
+            <InfoTag label={mappedDeclaration?.year} />
             <InfoTag label={mappedDeclaration?.type?.label} />
           </InfoTagRow>
           <Title>{'Deklaracija'}</Title>
@@ -306,7 +306,7 @@ const DeclarationPage = () => {
           </Formik>
         </MainCardContainer>
       </MainCard>
-      {mappedDeclaration.waterQuantity && (
+      {mappedDeclaration?.waterQuantity && (
         <>
           <InfoTitle>Rodiklių duomenys</InfoTitle>
           <InfoContainer>
