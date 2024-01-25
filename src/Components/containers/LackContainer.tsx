@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -21,6 +21,7 @@ const mapPayload = (lack: IndicatorOptionWithDiscrepancies['data']['lack']) => {
 
 const LackContainer = ({ lack }: { lack: IndicatorOptionWithDiscrepancies['data']['lack'] }) => {
   const [notes, setNotes] = useState(lack?.notes || '');
+  console.log(lack?.notes, 'lack?.notes', notes);
   const [error, setError] = useState('');
   const { handleSuccess } = useSuccess();
   const { id = '' } = useParams();
@@ -32,6 +33,10 @@ const LackContainer = ({ lack }: { lack: IndicatorOptionWithDiscrepancies['data'
       },
     },
   );
+
+  useEffect(() => {
+    setNotes(lack?.notes || '');
+  }, [lack]);
 
   const handleUpdateRepeat = async () => {
     if (!lack) return;
