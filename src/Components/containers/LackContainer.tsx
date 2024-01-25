@@ -21,7 +21,6 @@ const mapPayload = (lack: IndicatorOptionWithDiscrepancies['data']['lack']) => {
 
 const LackContainer = ({ lack }: { lack: IndicatorOptionWithDiscrepancies['data']['lack'] }) => {
   const [notes, setNotes] = useState(lack?.notes || '');
-  console.log(lack?.notes, 'lack?.notes', notes);
   const [error, setError] = useState('');
   const { handleSuccess } = useSuccess();
   const { id = '' } = useParams();
