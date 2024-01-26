@@ -100,7 +100,7 @@ const DeclarationPage = () => {
     () => api.getMandatoryIndicators(id),
     {
       retry: false,
-      enabled: !!mappedDeclaration.waterQuantity,
+      enabled: !!mappedDeclaration?.waterQuantity,
       refetchOnWindowFocus: false,
     },
   );
@@ -177,7 +177,7 @@ const DeclarationPage = () => {
   const formValues = {
     waterMaterial: mappedDeclaration?.waterMaterial || undefined,
     waterQuantity: mappedDeclaration?.waterQuantity || '',
-    usersCount: mappedDeclaration.usersCount || '',
+    usersCount: mappedDeclaration?.usersCount || '',
     isPreparedWater: !!mappedDeclaration?.waterMaterial,
   };
 
@@ -190,7 +190,7 @@ const DeclarationPage = () => {
     mandatoryIndicatorsLoading,
   ].some((loading) => loading);
 
-  const yearRange = getYearRange(mappedDeclaration.year);
+  const yearRange = getYearRange(mappedDeclaration?.year);
 
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
 
@@ -201,7 +201,7 @@ const DeclarationPage = () => {
       <TopRow>
         <div>
           <InfoTagRow>
-            <InfoTag label={mappedDeclaration.year} />
+            <InfoTag label={mappedDeclaration?.year} />
             <InfoTag label={mappedDeclaration?.type?.label} />
           </InfoTagRow>
           <Title>{'Deklaracija'}</Title>
@@ -306,110 +306,113 @@ const DeclarationPage = () => {
           </Formik>
         </MainCardContainer>
       </MainCard>
+      {mappedDeclaration?.waterQuantity && (
+        <>
+          <InfoTitle>Rodiklių duomenys</InfoTitle>
+          <InfoContainer>
+            <IndicatorGroupContainer>
+              {indicatorGroups.map((group) => {
+                return (
+                  <IndicatorLine
+                    key={`indicator-${group}`}
+                    onClick={() => setSelectedIndicatorGroup(group)}
+                  >
+                    <IndicatorText $isActive={group === selectedIndicatorGroup}>
+                      {indicatorGroupLabels[group]}
+                    </IndicatorText>
+                    <InfoTag
+                      label={selectedIndicators
+                        .filter((item) => item.groupId.toString() === group)
+                        .length.toString()}
+                    />
+                  </IndicatorLine>
+                );
+              })}
+            </IndicatorGroupContainer>
+            <Column>
+              {selectedIndicators
+                .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
+                .map((indicator, index) => {
+                  const initialOpen = indicator.initialOpen || index === 0;
 
-      <InfoTitle>Rodiklių duomenys</InfoTitle>
-      <InfoContainer>
-        <IndicatorGroupContainer>
-          {indicatorGroups.map((group) => {
-            return (
-              <IndicatorLine
-                key={`indicator-${group}`}
-                onClick={() => setSelectedIndicatorGroup(group)}
-              >
-                <IndicatorText $isActive={group === selectedIndicatorGroup}>
-                  {indicatorGroupLabels[group]}
-                </IndicatorText>
-                <InfoTag
-                  label={selectedIndicators
-                    .filter((item) => item.groupId.toString() === group)
-                    .length.toString()}
-                />
-              </IndicatorLine>
-            );
-          })}
-        </IndicatorGroupContainer>
-        <Column>
-          {selectedIndicators
-            .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
-            .map((indicator, index) => {
-              const initialOpen = indicator.initialOpen || index === 0;
+                  return (
+                    <div key={`indicator-group-${indicator.id}`}>
+                      <IndicatorContainer
+                        onDelete={(id) =>
+                          setSelectedIndicators(
+                            selectedIndicators.filter((indicator) => indicator.id !== id),
+                          )
+                        }
+                        initialOpen={initialOpen}
+                        updateIndicatorTable={(id) => updateIndicatorTable(id)}
+                        yearRange={yearRange}
+                        disabled={disabled}
+                        indicator={indicator}
+                      />
+                    </div>
+                  );
+                })}
 
-              return (
-                <div key={`indicator-group-${indicator.id}`}>
-                  <IndicatorContainer
-                    onDelete={(id) =>
-                      setSelectedIndicators(
-                        selectedIndicators.filter((indicator) => indicator.id !== id),
-                      )
-                    }
-                    initialOpen={initialOpen}
-                    updateIndicatorTable={(id) => updateIndicatorTable(id)}
-                    yearRange={yearRange}
-                    disabled={disabled}
-                    indicator={indicator}
-                  />
-                </div>
-              );
-            })}
+              {showAddIndicatorButton && (
+                <AddIndicatorButton
+                  disabled={!selectedIndicatorGroup}
+                  onClick={() => selectedIndicatorGroup && setShowPopup(true)}
+                >
+                  + Pridėti rodiklį
+                </AddIndicatorButton>
+              )}
+            </Column>
+          </InfoContainer>
 
-          {showAddIndicatorButton && (
-            <AddIndicatorButton
-              disabled={!selectedIndicatorGroup}
-              onClick={() => selectedIndicatorGroup && setShowPopup(true)}
+          <PopUpWithTitles
+            title={'Pridėti rodiklį'}
+            visible={showPopup}
+            onClose={() => setShowPopup(false)}
+          >
+            <Formik
+              enableReinitialize={true}
+              initialValues={indicatorInitialValues}
+              onSubmit={({ indicator }) => {
+                if (!indicator) return;
+
+                setSelectedIndicators((prev) => [
+                  ...prev.map((indicator) => ({ ...indicator, initialOpen: false })),
+                  { ...indicator, initialOpen: true },
+                ]);
+                setShowPopup(false);
+              }}
+              validateOnChange={false}
             >
-              + Pridėti rodiklį
-            </AddIndicatorButton>
-          )}
-        </Column>
-      </InfoContainer>
-
-      <PopUpWithTitles
-        title={'Pridėti rodiklį'}
-        visible={showPopup}
-        onClose={() => setShowPopup(false)}
-      >
-        <Formik
-          enableReinitialize={true}
-          initialValues={indicatorInitialValues}
-          onSubmit={({ indicator }) => {
-            if (!indicator) return;
-
-            setSelectedIndicators((prev) => [
-              ...prev.map((indicator) => ({ ...indicator, initialOpen: false })),
-              { ...indicator, initialOpen: true },
-            ]);
-            setShowPopup(false);
-          }}
-          validateOnChange={false}
-        >
-          {({ values, errors, setFieldValue }) => {
-            return (
-              <FormContainer>
-                <StyledSelectField
-                  options={filteredIndicatorOptions}
-                  getOptionLabel={getIndicatorLabel}
-                  value={values.indicator}
-                  label={'Rodiklis'}
-                  name="indicator"
-                  onChange={(value) => setFieldValue('indicator', value)}
-                  error={errors.indicator}
-                />
-                <ButtonRow>
-                  <ButtonInnerRow>
-                    <Button
-                      type="submit"
-                      loading={isSubmitLoading}
-                      disabled={!values.indicator || isSubmitLoading}
-                    >
-                      {'Pridėti rodiklį'}
-                    </Button>
-                  </ButtonInnerRow>
-                </ButtonRow>
-              </FormContainer>
-            );
-          }}
-        </Formik>
-      </PopUpWithTitles>
+              {({ values, errors, setFieldValue }) => {
+                return (
+                  <FormContainer>
+                    <StyledSelectField
+                      options={filteredIndicatorOptions}
+                      getOptionLabel={getIndicatorLabel}
+                      value={values.indicator}
+                      label={'Rodiklis'}
+                      name="indicator"
+                      onChange={(value) => setFieldValue('indicator', value)}
+                      error={errors.indicator}
+                    />
+                    <ButtonRow>
+                      <ButtonInnerRow>
+                        <Button
+                          type="submit"
+                          loading={isSubmitLoading}
+                          disabled={!values.indicator || isSubmitLoading}
+                        >
+                          {'Pridėti rodiklį'}
+                        </Button>
+                      </ButtonInnerRow>
+                    </ButtonRow>
+                  </FormContainer>
+                );
+              }}
+            </Formik>
+          </PopUpWithTitles>
+        </>
+      )}
     </PageContainer>
   );
 };
