@@ -66,3 +66,9 @@ export const Grid = styled.div<{ $columns?: number }>`
     grid-template-columns: repeat(1, 1fr);
   }
 `;
+
+
+export const TableActionContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;

@@ -18,7 +18,7 @@ import SelectField from '../fields/SelectField';
 import TextAreaField from '../fields/TextAreaField';
 import InfoContainer from '../layouts/InfoContainer';
 import PopUpWithTitles from '../layouts/PopUpWithTitle';
-import { BlueText, Grid } from '../other/CommonStyles';
+import { BlueText, Grid, TableActionContainer } from '../other/CommonStyles';
 import Loader from '../other/Loader';
 import Table from '../Table/Table';
 
@@ -142,7 +142,8 @@ const ExceededContainer = ({
       return {
         ...item,
         max: `${item.max} ${!isButton ? unit : ''}`,
-        edit: handleRenderApprove(item),
+
+        edit: <TableActionContainer>{handleRenderApprove(item)}</TableActionContainer>,
       };
     }) || [];
   const handleSubmit = (values: Exceeded) => {

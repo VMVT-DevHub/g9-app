@@ -246,7 +246,7 @@ const DeclarationPage = () => {
                       <FormLine>
                         <StyledNumericTextField
                           rightIcon={<CubicMeter />}
-                          label={'Vandens kiekis'}
+                          label={'Tiekiamo vandens kiekis'}
                           value={values.waterQuantity}
                           error={errors.waterQuantity}
                           disabled={disabled}
@@ -255,7 +255,7 @@ const DeclarationPage = () => {
                           showError={false}
                         />
                         <StyledNumericTextField
-                          label={'Vartotojų skaičius'}
+                          label={'Gyventojų skaičius'}
                           name="usersCount"
                           value={values.usersCount}
                           disabled={disabled}

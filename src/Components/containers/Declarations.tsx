@@ -32,7 +32,15 @@ const Declarations = () => {
 
     const lookUp = data.Lookup;
 
-    return data?.Data.sort((a, b) => b[2] - a[2]).map((item) => {
+    return data?.Data.sort((a, b) => {
+      const yearComparison = b[2] - a[2];
+
+      if (yearComparison == 0) {
+        return a[3] - b[3];
+      }
+
+      return yearComparison;
+    }).map((item) => {
       const type = lookUp.Stebesenos[item[3]];
       return {
         id: item[0],

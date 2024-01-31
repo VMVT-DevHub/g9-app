@@ -5,7 +5,7 @@ import { useAppSelector } from '../../state/hooks';
 import { DeleteInfoProps } from '../../types';
 import api from '../../utils/api';
 import { getRole, handleSuccessToast } from '../../utils/functions';
-import { BlueText, BoldText } from '../other/CommonStyles';
+import { BlueText, BoldText, TableActionContainer } from '../other/CommonStyles';
 import DeleteComponent from '../other/DeleteCard';
 import Table from '../Table/Table';
 import TableSelect from '../Table/TableSelect';
@@ -62,7 +62,11 @@ const RightsDelegations = () => {
           fullName: <BoldText>{fullName}</BoldText>,
           ...(!isCurrentUser && {
             delete: (
-              <BlueText onClick={() => setSelectedUser({ fullName, id: item[1] })}>Trinti</BlueText>
+              <TableActionContainer>
+                <BlueText onClick={() => setSelectedUser({ fullName, id: item[1] })}>
+                  Trinti
+                </BlueText>
+              </TableActionContainer>
             ),
           }),
 
