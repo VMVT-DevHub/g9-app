@@ -13,7 +13,7 @@ import ButtonsGroup from '../buttons/ButtonGroup';
 import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
 import Table from '../Table/Table';
-import { BlueText, DangerText } from './CommonStyles';
+import { BlueText, DangerText, TableActionContainer } from './CommonStyles';
 import Icon, { IconName } from './Icons';
 import InfoPopUp from './InfoPopUp';
 
@@ -61,7 +61,11 @@ const IndicatorContainer = ({
         ...item,
         value: renderValue(item),
         ...(!disabled && {
-          delete: <BlueText onClick={() => deleteUserMutation(item.id)}>Trinti</BlueText>,
+          delete: (
+            <TableActionContainer>
+              <BlueText onClick={() => deleteUserMutation(item.id)}>Trinti</BlueText>
+            </TableActionContainer>
+          ),
         }),
       };
     }) || [];
@@ -294,5 +298,7 @@ const Delete = styled.div<{ $isActive: boolean }>`
   margin-left: 10px;
   color: ${({ $isActive, theme }) => (!$isActive ? theme.colors.text.active : 'white')};
 `;
+
+
 
 export default IndicatorContainer;

@@ -7,7 +7,7 @@ import api from '../../utils/api';
 import { useSuccess } from '../../utils/hooks';
 import Button, { ButtonColors } from '../buttons/Button';
 import InfoContainer from '../layouts/InfoContainer';
-import { BlueText, SuccessText } from '../other/CommonStyles';
+import { BlueText, SuccessText, TableActionContainer } from '../other/CommonStyles';
 import Loader from '../other/Loader';
 import Table from '../Table/Table';
 
@@ -89,7 +89,7 @@ const RepeatContainer = ({
         return {
           ...item,
           value: `${item.value} ${unit}`,
-          approve: handleRenderApprove(item),
+          approve: <TableActionContainer>{handleRenderApprove(item)}</TableActionContainer>,
         };
       }) || [];
 
