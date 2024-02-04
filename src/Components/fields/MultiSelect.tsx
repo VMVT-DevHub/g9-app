@@ -39,6 +39,7 @@ const MultiSelect = ({
   values = [],
   error,
   options = [],
+  showError,
   onChange,
   disabled = false,
   className,
@@ -64,6 +65,7 @@ const MultiSelect = ({
     <FieldWrapper
       className={className}
       onClick={handleToggleSelect}
+      showError={showError}
       label={label}
       error={error}
       handleBlur={handleBlur}

@@ -39,9 +39,9 @@ export const declarationSchema = Yup.object().shape({
   usersCount: Yup.number()
     .min(1, validationTexts.positiveNumber)
     .required(validationTexts.requireText),
-  waterMaterial: Yup.number().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
+  waterMaterial: Yup.array().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
     if (isPreparedWater?.[0]) {
-      return schema.required(validationTexts.requireSelect);
+      return schema.min(1, validationTexts.requireSelect);
     }
     return schema.nullable();
   }),
@@ -175,7 +175,7 @@ const DeclarationPage = () => {
   );
 
   const formValues = {
-    waterMaterial: mappedDeclaration?.waterMaterial || undefined,
+    waterMaterial: mappedDeclaration?.waterMaterial || [],
     waterQuantity: mappedDeclaration?.waterQuantity || '',
     usersCount: mappedDeclaration?.usersCount || '',
     isPreparedWater: !!mappedDeclaration?.waterMaterial,
@@ -279,7 +279,7 @@ const DeclarationPage = () => {
                             options={waterMaterialOptions}
                             showError={false}
                             getOptionLabel={(option) => waterMaterialLabels[option]}
-                            getOptionValue={(option) => option}
+                            getOptionValue={(option) => Number(option)}
                             values={values.waterMaterial}
                             label={'Vandens ruošimui naudojamos medžiagos'}
                             name="waterMaterials"
