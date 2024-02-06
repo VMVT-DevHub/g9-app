@@ -8,11 +8,12 @@ import * as Yup from 'yup';
 import { device } from '../../styles';
 import { Exceeded, ServerDiscrepancy } from '../../types';
 import api from '../../utils/api';
-import { getOptions, getYesNo } from '../../utils/functions';
+import { formatDate, getOptions, getYesNo } from '../../utils/functions';
 import { useSuccess } from '../../utils/hooks';
 import { validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import ButtonsGroup from '../buttons/ButtonGroup';
+import DateField from '../fields/DateField';
 import NumericTextField from '../fields/NumericTextField';
 import SelectField from '../fields/SelectField';
 import TextAreaField from '../fields/TextAreaField';
@@ -22,13 +23,17 @@ import { BlueText, Grid, TableActionContainer } from '../other/CommonStyles';
 import Loader from '../other/Loader';
 import Table from '../Table/Table';
 
-export const exceededSchema = Yup.object().shape({
+export const extendedExceededSchema = Yup.object().shape({
+  startDate: Yup.string().required(validationTexts.requireText),
+  endDate: Yup.string().required(validationTexts.requireText),
   LOQValue: Yup.number()
     .required(validationTexts.requireText)
     .min(1, validationTexts.positiveNumber),
   userCount: Yup.number()
     .required(validationTexts.requireText)
     .min(1, validationTexts.positiveNumber),
+  reason: Yup.number().required(validationTexts.requireText),
+  action: Yup.string().required(validationTexts.requireText),
   isBelowLOQ: Yup.boolean().required(validationTexts.requireSelect),
   type: Yup.number().required(validationTexts.requireText),
   status: Yup.number().required(validationTexts.requireSelect),
@@ -46,10 +51,25 @@ export const exceededSchema = Yup.object().shape({
   }),
 });
 
+export const exceededSchema = Yup.object().shape({
+  startDate: Yup.string().required(validationTexts.requireText),
+  endDate: Yup.string().required(validationTexts.requireText),
+  reason: Yup.number().required(validationTexts.requireText),
+  action: Yup.string().required(validationTexts.requireText),
+  type: Yup.number().required(validationTexts.requireText),
+  notes: Yup.string()
+    .required(validationTexts.requireText)
+    .test('notes', validationTexts.shortDescription, (val) => val.length > 5),
+});
+
 const mapPayload = (item) => {
   return {
     ID: item.id,
     Nereiksmingas: item.insignificant,
+    Priezastis: item?.reason || null,
+    Veiksmas: item?.action,
+    Pradzia: formatDate(item?.startDate),
+    Pabaiga: formatDate(item?.endDate),
     NereiksmApras: item.insignificantDescription || null,
     Zmones: parseInt(`${item.userCount}`),
     Tipas: parseInt(`${item.type}`),
@@ -65,19 +85,24 @@ const ExceededContainer = ({
   exceeded,
   unit,
   options,
+  yearRange,
   description,
+  groupId,
 }: {
   description: string;
+  yearRange: any;
   exceeded: Exceeded[];
   unit: string;
   options?: ServerDiscrepancy['Virsijimas']['Lookup'];
+  groupId?: any;
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [currentExceeded, setCurrentExceeded] = useState<Exceeded | any>({});
   const { id = '' } = useParams();
   const { handleSuccess } = useSuccess();
-
   const isButton = unit === 'T/N';
+  const extendedFormTypes = [1, 2];
+  const isExtendedForm = extendedFormTypes.includes(groupId);
 
   const [rowLoadingId, setRowLoadingId] = useState('');
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -88,7 +113,7 @@ const ExceededContainer = ({
     {},
   );
 
-  const handleUpdateRepeat = async (values) => {
+  const handleUpdateExceeded = async (values) => {
     setRowLoadingId(values.id);
     setDisabled(true);
     await updateRepeat({ Virsijimas: [mapPayload(values)] });
@@ -110,6 +135,10 @@ const ExceededContainer = ({
     setButtonLoading(false);
   };
 
+  const actionOptions = getOptions(options?.Veiksmas);
+  const reasonOptions = getOptions(options?.Priezastis);
+  const actionLabels = options?.Veiksmas;
+  const reasonLabels = options?.Priezastis;
   const typeOptions = getOptions(options?.Tipas);
   const statusOptions = getOptions(options?.Statusas);
   const typeLabels = options?.Tipas;
@@ -153,15 +182,16 @@ const ExceededContainer = ({
       return handleUpdateAllRepeat(values);
     }
 
-    handleUpdateRepeat(values);
+    handleUpdateExceeded(values);
   };
-
   const labels = {
     dateFrom: 'Data nuo',
     dateTo: 'Data iki',
     max: isButton ? description : 'Maksimali reikšmė',
     edit: '',
   };
+
+  const validationSchema = isExtendedForm ? extendedExceededSchema : exceededSchema;
 
   return (
     <>
@@ -202,25 +232,27 @@ const ExceededContainer = ({
           enableReinitialize={true}
           initialValues={currentExceeded || ({} as Exceeded)}
           onSubmit={handleSubmit}
-          validationSchema={exceededSchema}
+          validationSchema={validationSchema}
           validateOnChange={false}
         >
           {({ values, errors, setFieldValue }) => {
             return (
               <FormContainer>
-                <Grid $columns={2}>
-                  <ButtonsGroup
-                    options={[true, false]}
-                    label={'Ar nereikšmingas viršijimas?'}
-                    onChange={(option) => {
-                      setFieldValue('insignificant', option);
-                      setFieldValue('insignificantDescription', '');
-                    }}
-                    getOptionLabel={getYesNo}
-                    error={errors?.insignificant}
-                    isSelected={(option) => option === values?.insignificant}
-                  />
-                </Grid>
+                {isExtendedForm && (
+                  <Grid $columns={2}>
+                    <ButtonsGroup
+                      options={[true, false]}
+                      label={'Ar nereikšmingas viršijimas?'}
+                      onChange={(option) => {
+                        setFieldValue('insignificant', option);
+                        setFieldValue('insignificantDescription', '');
+                      }}
+                      getOptionLabel={getYesNo}
+                      error={errors?.insignificant}
+                      isSelected={(option) => option === values?.insignificant}
+                    />
+                  </Grid>
+                )}
 
                 {values.insignificant && (
                   <Grid $columns={1}>
@@ -234,14 +266,15 @@ const ExceededContainer = ({
                 )}
 
                 <Grid $columns={2}>
-                  <NumericTextField
-                    value={values?.userCount}
-                    label={'Viršijimo paveiktų žmonių skaičius'}
-                    name="value"
-                    onChange={(value) => setFieldValue('userCount', value)}
-                    error={errors?.userCount}
-                  />
-
+                  {isExtendedForm && (
+                    <NumericTextField
+                      value={values?.userCount}
+                      label={'Viršijimo paveiktų žmonių skaičius'}
+                      name="value"
+                      onChange={(value) => setFieldValue('userCount', value)}
+                      error={errors?.userCount}
+                    />
+                  )}
                   <SelectField
                     options={typeOptions}
                     showError={false}
@@ -253,38 +286,82 @@ const ExceededContainer = ({
                     onChange={(value) => setFieldValue('type', value)}
                   />
                 </Grid>
+                {isExtendedForm && (
+                  <>
+                    <Grid $columns={2}>
+                      <ButtonsGroup
+                        options={[true, false]}
+                        label={'Ar nustatyta vertė žemiau nei LOQ?'}
+                        onChange={(option) => {
+                          setFieldValue('isBelowLOQ', option);
+                        }}
+                        error={errors?.isBelowLOQ}
+                        getOptionLabel={getYesNo}
+                        isSelected={(option) => option === values?.isBelowLOQ}
+                      />
+                    </Grid>
+                    <Grid $columns={1}>
+                      <NumericTextField
+                        label="Kiekybinio nustatymo ribos LOQ reikšmė"
+                        value={values?.LOQValue}
+                        error={errors?.LOQValue}
+                        onChange={(value) => setFieldValue('LOQValue', value)}
+                      />
+                    </Grid>
+                  </>
+                )}
                 <Grid $columns={2}>
-                  <ButtonsGroup
-                    options={[true, false]}
-                    label={'Ar nustatyta vertė žemiau nei LOQ?'}
-                    onChange={(option) => {
-                      setFieldValue('isBelowLOQ', option);
-                    }}
-                    error={errors?.isBelowLOQ}
-                    getOptionLabel={getYesNo}
-                    isSelected={(option) => option === values?.isBelowLOQ}
-                  />
-                </Grid>
-                <Grid $columns={1}>
-                  <NumericTextField
-                    label="Kiekybinio nustatymo ribos LOQ reikšmė"
-                    value={values?.LOQValue}
-                    error={errors?.LOQValue}
-                    onChange={(value) => setFieldValue('LOQValue', value)}
-                  />
-                </Grid>
-                <Grid $columns={1}>
                   <SelectField
-                    options={statusOptions}
+                    options={reasonOptions}
                     showError={false}
-                    getOptionLabel={(option) => (statusLabels ? statusLabels[option] : '-')}
-                    value={values?.status}
-                    label={'Stebėjimo statusas'}
-                    name="status"
-                    onChange={(value) => setFieldValue('status', value)}
-                    error={errors?.status}
+                    getOptionLabel={(option) => (reasonLabels ? reasonLabels[option] : '-')}
+                    value={values?.reason}
+                    label={'Priežastis'}
+                    error={errors?.reason}
+                    onChange={(value) => setFieldValue('reason', value)}
+                  />
+                  <SelectField
+                    options={actionOptions}
+                    showError={false}
+                    getOptionLabel={(option) => (actionLabels ? actionLabels[option] : '-')}
+                    value={values?.action}
+                    label={'Taisomasis veiksmas'}
+                    error={errors?.action}
+                    onChange={(value) => setFieldValue('action', value)}
+                  />
+                  <DateField
+                    value={values.startDate}
+                    label={'Taisomojo veiksmo pradžia'}
+                    onChange={(value) => setFieldValue('startDate', value)}
+                    error={errors.startDate}
+                    placeHolder={formatDate(yearRange.minDate)}
+                    maxDate={values.endDate || yearRange.maxDate}
+                    minDate={yearRange.minDate}
+                  />
+                  <DateField
+                    value={values.endDate}
+                    label={'Taisomojo veiksmo pabaiga'}
+                    onChange={(value) => setFieldValue('endDate', value)}
+                    error={errors.endDate}
+                    placeHolder={formatDate(yearRange.minDate)}
+                    maxDate={yearRange.maxDate}
+                    minDate={values.startDate || yearRange.minDate}
                   />
                 </Grid>
+                {isExtendedForm && (
+                  <Grid $columns={1}>
+                    <SelectField
+                      options={statusOptions}
+                      showError={false}
+                      getOptionLabel={(option) => (statusLabels ? statusLabels[option] : '-')}
+                      value={values?.status}
+                      label={'Stebėjimo statusas'}
+                      name="status"
+                      onChange={(value) => setFieldValue('status', value)}
+                      error={errors?.status}
+                    />
+                  </Grid>
+                )}
 
                 <Grid $columns={1}>
                   <TextAreaField

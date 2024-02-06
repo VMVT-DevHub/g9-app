@@ -12,7 +12,7 @@ import Icon, { IconName } from '../Components/other/Icons';
 import InfoRow from '../Components/other/InfoRow';
 import { device, theme } from '../styles';
 import { IndicatorOptionWithDiscrepancies } from '../types';
-import { getIndicatorLabel, handleIsApproved } from '../utils/functions';
+import { getIndicatorLabel, getYearRange, handleIsApproved } from '../utils/functions';
 import { useDeclaration, useMappedIndicatorsWithDiscrepancies } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 
@@ -31,7 +31,9 @@ const indicatorColors = {
 const Discrepancies = () => {
   const { businessPlaceId = '', id = '' } = useParams();
 
-  const { canDeclare, declarationLoading } = useDeclaration();
+  const { canDeclare, declarationLoading, mappedDeclaration } = useDeclaration();
+
+  const yearRange = getYearRange(mappedDeclaration?.year);
 
   useEffect(() => {
     if (declarationLoading) return;
@@ -136,6 +138,8 @@ const Discrepancies = () => {
 
           {activeIndicator?.data?.exceeded && (
             <ExceededContainer
+              groupId={activeIndicator.groupId}
+              yearRange={yearRange}
               options={discrepancies?.Virsijimas?.Lookup}
               unit={activeIndicator.unit}
               exceeded={activeIndicator?.data?.exceeded}
