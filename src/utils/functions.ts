@@ -109,6 +109,10 @@ export const getUniqueIndicatorIds = (
       status: item[12],
       approved: item[13],
       notes: item[14],
+      startDate: item[17],
+      reason: item[15],
+      action: item[16],
+      endDate: item[18],
     });
   });
 
