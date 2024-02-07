@@ -2,6 +2,7 @@ import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../utils/api';
 import { TagColors } from '../../utils/constants';
+import { mapArraysToJson } from '../../utils/functions';
 import { slugs } from '../../utils/routes';
 import { BoldText } from '../other/CommonStyles';
 import StatusTag from '../other/StatusTag';
@@ -32,23 +33,30 @@ const Declarations = () => {
 
     const lookUp = data.Lookup;
 
-    return data?.Data.sort((a, b) => {
-      const yearComparison = b[2] - a[2];
+    return mapArraysToJson(data)
+      .sort((a, b) => {
+        const yearComparison = b.Metai - a.Metai;
 
-      if (yearComparison == 0) {
-        return a[3] - b[3];
-      }
+        if (yearComparison == 0) {
+          return a.Stebesenos - b.Stebesenos;
+        }
 
-      return yearComparison;
-    }).map((item) => {
-      const type = lookUp.Stebesenos[item[3]];
-      return {
-        id: item[0],
-        date: <BoldText>{item[2]}</BoldText>,
-        type: item[3] == 1 ? <BoldText>{type}</BoldText> : type,
-        status: <StatusTag color={statusToColor[item[4]]} label={lookUp.Statusas[item[4]]} />,
-      };
-    });
+        return yearComparison;
+      })
+      .map((item) => {
+        const type = lookUp.Stebesenos[item.Stebesenos];
+        return {
+          id: item.ID,
+          date: <BoldText>{item.Metai}</BoldText>,
+          type: item.Stebesenos == 1 ? <BoldText>{type}</BoldText> : type,
+          status: (
+            <StatusTag
+              color={statusToColor[item.Statusas]}
+              label={lookUp.Statusas[item.Statusas]}
+            />
+          ),
+        };
+      });
   };
 
   return (

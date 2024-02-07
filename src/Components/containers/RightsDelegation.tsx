@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../state/hooks';
 import { DeleteInfoProps } from '../../types';
 import api from '../../utils/api';
-import { getRole, handleSuccessToast } from '../../utils/functions';
+import { getRole, handleSuccessToast, mapArraysToJson } from '../../utils/functions';
 import { BlueText, BoldText, TableActionContainer } from '../other/CommonStyles';
 import DeleteComponent from '../other/DeleteCard';
 import Table from '../Table/Table';
@@ -53,17 +53,18 @@ const RightsDelegations = () => {
 
     if (!users) return [];
 
-    return users.Data.filter((item) => item[0].toString() === id)
-      .sort((a, b) => `${a[2]} ${a[3]}`.localeCompare(`${b[2]} ${b[3]}`))
+    return mapArraysToJson(users)
+      .filter((item) => item?.GVTS?.toString() === id)
+      .sort((a, b) => `${a.FName} ${a.LName}`.localeCompare(`${b.FName} ${b.LName}`))
       .map((item) => {
-        const fullName = `${item[2]} ${item[3]}`;
-        const isCurrentUser = currentUser.id === item[1];
+        const fullName = `${item.FName} ${item.LName}`;
+        const isCurrentUser = currentUser.id === item.ID;
         return {
           fullName: <BoldText>{fullName}</BoldText>,
           ...(!isCurrentUser && {
             delete: (
               <TableActionContainer>
-                <BlueText onClick={() => setSelectedUser({ fullName, id: item[1] })}>
+                <BlueText onClick={() => setSelectedUser({ fullName, id: item.ID })}>
                   Trinti
                 </BlueText>
               </TableActionContainer>
@@ -75,8 +76,8 @@ const RightsDelegations = () => {
               disabled={true}
               optionLabel={getRole}
               onChange={() => {}}
-              value={getRole(item[4])}
-              options={[!item[4]]}
+              value={getRole(item.Admin)}
+              options={[!item.Admin]}
             />
           ),
         };

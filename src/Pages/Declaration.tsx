@@ -27,6 +27,7 @@ import {
   getYearRange,
   getYesNo,
   handleSuccessToast,
+  mapArraysToJson,
 } from '../utils/functions';
 import { useBusinessPlaces, useDeclaration, useIndicators } from '../utils/hooks';
 import { slugs } from '../utils/routes';
@@ -64,7 +65,10 @@ const mapValues = (
       return prev;
     }
 
-    if (!!deficiencyData && deficiencyData.some((item) => item[1] == curr.id)) {
+    if (
+      !!deficiencyData &&
+      mapArraysToJson(mandatoryIndicators?.Trukumas).some((item) => item.Rodiklis == curr.id)
+    ) {
       prev.push({ ...curr, tableData: [] });
 
       return prev;

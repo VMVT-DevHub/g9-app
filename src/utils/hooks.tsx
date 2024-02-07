@@ -12,6 +12,7 @@ import {
   handleErrorToast,
   handleIsApproved,
   handleSuccessToast,
+  mapArraysToJson,
   mapDeclaration,
 } from './functions';
 
@@ -62,14 +63,16 @@ export const useBusinessPlaces = () => {
   const getMappedData = () => {
     if (!data?.GVTS?.Data) return [];
 
-    const mappedData = data?.GVTS?.Data?.map((item) => {
-      return {
-        id: item[0],
-        code: item[1],
-        name: item[2],
-        address: item[3],
-      };
-    }).sort((a, b) => a.name.localeCompare(b.name));
+    const mappedData = mapArraysToJson(data?.GVTS)
+      ?.map((item) => {
+        return {
+          id: item.ID,
+          code: item.JA,
+          name: item.Title,
+          address: item.Addr,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     return mappedData;
   };
@@ -88,22 +91,22 @@ export const useIndicators = (declarationType: any) => {
   );
 
   const indicatorGroupLabels = indicators?.Rodikliai?.Lookup?.Grupe || {};
-  const indicatorOptions = indicators?.Rodikliai?.Data.filter(
-    (item) => !currentDeclaration || currentDeclaration?.Rodikliai.includes(item[0]),
-  ).map((item) => {
-    return {
-      id: item[0],
-      groupId: item[1],
-      name: item[3],
-      code: item[2],
-      min: item[5],
-      max: item[6],
-      step: item[7],
-      unit: item[8],
-      digitsAfterComma: countDigitsAfterComma(item[7]),
-      description: item[9],
-    };
-  });
+  const indicatorOptions = mapArraysToJson(indicators?.Rodikliai)
+    .filter((item) => !currentDeclaration || currentDeclaration?.Rodikliai.includes(item.ID))
+    .map((item) => {
+      return {
+        id: item.ID,
+        groupId: item.Grupe,
+        name: item.Pavadinimas,
+        code: item.Kodas,
+        min: item.Min,
+        max: item.Max,
+        step: item.Step,
+        unit: item.Vnt,
+        digitsAfterComma: countDigitsAfterComma(item.Step),
+        description: item.Aprasymas,
+      };
+    });
 
   const indicatorGroups = getOptions(indicators?.Rodikliai?.Lookup?.Grupe).filter((groupId) =>
     indicatorOptions?.some((item) => item.groupId == groupId),
