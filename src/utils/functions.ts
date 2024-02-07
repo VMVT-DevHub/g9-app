@@ -183,18 +183,18 @@ export const getGroupedIndicatorValues = (values: any) => {
 export const getIndicatorLabel = (indicator: any) =>
   `${indicator?.name?.trim()}, (Kodas: ${indicator.code?.trim()})`;
 
-export const mapArraysToJson = (arrays) => {
+export const mapArraysToJson = (arrays: { Fields: any[]; Data: any[] }) => {
   const fields = arrays.Fields;
   const data = arrays.Data;
 
-  const objects: any = [];
+  const objects: any[] = [];
 
-  for (let i in data) {
-    const j = data[i],
+  for (const i in data) {
+    const value = data[i],
       object = {};
-    for (let k in fields) {
-      const l = fields[k];
-      object[l] = j[k];
+    for (const k in fields) {
+      const field = fields[k];
+      object[field] = value[k];
     }
     objects.push(object);
   }
