@@ -130,6 +130,7 @@ const Discrepancies = () => {
         </Column>
 
         <ContainersColumn>
+          <IndicatorTitle>{getIndicatorLabel(activeIndicator)}</IndicatorTitle>
           {activeIndicator?.data?.repeats && (
             <RepeatContainer unit={activeIndicator.unit} repeats={activeIndicator?.data?.repeats} />
           )}
@@ -227,6 +228,11 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+`;
+
+const IndicatorTitle = styled.div`
+  font-weight: bold;
+  font-size: 2rem;
 `;
 
 const ContainersColumn = styled.div`

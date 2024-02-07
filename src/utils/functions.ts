@@ -181,7 +181,7 @@ export const getGroupedIndicatorValues = (values: any) => {
 };
 
 export const getIndicatorLabel = (indicator: any) =>
-  `${indicator?.name?.trim()}, (Kodas: ${indicator.code?.trim()})`;
+  `${indicator?.name?.trim()}, (Kodas: ${indicator?.code?.trim()})`;
 
 export const mapArraysToJson = (arrays: any) => {
   const fields = arrays.Fields;
