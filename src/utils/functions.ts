@@ -64,55 +64,55 @@ export const getUniqueIndicatorIds = (
 
   const indicators: any = {};
 
-  discrepancies.Kartojasi.Data.forEach((item) => {
-    indicators[item[1]] = {
-      ...indicators[item[1]],
-      repeats: indicators[item[1]]?.repeats || [],
+  mapArraysToJson(discrepancies.Kartojasi).forEach((item) => {
+    indicators[item.Rodiklis] = {
+      ...indicators[item.Rodiklis],
+      repeats: indicators[item.Rodiklis]?.repeats || [],
     };
 
-    indicators[item[1]].repeats.push({
-      id: item[0],
-      date: item[2],
-      value: item[3],
-      approved: item[4],
+    indicators[item.Rodiklis].repeats.push({
+      id: item.ID,
+      date: item.Data,
+      value: item.Reiksme,
+      approved: item.Patvirtinta,
     });
   });
 
-  discrepancies.Trukumas.Data.forEach((item) => {
-    indicators[item[1]] = {
-      ...indicators[item[1]],
+  mapArraysToJson(discrepancies.Trukumas).forEach((item) => {
+    indicators[item.Rodiklis] = {
+      ...indicators[item.Rodiklis],
       lack: {
-        id: item[0],
-        approved: item[5],
-        notes: item[6] || '',
+        id: item.ID,
+        approved: item.Patvirtinta,
+        notes: item.Pastabos || '',
       },
     };
   });
 
-  discrepancies.Virsijimas.Data.forEach((item) => {
-    indicators[item[1]] = {
-      ...indicators[item[1]],
-      exceeded: indicators?.[item[1]]?.exceeded || [],
+  mapArraysToJson(discrepancies.Virsijimas).forEach((item) => {
+    indicators[item.Rodiklis] = {
+      ...indicators[item.Rodiklis],
+      exceeded: indicators?.[item.Rodiklis]?.exceeded || [],
     };
 
-    indicators[item[1]].exceeded.push({
-      id: item[0],
-      dateFrom: item[2],
-      dateTo: item[3],
-      max: item[4],
-      insignificant: item[6],
-      insignificantDescription: item[7],
-      userCount: item[8],
-      type: item[9],
-      isBelowLOQ: item[10],
-      LOQValue: item[11],
-      status: item[12],
-      approved: item[13],
-      notes: item[14],
-      startDate: item[17],
-      reason: item[15],
-      action: item[16],
-      endDate: item[18],
+    indicators[item.Rodiklis].exceeded.push({
+      id: item.ID,
+      dateFrom: item.Nuo,
+      dateTo: item.Iki,
+      max: item.Max,
+      insignificant: item.Nereiksmingas,
+      insignificantDescription: item.NereiksmApras,
+      userCount: item.Zmones,
+      type: item.Tipas,
+      isBelowLOQ: item.LOQVerte,
+      LOQValue: item.LOQReiksme,
+      status: item.Statusas,
+      approved: item.Patvirtinta,
+      notes: item.Pastabos,
+      startDate: item.Pradzia,
+      reason: item.Priezastis,
+      action: item.Veiksmas,
+      endDate: item.Pabaiga,
     });
   });
 
@@ -182,3 +182,21 @@ export const getGroupedIndicatorValues = (values: any) => {
 
 export const getIndicatorLabel = (indicator: any) =>
   `${indicator?.name?.trim()}, (Kodas: ${indicator.code?.trim()})`;
+
+export const mapArraysToJson = (arrays: any) => {
+  const fields = arrays.Fields;
+  const data = arrays.Data;
+
+  const objects: any[] = [];
+
+  for (const i in data) {
+    const value = data[i],
+      object = {};
+    for (const k in fields) {
+      const field = fields[k];
+      object[field] = value[k];
+    }
+    objects.push(object);
+  }
+  return objects;
+};
