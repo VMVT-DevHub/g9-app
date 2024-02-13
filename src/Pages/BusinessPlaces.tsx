@@ -6,7 +6,7 @@ import { useBusinessPlaces } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 
 const labels = {
-  name: 'Veiklavietės pavadinimas',
+  name: 'Pavadinimas',
   code: 'Kodas',
   address: 'Adresas',
 };
@@ -24,7 +24,7 @@ const BusinessPlaces = () => {
 
   return (
     <PageContainer>
-      <Title>Veiklavietės</Title>
+      <Title>Geriamojo vandens tiekimo sistemos</Title>
       <Table
         onClick={(businessPlace) => navigate(slugs.businessPlaceDeclarations(businessPlace.id))}
         tableData={mappedData}

@@ -66,6 +66,11 @@ class Api {
     FName: string;
     LName: string;
     Phone: string;
+    JA: {
+      ID: number;
+      Title: string;
+      Addr: string;
+    };
     Admin: Number[];
     ID: string;
   }> => {

@@ -20,7 +20,7 @@ const ProfileDropdown = () => {
       <Select onClick={() => setShowSelect(!showSelect)}>
         <SelectContainer>
           <Name>{`${user?.firstName || '-'} ${user?.lastName || '-'}`}</Name>
-          <Email>{user?.email || '-'}</Email>
+          <Email>{user?.companyName || user?.email || '-'}</Email>
         </SelectContainer>
         <DropdownIcon name={IconName.arrowDown} />
       </Select>
