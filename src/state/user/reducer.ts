@@ -8,7 +8,7 @@ export interface UserReducerProps {
 }
 
 export const emptyUser: UserReducerProps = {
-  userData: { id: '', firstName: '', lastName: '', email: '', adminRoles: [] },
+  userData: { id: '', firstName: '', lastName: '', email: '', adminRoles: [], companyName: '' },
   loggedIn: false,
 };
 

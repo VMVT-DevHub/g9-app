@@ -24,7 +24,7 @@ export enum Ids {
 
 export const routes = [
   {
-    label: 'Veiklavietės',
+    label: 'Geriamojo vandens tiekimo sistemos',
     slug: slugs.businessPlaces,
     component: <BusinessPlaces />,
   },

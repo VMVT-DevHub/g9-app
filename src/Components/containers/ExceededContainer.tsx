@@ -37,9 +37,6 @@ export const extendedExceededSchema = Yup.object().shape({
   isBelowLOQ: Yup.boolean().required(validationTexts.requireSelect),
   type: Yup.number().required(validationTexts.requireText),
   status: Yup.number().required(validationTexts.requireSelect),
-  notes: Yup.string()
-    .required(validationTexts.requireText)
-    .test('notes', validationTexts.shortDescription, (val) => val.length > 5),
   insignificant: Yup.boolean().required(validationTexts.requireSelect),
   insignificantDescription: Yup.string().when(['insignificant'], (insignificant: any, schema) => {
     if (insignificant[0]) {
@@ -57,9 +54,6 @@ export const exceededSchema = Yup.object().shape({
   reason: Yup.number().required(validationTexts.requireText),
   action: Yup.string().required(validationTexts.requireText),
   type: Yup.number().required(validationTexts.requireText),
-  notes: Yup.string()
-    .required(validationTexts.requireText)
-    .test('notes', validationTexts.shortDescription, (val) => val.length > 5),
 });
 
 const mapPayload = (item) => {
@@ -161,7 +155,7 @@ const ExceededContainer = ({
           setShowPopup(true);
         }}
       >
-        {item.notes ? 'Redaguoti' : 'Įvesti pastabas'}
+        {item.approved ? 'Redaguoti' : 'Įvesti pastabas'}
       </BlueText>
     );
   };
@@ -192,7 +186,6 @@ const ExceededContainer = ({
   };
 
   const validationSchema = isExtendedForm ? extendedExceededSchema : exceededSchema;
-
   return (
     <>
       <InfoContainer

@@ -3,6 +3,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  companyName?: string;
   adminRoles: number[];
   [key: string]: any;
 }

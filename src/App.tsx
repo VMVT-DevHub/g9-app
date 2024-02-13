@@ -16,7 +16,7 @@ const App = () => {
   const loggedIn = useAppSelector((state) => state.user.loggedIn);
 
   const { isLoading } = useQuery(['userInfo'], () => api.getUserInfo(), {
-    onSuccess: ({ Email, FName, LName, Phone, ID, Admin }) => {
+    onSuccess: ({ Email, FName, LName, Phone, ID, Admin, JA }) => {
       if (!ID) return;
 
       const userData = {
@@ -24,6 +24,7 @@ const App = () => {
         firstName: FName,
         lastName: LName,
         phone: Phone,
+        companyName: JA?.Title,
         id: ID,
         adminRoles: Admin,
       };
