@@ -8,7 +8,7 @@ import { slugs } from '../utils/routes';
 const labels = {
   name: 'Pavadinimas',
   code: 'Kodas',
-  address: 'Adresas',
+  address: 'Teritorija',
 };
 
 const BusinessPlaces = () => {

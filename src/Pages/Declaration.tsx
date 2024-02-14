@@ -54,7 +54,6 @@ const mapValues = (
   mandatoryIndicators?: any,
 ) => {
   if (!values || !indicatorOptions) return [];
-  const deficiencyData = mandatoryIndicators?.Trukumas?.Data;
 
   const groupedValues = getGroupedIndicatorValues(values);
 
@@ -66,8 +65,8 @@ const mapValues = (
     }
 
     if (
-      !!deficiencyData &&
-      mapArraysToJson(mandatoryIndicators?.Trukumas).some((item) => item.Rodiklis == curr.id)
+      !!mandatoryIndicators &&
+      mapArraysToJson(mandatoryIndicators).some((item) => item.Rodiklis == curr.id)
     ) {
       prev.push({ ...curr, tableData: [] });
 

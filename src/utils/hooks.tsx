@@ -67,7 +67,7 @@ export const useBusinessPlaces = () => {
       ?.map((item) => {
         return {
           id: item.ID,
-          code: item.JA,
+          code: item.GVTOT,
           name: item.Title,
           address: item.Addr,
         };

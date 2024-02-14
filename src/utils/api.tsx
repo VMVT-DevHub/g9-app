@@ -179,10 +179,9 @@ class Api {
 
   getMandatoryIndicators = async (id: string): Promise<ServerDiscrepancy> => {
     return this.get({
-      resource: `api/neatitiktys/${id}/Trukumas`,
+      resource: `api/deklaracija/${id}/suvedimai`,
     });
   };
-
   updateDiscrepancies = async (id: string, params: any): Promise<ServerDiscrepancy> => {
     return this.post({
       resource: `api/neatitiktys`,
