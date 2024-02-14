@@ -26,9 +26,13 @@ import Table from '../Table/Table';
 export const extendedExceededSchema = Yup.object().shape({
   startDate: Yup.string().required(validationTexts.requireText),
   endDate: Yup.string().required(validationTexts.requireText),
-  LOQValue: Yup.number()
-    .required(validationTexts.requireText)
-    .min(1, validationTexts.positiveNumber),
+
+  LOQValue: Yup.string().when(['isBelowLOQ'], (isBelowLOQ: any, schema) => {
+    if (isBelowLOQ[0]) {
+      return schema.required(validationTexts.requireText).min(1, validationTexts.positiveNumber);
+    }
+    return schema.nullable();
+  }),
   userCount: Yup.number()
     .required(validationTexts.requireText)
     .min(1, validationTexts.positiveNumber),
@@ -293,14 +297,16 @@ const ExceededContainer = ({
                         isSelected={(option) => option === values?.isBelowLOQ}
                       />
                     </Grid>
-                    <Grid $columns={1}>
-                      <NumericTextField
-                        label="Kiekybinio nustatymo ribos LOQ reikšmė"
-                        value={values?.LOQValue}
-                        error={errors?.LOQValue}
-                        onChange={(value) => setFieldValue('LOQValue', value)}
-                      />
-                    </Grid>
+                    {values?.isBelowLOQ && (
+                      <Grid $columns={1}>
+                        <NumericTextField
+                          label="Kiekybinio nustatymo ribos LOQ reikšmė"
+                          value={values?.LOQValue}
+                          error={errors?.LOQValue}
+                          onChange={(value) => setFieldValue('LOQValue', value)}
+                        />
+                      </Grid>
+                    )}
                   </>
                 )}
                 <Grid $columns={2}>
@@ -358,7 +364,7 @@ const ExceededContainer = ({
 
                 <Grid $columns={1}>
                   <TextAreaField
-                    label="Pastabos"
+                    label="Papildoma informacija"
                     value={values?.notes}
                     error={errors?.notes}
                     onChange={(value) => setFieldValue('notes', value)}
