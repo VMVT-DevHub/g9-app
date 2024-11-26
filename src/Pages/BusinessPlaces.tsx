@@ -7,7 +7,7 @@ import { slugs } from '../utils/routes';
 
 const labels = {
   name: 'Pavadinimas',
-  code: 'Kodas',
+  code: 'Teritorijos kodas',
   address: 'Teritorija',
 };
 

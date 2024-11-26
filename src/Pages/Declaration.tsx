@@ -233,7 +233,7 @@ const DeclarationPage = () => {
       <MainCard>
         <Image src="/formImage.webp" />
         <MainCardContainer>
-          <InfoTitle>Nurodykite savo veiklavietės parametrus</InfoTitle>
+          <InfoTitle>Nurodykite vandens tiekimo sistemos parametrus</InfoTitle>
           <Formik
             enableReinitialize={true}
             initialValues={formValues}
