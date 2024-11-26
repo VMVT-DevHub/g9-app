@@ -4,4 +4,5 @@ export const validationTexts = {
   shortDescription: 'Per trumpas aprašymas',
   requireSelect: 'Privalote pasirinkti',
   personalCode: 'Asmens kodas',
+  phoneNumber: 'Telefono numeris nėra tinkamas'
 };

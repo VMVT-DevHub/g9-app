@@ -152,8 +152,6 @@ const IndicatorContainer = ({
                     onChange={(value) => setFieldValue('date', value)}
                     error={errors.date}
                     placeHolder={formatDate(yearRange.minDate)}
-                    maxDate={yearRange.maxDate}
-                    minDate={yearRange.minDate}
                   />
                   {isButton ? (
                     <StyledButtonGroup
