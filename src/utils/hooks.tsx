@@ -70,6 +70,7 @@ export const useBusinessPlaces = () => {
           code: item.GVTOT,
           name: item.Title,
           address: item.Addr,
+          ja: item.JA
         };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -77,7 +78,28 @@ export const useBusinessPlaces = () => {
     return mappedData;
   };
 
-  return { data: getMappedData(), isLoading };
+  const getMappedJAData = () => {
+    if (!data?.JA?.Data) return [];
+
+    const mappedJAData = mapArraysToJson(data?.JA)
+      ?.map((item) => {
+        return {
+          id: item.ID,
+          name: item.Title,
+          address: item.Addr,
+          contactName: item.KontaktasVardas,
+          contactLastName: item.KontaktasPavarde,
+          contactEmail: item.KontaktasEmail,
+          contactPhone: item.KontaktasPhone
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return mappedJAData;
+  };
+
+
+  return { data: getMappedData(), JA_data: getMappedJAData(), isLoading };
 };
 
 export const useIndicators = (declarationType: any) => {

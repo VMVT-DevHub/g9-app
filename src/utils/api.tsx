@@ -80,6 +80,10 @@ class Api {
   };
 
   getBusinessPlaces = async (): Promise<{
+    JA: { 
+      Data: [number, string, string, string | null, string | null, string | null, string | null]; 
+      Fields: ['ID','Title','Addr','KontaktasVardas','KontaktasPavarde','KontaktasEmail',
+      'KontaktasPhone']};
     GVTS: { Data: [number, number, string, string]; Fields: ['ID', 'JA', 'Title', 'Addr'] };
   }> => {
     return this.get({
