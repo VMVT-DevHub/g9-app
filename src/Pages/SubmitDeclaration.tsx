@@ -19,6 +19,7 @@ import NumericTextField from '../Components/fields/NumericTextField';
 import InfoContainer from '../Components/layouts/InfoContainer';
 import { Form, Formik } from 'formik';
 import { handleSuccessToast } from '../utils/functions';
+import { useAppSelector } from '../state/hooks';
 
 const phoneRegExp = /^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,3})|(\(?\d{2,3}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$/
 
@@ -30,12 +31,14 @@ export const declarationSchema = Yup.object().shape({
   email: Yup.string()
     .required(validationTexts.requireText),
   phone: Yup.string().matches(phoneRegExp, validationTexts.phoneNumber)
-  .required(validationTexts.requireText),
+    .required(validationTexts.requireText),
 });
 
 const SubmitDeclaration = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const currentUser = useAppSelector((state) => state.user.userData);
+
   const { businessPlaceId = '', id = '' } = useParams();
 
   const { isLoading, isAllApproved } = useMappedIndicatorsWithDiscrepancies();
@@ -84,10 +87,10 @@ const SubmitDeclaration = () => {
   };
 
   const formValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: ''
+    firstName: currentUser.firstName || '',
+    lastName: currentUser.lastName || '',
+    email: currentUser.email || '',
+    phone: currentUser.phone as string || '',
   };
 
   return (
@@ -108,7 +111,7 @@ const SubmitDeclaration = () => {
         initialValues={formValues}
         onSubmit={handleSubmit}
         validationSchema={declarationSchema}
-        validateOnChange={false}
+        validateOnChange={true}
       >
         {({ values, errors, setFieldValue }) => {
           return( 
