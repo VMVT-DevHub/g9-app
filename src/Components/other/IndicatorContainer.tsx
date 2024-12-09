@@ -55,6 +55,14 @@ const IndicatorContainer = ({
     return <DangerText>{value}</DangerText>;
   };
 
+  const currentDate = new Date();
+  let maxAllowedDate = yearRange.maxDate;
+
+  if(yearRange.maxDate >= currentDate)
+  {
+    maxAllowedDate = currentDate;
+  }
+
   const tableData =
     indicator.tableData?.map((item) => {
       return {
@@ -152,6 +160,8 @@ const IndicatorContainer = ({
                     onChange={(value) => setFieldValue('date', value)}
                     error={errors.date}
                     placeHolder={formatDate(yearRange.minDate)}
+                    minDate={yearRange.minDate}
+                    maxDate={maxAllowedDate}
                   />
                   {isButton ? (
                     <StyledButtonGroup
@@ -163,16 +173,18 @@ const IndicatorContainer = ({
                       isSelected={(option) => option === values.value}
                     />
                   ) : (
-                    <StyledNumericTextField
-                      value={values.value}
-                      label={'Reikšmė'}
-                      name="value"
-                      onChange={(value) => setFieldValue('value', value)}
-                      rightIcon={<Unit>{indicator.unit}</Unit>}
-                      error={errors.value}
-                      disabled={disabled}
-                      digitsAfterComma={indicator.digitsAfterComma}
-                    />
+                    <NumericInputContainer >
+                      <StyledNumericTextField
+                        value={values.value}
+                        label={'Reikšmė'}
+                        name="value"
+                        onChange={(value) => setFieldValue('value', value)}
+                        error={errors.value}
+                        disabled={disabled}
+                        digitsAfterComma={indicator.digitsAfterComma}
+                      />
+                      <Unit>{indicator.unit}</Unit>
+                    </NumericInputContainer >
                   )}
 
                   <ButtonLine>
@@ -195,6 +207,18 @@ const IndicatorContainer = ({
     </>
   );
 };
+
+const NumericInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+
+  @media ${device.mobileL} {
+    max-width: 100%;
+  }
+`;
 
 const FormContainer = styled(Form)`
   display: flex;
@@ -230,11 +254,8 @@ const StyledButtonGroup = styled(ButtonsGroup)`
 `;
 
 const StyledNumericTextField = styled(NumericTextField)`
-  max-width: 300px;
-  @media ${device.mobileL} {
-    max-width: 100%;
-    width: 100%;
-  }
+  flex-grow: 1;
+  max-width: none;
 `;
 
 const StyledDatePicker = styled(DateField)`
@@ -253,9 +274,10 @@ const StyledIcon = styled(Icon)<{ $isActive: boolean }>`
 `;
 
 const Unit = styled.div`
+  position: relative;
+  top: 11px;
+  flex-shrink: 0;
   font-size: 1.4rem;
-  margin-right: 16px;
-
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 

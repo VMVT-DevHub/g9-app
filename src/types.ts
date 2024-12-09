@@ -33,12 +33,14 @@ export interface ServerDeclaration {
     'DeklarUser',
     'RedagDate',
     'RedagUser',
+    'RuosimoBudai',
   ];
   Data: any[];
   Lookup: {
     Stebesenos: { [key: string]: string };
     Statusas: { [key: string]: string };
     RuosimoMedziagos: { [key: string]: string };
+    RuosimoBudai: { [key: string]: string };
   };
 }
 

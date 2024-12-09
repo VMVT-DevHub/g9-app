@@ -109,7 +109,7 @@ const BusinessPlace = () => {
         <Title>{currentBusinessPlace?.name || '-'}</Title>
         <InfoRow
           info={[
-            currentBusinessPlace?.name,
+            currentBusinessPlace?.id,
             currentBusinessPlace?.code,
             currentBusinessPlace?.address,
           ]}

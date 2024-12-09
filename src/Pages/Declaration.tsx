@@ -46,6 +46,12 @@ export const declarationSchema = Yup.object().shape({
     }
     return schema.nullable();
   }),
+  waterPreparation: Yup.array().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
+    if (isPreparedWater?.[0]) {
+      return schema.min(1, validationTexts.requireSelect);
+    }
+    return schema.nullable();
+  }),
 });
 
 const mapValues = (
@@ -112,6 +118,9 @@ const DeclarationPage = () => {
   const waterMaterialOptions = getOptions(lookup?.RuosimoMedziagos);
   const waterMaterialLabels = lookup?.RuosimoMedziagos || {};
 
+  const waterPreparationOptions = getOptions(lookup?.RuosimoBudai);
+  const waterPreparationLabels = lookup?.RuosimoBudai || {};
+
   const { indicatorGroupLabels, indicatorGroups, indicatorOptions, indicators } = useIndicators(
     mappedDeclaration.type?.value,
   );
@@ -159,7 +168,7 @@ const DeclarationPage = () => {
     const params = {
       Kiekis: values.waterQuantity,
       Vartotojai: values.usersCount,
-      ...(values.isPreparedWater && { RuosimoMedziagos: values.waterMaterial }),
+      ...(values.isPreparedWater && { RuosimoMedziagos: values.waterMaterial, RuosimoBudai: values.waterPreparation }),
     };
 
     updateDeclarationMutation(params);
@@ -179,6 +188,7 @@ const DeclarationPage = () => {
 
   const formValues = {
     waterMaterial: mappedDeclaration?.waterMaterial || [],
+    waterPreparation: mappedDeclaration?.waterPreparation || [],
     waterQuantity: mappedDeclaration?.waterQuantity || '',
     usersCount: mappedDeclaration?.usersCount || '',
     isPreparedWater: !!mappedDeclaration?.waterMaterial,
@@ -276,20 +286,37 @@ const DeclarationPage = () => {
                         />
                       </FormLine>
                       {values.isPreparedWater && (
-                        <FormLine>
-                          <StyledFormMultiSelectField
-                            disabled={disabled}
-                            options={waterMaterialOptions}
-                            showError={false}
-                            getOptionLabel={(option) => waterMaterialLabels[option]}
-                            getOptionValue={(option) => Number(option)}
-                            values={values.waterMaterial}
-                            label={'Vandens ruošimui naudojamos medžiagos'}
-                            name="waterMaterials"
-                            onChange={(value) => setFieldValue('waterMaterial', value)}
-                            error={errors.waterMaterial}
-                          />
-                        </FormLine>
+                        <>
+                          <FormLine>
+                            <StyledFormMultiSelectField
+                              disabled={disabled}
+                              options={waterPreparationOptions}
+                              showError={false}
+                              getOptionLabel={(option) => waterPreparationLabels[option]}
+                              getOptionValue={(option) => Number(option)}
+                              values={values.waterPreparation}
+                              label={'Vandens ruošimo būdai'}
+                              name="waterPreparations"
+                              onChange={(value) => setFieldValue('waterPreparation', value)}
+                              error={errors.waterPreparation}
+                            />
+                          </FormLine>
+                          <FormLine>
+                            <StyledFormMultiSelectField
+                              disabled={disabled}
+                              options={waterMaterialOptions}
+                              showError={false}
+                              getOptionLabel={(option) => waterMaterialLabels[option]}
+                              getOptionValue={(option) => Number(option)}
+                              values={values.waterMaterial}
+                              label={'Vandens ruošimo cheminės medžiagos'}
+                              name="waterMaterials"
+                              onChange={(value) => setFieldValue('waterMaterial', value)}
+                              error={errors.waterMaterial}
+                            />
+                          </FormLine>
+                          
+                        </>
                       )}
                     </InnerContainerLine>
 

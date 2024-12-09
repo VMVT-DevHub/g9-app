@@ -8,6 +8,7 @@ import styled from 'styled-components';
 
 
 const labels = {
+  fis: 'Kodas',
   name: 'Pavadinimas',
   code: 'Teritorijos kodas',
   address: 'Teritorija',
@@ -20,7 +21,7 @@ const BusinessPlaces = () => {
   if (isLoading) return <FullscreenLoader />;
 
   const mappedData = data.map((item) => {
-    return { ...item, name: <BoldText>{item.name}</BoldText> };
+    return { ...item, fis: item.id, name: <BoldText>{item.name}</BoldText> };
   });
 
   let tablesJA = JA_data.map((JA) => {
@@ -49,13 +50,13 @@ const BusinessPlaces = () => {
 const InfoTitle = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 
 `;
 
 const TableDiv = styled.div`
   & > *:nth-child(2) {
-    margin-left: 10px;
+    margin-left: 20px;
   }
 `;
 
