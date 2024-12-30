@@ -221,3 +221,11 @@ export const useDeclaration = () => {
 
   return { mappedDeclaration, declarationLoading, lookup: data?.Lookup, disabled, canDeclare };
 };
+
+export const useJAContacts = () => {
+  const { data, isLoading } = useQuery(['jacontacts'], () => api.getJAContacts(), {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  return {data, isLoading};
+};

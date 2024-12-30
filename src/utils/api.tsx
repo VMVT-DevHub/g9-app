@@ -91,6 +91,27 @@ class Api {
     });
   };
 
+  getJAContacts = async (): Promise<{
+    ID: number;
+    KontaktaiVardas: string | null;
+    KontaktaiPavarde: string | null;
+    KontaktaiEmail: string | null;
+    KontaktaiPhone: string | null;
+    Title: string;
+    Addr: string;
+  }> => {
+    return this.get({
+      resource: 'api/ja'
+    })
+  }
+
+  updateJAContacts = async (params: any): Promise<ServerDeclaration> => {
+    return this.post({
+      resource: `api/ja`,
+      params,
+    });
+  };
+
   getUsers = async (): Promise<{
     Users: { Data: any[]; Fields: ['GVTS', 'ID', 'FName', 'LName', 'Admin', 'LastLogin'] };
   }> => {
