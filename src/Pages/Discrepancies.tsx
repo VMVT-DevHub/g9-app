@@ -130,7 +130,11 @@ const Discrepancies = () => {
         </Column>
 
         <ContainersColumn>
-          <IndicatorTitle>{getIndicatorLabel(activeIndicator)}</IndicatorTitle>
+          {activeIndicator ? (
+            <IndicatorTitle>{getIndicatorLabel(activeIndicator)}</IndicatorTitle>
+          ) : (
+            <p>Neatitikčių nerasta, galima deklaruoti.</p>
+          )}
           {activeIndicator?.data?.repeats && (
             <RepeatContainer unit={activeIndicator.unit} repeats={activeIndicator?.data?.repeats} />
           )}
