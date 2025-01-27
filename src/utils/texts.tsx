@@ -3,6 +3,6 @@ export const validationTexts = {
   positiveNumber: 'Turi būti teigiamas skaičius',
   shortDescription: 'Per trumpas aprašymas',
   requireSelect: 'Privalote pasirinkti',
-  personalCode: 'Asmens kodas',
+  personalCode: 'Asmens kodas yra klaidingas',
   phoneNumber: 'Telefono numeris nėra tinkamas'
 };

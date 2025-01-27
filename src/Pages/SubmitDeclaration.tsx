@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient  } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -20,6 +20,7 @@ import InfoContainer from '../Components/layouts/InfoContainer';
 import { Form, Formik } from 'formik';
 import { handleSuccessToast } from '../utils/functions';
 import { useAppSelector } from '../state/hooks';
+import PopUpWithTitles from '../Components/layouts/PopUpWithTitle';
 
 const phoneRegExp = /^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,3})|(\(?\d{2,3}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$/
 
@@ -38,6 +39,7 @@ const SubmitDeclaration = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const currentUser = useAppSelector((state) => state.user.userData);
+  const [showPopup, setShowPopup] = useState(false);
 
   const { businessPlaceId = '', id = '' } = useParams();
 
@@ -57,7 +59,7 @@ const SubmitDeclaration = () => {
     {
       onError: () => {},
       onSuccess: async () => {
-        handleSuccessToast();
+        handleSuccessToast('Deklaracija sėkmingai pateikta');
         await queryClient.invalidateQueries(['declaration', id]);
       },
       retry: false,
@@ -84,6 +86,7 @@ const SubmitDeclaration = () => {
     };
     await updateDeclarationMutation(params);
     await submitDeclaration();
+    setShowPopup(false);
   };
 
   const formValues = {
@@ -131,7 +134,7 @@ const SubmitDeclaration = () => {
                         error={errors.firstName}
                         name="firstName"
                         onChange={(el) => setFieldValue('firstName', el)}
-                        showError={false}
+                        showError={true}
                       />
                       <StyledTextField           
                         label={'Pavardė'}
@@ -139,7 +142,7 @@ const SubmitDeclaration = () => {
                         error={errors.lastName}
                         name="lastName"
                         onChange={(el) => setFieldValue('lastName', el)}
-                        showError={false}
+                        showError={true}
                       />
                     </FormLine>
                     <FormLine>
@@ -149,7 +152,7 @@ const SubmitDeclaration = () => {
                         error={errors.phone}
                         name="phone"
                         onChange={(el) => setFieldValue('phone', el)}
-                        showError={false}
+                        showError={true}
                       />
                       <StyledTextField           
                         label={'El. pašto adresas'}
@@ -157,7 +160,7 @@ const SubmitDeclaration = () => {
                         error={errors.email}
                         name="email"
                         onChange={(el) => setFieldValue('email', el)}
-                        showError={false}
+                        showError={true}
                       />
                     </FormLine>
                   </InnerContainerLine>
@@ -174,22 +177,43 @@ const SubmitDeclaration = () => {
                     {'Grįžti atgal'}
                   </Button>
                   <Button
+                    type="button"
+                    disabled={Object.values(errors).some(error => error)}
+                    onClick={() => setShowPopup(true)}
+                  >
+                    {'Pateikti deklaraciją'}
+                  </Button>
+                </ButtonRow>
+              </ButtonContainer>
+              <PopUpWithTitles
+                title={'Ar tikrai norite pateikti deklaraciją?'}
+                visible={showPopup}
+                onClose={() => setShowPopup(false)}
+              > 
+                <ConfirmDeclarationContainer>
+                  <p>Paspaudus mygtuką “Pateikti deklaraciją”, nebebus galima atlikti jokių papildomų pakeitimų ataskaitos turiniui.</p>
+                  <Button
                     type="submit"
                     loading={updateLoading || submitLoading}
                     disabled={updateLoading || submitLoading}                        
                   >
                     {'Pateikti deklaraciją'}
                   </Button>
-                </ButtonRow>
-              </ButtonContainer>
+                </ConfirmDeclarationContainer>
+              </PopUpWithTitles>
             </FormContainer>
+            
           );
         }}
       </Formik>
     </PageContainer>
   );
 };
-
+const ConfirmDeclarationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -203,9 +227,13 @@ const ButtonRow = styled.div`
 const StyledTextField = styled(TextField)`
   min-width: 150px;
   flex: 1;
+  padding-bottom: 32px;
   @media ${device.mobileL} {
     width: 100%;
   }
+  ${({ error }) => error && `
+    padding-bottom: 0px;
+  `}
 `;
 const StyledNumericTextField = styled(NumericTextField)`
   min-width: 150px;
