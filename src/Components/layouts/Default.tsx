@@ -4,6 +4,7 @@ import { ChildrenType } from '../../types';
 import { useWindowSize } from '../../utils/hooks';
 import MobileNavBar from '../other/MobileNavBar';
 import Navbar from '../other/Navbar';
+import Footer from '../other/Footer';
 
 export interface DefaultLayoutProps {
   children?: ChildrenType;
@@ -19,6 +20,7 @@ const DefaultLayout = ({ children }: DefaultLayoutProps) => {
       <InnerContainer>
         <Content>{children}</Content>
       </InnerContainer>
+      <Footer />
     </Container>
   );
 };
@@ -30,14 +32,16 @@ const Container = styled.div`
   background-color: white;
   flex-direction: column;
   overflow-y: auto;
-
+  min-height: 100vh;
   @media ${device.mobileL} {
     overflow-y: auto;
     height: 100svh; //fixes iOS Safari floating address bar problem
   }
 `;
 
-const InnerContainer = styled.div``;
+const InnerContainer = styled.div`
+  
+`;
 
 const Content = styled.div`
   max-width: 1250px;

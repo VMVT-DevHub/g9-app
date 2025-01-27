@@ -186,6 +186,7 @@ const DateField = ({
               setOpen(false);
             }}
             inline
+            showMonthDropdown
           ></DatePicker>
         </DateContainer>
       ) : null}
@@ -340,6 +341,7 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
   }
   input[type='number'] {
     -moz-appearance: textfield;
+    appearance: textfield;
   }
   .react-datepicker__day--selected {
     background-color: white;
@@ -393,10 +395,11 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
   }
   .react-datepicker__current-month {
     text-align: center;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     letter-spacing: 0px;
     color: #121a55;
     margin-top: 13px;
+    margin-bottom: 5px;
     text-transform: capitalize;
   }
   .react-datepicker__navigation--previous {
@@ -407,6 +410,18 @@ const Container = styled.div<{ $disabled: boolean; $bottom: boolean }>`
   }
   .react-datepicker__month-container {
     float: none;
+  }
+  .react-datepicker__month-dropdown-container {
+    font-size: 1.5rem;
+    border-radius: 10px;
+    z-index: 2;
+  }
+  .react-datepicker__month-dropdown {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    z-index: 3;
+    padding: 5px;
   }
 `;
 

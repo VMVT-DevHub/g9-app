@@ -59,7 +59,7 @@ const Container = styled.div`
 
 const DropdownIcon = styled(Icon)`
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 `;
 
 const Select = styled.div`
@@ -73,6 +73,10 @@ const Select = styled.div`
 
 const SelectContainer = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  margin-right: 10px;
 `;
 
 const Name = styled.div`

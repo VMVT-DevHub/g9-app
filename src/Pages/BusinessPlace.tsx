@@ -1,5 +1,6 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
+import axios, { AxiosError } from 'axios';
 import { personalCode } from 'lt-codes';
 import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
@@ -23,6 +24,7 @@ import { getRole } from '../utils/functions';
 import { useBusinessPlaces, useGetCurrentRoute, useIsAdmin } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
+import { handleErrorToast } from '../utils/functions';
 
 export const userSchema = Yup.object().shape({
   firstName: Yup.string().required(validationTexts.requireText),
@@ -72,6 +74,9 @@ const BusinessPlace = () => {
 
   const currentTab = useGetCurrentRoute(tabs);
 
+  interface ErrorResponse {
+    Details: string;
+  }
   useEffect(() => {
     if (!currentTab?.slug) {
       navigate(slugs.businessPlaceDeclarations(id));
@@ -92,7 +97,12 @@ const BusinessPlace = () => {
         Admin: values.role,
       }),
     {
-      onError: () => {},
+      onError: (error: AxiosError<ErrorResponse>) => {
+        if(error.response)
+        {
+          handleErrorToast(`${error.response.data.Details[0]}. Patikrinkite, ar teisingai įvedėte asmens kodą.`)
+        }
+      },
       onSuccess: async () => {
         await queryClient.invalidateQueries(['users']);
         setShowPopup(false);

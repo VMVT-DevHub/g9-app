@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import { isEmpty } from 'lodash';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useMutation } from 'react-query';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -38,7 +38,8 @@ const IndicatorContainer = ({
   const [open, setOpen] = useState(initialOpen);
   const { id = '' } = useParams();
   const [showPopup, setsSowPopup] = useState(false);
-
+  const [showForm, setShowForm] = useState(false);
+  
   const isButton = indicator.unit === 'T/N';
 
   const renderValue = (item) => {
@@ -143,6 +144,12 @@ const IndicatorContainer = ({
             <BookIcon name={IconName.bookOpen} />
             <BlueText>Skaityti rodiklio aprašymą</BlueText>
           </InfoRow>
+          <InputExpander onClick={() => setShowForm(prev => !prev)} $isActive={showForm}>
+            Pridėti reikšmę
+          <StyledIconInput $isActive={showForm} name={IconName.dropdownArrow} />
+
+          </InputExpander>
+          {showForm && 
           <Formik
             enableReinitialize={true}
             initialValues={{ date: undefined, value: undefined }}
@@ -199,7 +206,7 @@ const IndicatorContainer = ({
                 </FormContainer>
               );
             }}
-          </Formik>
+          </Formik>}
           {showTable && <Table maxHeight="300px" tableData={tableData} labels={labels} />}
           <InfoPopUp setShowPopup={setsSowPopup} showPopup={showPopup} indicator={indicator} />
         </>
@@ -227,7 +234,7 @@ const FormContainer = styled(Form)`
   align-items: flex-end;
 
   background: #f3f4f6;
-  border-radius: 4px;
+  border-radius: 0 0 4px 4px;
   padding: 12px;
   margin-bottom: 12px;
 
@@ -273,6 +280,14 @@ const StyledIcon = styled(Icon)<{ $isActive: boolean }>`
   margin-right: 12px;
 `;
 
+const StyledIconInput = styled(Icon)<{ $isActive: boolean }>`
+  position: relative;
+  transform: ${({ $isActive }) => ($isActive ? 'rotateX(180deg)' : '')};
+  color: ${({ theme }) => theme.colors.text.active};
+  font-size: 2rem;
+  top: 0px;
+`;
+
 const Unit = styled.div`
   position: relative;
   top: 11px;
@@ -307,6 +322,18 @@ const Expander = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: space-between;
   cursor: pointer;
+`;
+
+const InputExpander = styled.div<{ $isActive: boolean }>`
+  padding: 18px 14px;
+  background-color:#f3f4f6;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  gap: 5px;
+  justify-content: start;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.text.active};
+
 `;
 
 const IndicatorValue = styled.div<{ $isActive: boolean }>`
