@@ -76,6 +76,7 @@ const Table = ({
 const Tbody = styled.tbody`
   width: 100%;
   overflow-y: auto;
+  
 `;
 
 const TableContainer = styled.div<{ $maxHeight?: string }>`
@@ -91,12 +92,13 @@ const CustomTable = styled.table`
 const TH = styled.th`
   text-align: left;
   font-size: 1.4rem;
-  padding: 15px 42px 15px 16px;
+  padding: 15px 0px 15px 16px;
   font-weight: normal;
   color: ${({ theme }) => theme.colors.text.labels};
   border-bottom: 1px solid #cdd5df;
   line-height: 17px;
-  white-space: nowrap;
+  white-space: normal;
+  min-width: 250px;
   font-weight: 600;
 `;
 

@@ -65,6 +65,8 @@ const Discrepancies = () => {
 
   const hasNext =
     typeof activeIndicator?.index === 'number' && !!mappedIndicators[activeIndicator?.index + 1];
+  const hasPrevious =
+    typeof activeIndicator?.index === 'number' && !!mappedIndicators[activeIndicator?.index - 1];
 
   if (isLoading || declarationLoading) return <FullscreenLoader />;
 
@@ -152,18 +154,51 @@ const Discrepancies = () => {
             />
           )}
           {hasNext ? (
-            <Row onClick={() => setActiveIndicator(mappedIndicators[activeIndicator.index + 1])}>
-              <BackButton> {'Kitas rodiklis'}</BackButton>
-              <Icon name={IconName.arrowNext} />
+            <Row>
+              {hasPrevious && (
+                <BackButton
+                  onClick={() => setActiveIndicator(mappedIndicators[activeIndicator.index - 1])}
+                >
+                  <StyledIcon name={IconName.arrowNext} />
+                  {'Praeitas rodiklis'}
+                </BackButton>
+              )}
+              <BackButton
+                onClick={() => setActiveIndicator(mappedIndicators[activeIndicator.index + 1])}
+              >
+                {'Kitas rodiklis'}
+                <NextIcon name={IconName.arrowNext} />
+              </BackButton>
             </Row>
           ) : (
-            ''
+            <Row>
+              {hasPrevious && (
+                <BackButton
+                  onClick={() => setActiveIndicator(mappedIndicators[activeIndicator.index - 1])}
+                >
+                  <StyledIcon name={IconName.arrowNext} />
+                  {'Praeitas rodiklis'}
+                </BackButton>
+              )}
+            </Row>
           )}
         </ContainersColumn>
       </Content>
     </PageContainer>
   );
 };
+const NextIcon = styled(Icon)`
+   position: relative;
+   top: 3px;
+   left: 2px;
+`;
+const StyledIcon = styled(Icon)`
+   transform: rotate(180deg);
+   transform-origin: center;
+   position: relative;
+   top: 3px;
+   left: -2px;
+`;
 
 const BackButton = styled.div`
   font-size: 1.4rem;
@@ -173,6 +208,7 @@ const BackButton = styled.div`
 
 const Row = styled.div`
   margin-top: 16px;
+  gap: 10px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
