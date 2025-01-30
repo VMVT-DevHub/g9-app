@@ -16,6 +16,8 @@ import FullscreenLoader from '../Components/other/FullscreenLoader';
 import IndicatorContainer from '../Components/other/IndicatorContainer';
 import InfoRow from '../Components/other/InfoRow';
 import InfoTag from '../Components/other/InfoTag';
+import StatusTag from '../Components/other/StatusTag';
+import { TagColors } from '../utils/constants';
 import { CubicMeter } from '../Components/other/MeasurmentUnits';
 import { device } from '../styles';
 import { IndicatorOption } from '../types';
@@ -33,6 +35,11 @@ import { useBusinessPlaces, useDeclaration, useIndicators } from '../utils/hooks
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
 
+const statusToColor = {
+  1: TagColors.GREY,
+  2: TagColors.BLUE,
+  3: TagColors.GREEN,
+};
 export const declarationSchema = Yup.object().shape({
   waterQuantity: Yup.number()
     .min(1, validationTexts.positiveNumber)
@@ -93,6 +100,7 @@ const DeclarationPage = () => {
   const currentBusinessPlace = businessPlaces.find(
     (item) => item?.id?.toString() === businessPlaceId,
   );
+  const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
 
   const { data: values, isLoading: valuesLoading } = useQuery(
     ['values', id],
@@ -100,10 +108,10 @@ const DeclarationPage = () => {
     {
       retry: false,
       refetchOnWindowFocus: false,
+      enabled: !declarationLoading,
     },
   );
 
-  const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
   const { data: mandatoryIndicators, isFetching: mandatoryIndicatorsLoading } = useQuery(
     ['mandatory', mappedDeclaration.waterQuantity],
     () => api.getMandatoryIndicators(id),
@@ -149,12 +157,19 @@ const DeclarationPage = () => {
   };
 
   useEffect(() => {
-    if (isEmpty(values) || isEmpty(indicators) || mandatoryIndicatorsLoading) return;
+    if (!declarationLoading) {
+      setSelectedIndicators([]);
+    }
+  }, [id, declarationLoading]);
+
+  useEffect(() => {
+    if (isEmpty(values) || isEmpty(indicators) || mandatoryIndicatorsLoading || valuesLoading || 
+    declarationLoading) return;
 
     const mappedValues = mapValues(indicatorOptions, values, mandatoryIndicators);
 
     setSelectedIndicators(mappedValues);
-  }, [values, indicators, mandatoryIndicatorsLoading]);
+  }, [values, indicators, mandatoryIndicatorsLoading, mandatoryIndicators]);
 
   const filteredIndicatorOptions = indicatorOptions
     ?.filter(
@@ -216,9 +231,15 @@ const DeclarationPage = () => {
           <InfoTagRow>
             <InfoTag label={mappedDeclaration?.year} />
             <InfoTag label={mappedDeclaration?.type?.label} />
+           
           </InfoTagRow>
-          <Title>{'Deklaracija'}</Title>
-
+          <TitleContainer>
+            <Title>{'Deklaracija'}</Title>
+            <StatusTag
+                color={statusToColor[mappedDeclaration?.status]}
+                label={lookup?.Statusas[mappedDeclaration?.status] || ""}
+            />
+          </TitleContainer>
           <InfoRow
             info={[
               currentBusinessPlace?.name,
@@ -446,6 +467,15 @@ const DeclarationPage = () => {
     </PageContainer>
   );
 };
+
+
+
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
 
 const ButtonInnerRow = styled.div`
   display: flex;

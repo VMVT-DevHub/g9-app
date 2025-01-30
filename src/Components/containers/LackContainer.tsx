@@ -35,6 +35,7 @@ const LackContainer = ({ lack }: { lack: IndicatorOptionWithDiscrepancies['data'
 
   useEffect(() => {
     setNotes(lack?.notes || '');
+    setError('');
   }, [lack]);
 
   const handleUpdateRepeat = async () => {
@@ -44,7 +45,9 @@ const LackContainer = ({ lack }: { lack: IndicatorOptionWithDiscrepancies['data'
       return setError(validationTexts.shortDescription);
     }
 
+    
     await updateRepeat({ Trukumas: [mapPayload({ ...lack, notes })] });
+ 
   };
 
   return (

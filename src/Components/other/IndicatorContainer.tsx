@@ -41,7 +41,7 @@ const IndicatorContainer = ({
   const [showForm, setShowForm] = useState(false);
   
   const isButton = indicator.unit === 'T/N';
-
+  
   const renderValue = (item) => {
     if (isButton) {
       if (item.value === 0) return 'Ne';
@@ -112,7 +112,12 @@ const IndicatorContainer = ({
     ];
 
     await updateDeclarationValuesMutation(params);
-    resetForm();
+    resetForm({
+      values: {
+        date: values.date,
+      },
+    });
+    
   };
 
   const labels = {
@@ -151,7 +156,7 @@ const IndicatorContainer = ({
           </InputExpander>
           {showForm && 
           <Formik
-            enableReinitialize={true}
+            enableReinitialize={false}
             initialValues={{ date: undefined, value: undefined }}
             onSubmit={handleSubmit}
             validateOnChange={false}

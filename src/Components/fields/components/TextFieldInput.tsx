@@ -164,6 +164,7 @@ const TextInput = styled.input<{ readOnly: boolean; selectedValue: boolean }>`
 
   [type='number'] {
     -moz-appearance: textfield;
+    appearance: textfield;
   }
   ::-webkit-inner-spin-button,
   ::-webkit-outer-spin-button {
