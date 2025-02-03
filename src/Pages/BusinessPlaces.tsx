@@ -33,6 +33,8 @@ const BusinessPlaces = () => {
   const [showPopup, setShowPopup] = React.useState(false);
 
   let id = user?.companyID;
+  let hasRoles = user?.adminRoles.length > 0;
+
   const { data: contactsData, isLoading: contactsLoading } = 
   id ? useJAContacts() : { data: null, isLoading: false };
 
@@ -56,7 +58,7 @@ const BusinessPlaces = () => {
     return { ...item, fis: item.id, name: <BoldText>{item.name}</BoldText> };
   });
 
-  const showEditContactsButton = user?.companyID == JA_data[0].id ? true : false;
+  const showEditContactsButton = id !== undefined && user?.companyID == JA_data[0].id ? true : false;
 
   const tablesJA = JA_data.map((JA) => {
     const hasContactInfo = JA && JA.contactName && JA.contactLastName && JA.contactPhone && JA.contactEmail;
@@ -112,6 +114,7 @@ const BusinessPlaces = () => {
   return (
     <PageContainer>
       <Title>Geriamojo vandens tiekimo sistemos</Title>
+      {!hasRoles && <p>Jūs nesate priskirti jokiam Juridiniam Asmeniui. Susisiekite su savo administratoriumi.</p>}
       {tablesJA}
       <PopUpWithTitles
         title={'Redaguoti kontaktinius duomenis'}
