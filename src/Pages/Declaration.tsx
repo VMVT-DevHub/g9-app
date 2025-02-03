@@ -119,6 +119,8 @@ const DeclarationPage = () => {
       retry: false,
       enabled: !!mappedDeclaration?.waterQuantity,
       refetchOnWindowFocus: false,
+      cacheTime: 0,
+      staleTime: 0,
     },
   );
 
