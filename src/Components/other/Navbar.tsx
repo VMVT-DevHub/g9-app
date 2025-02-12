@@ -75,14 +75,14 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 65px;
+  height: 65px;
   width: 100%;
   border-bottom: 1px solid #cdd5df;
   padding: 20px;
 `;
 
 const InnerContainer = styled.div`
-  flex-basis: 1200px;
+  flex-basis: 1250px;
   display: flex;
   align-items: center;
 `;

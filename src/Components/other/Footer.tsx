@@ -59,7 +59,7 @@ const RightContainer = styled.div`
 `;
 
 const FooterContainer = styled.div`
-  background-color: #f9fafb;
+  background-color: white;
   border-top: 1px solid #cdd5df;
   display: flex;
   align-items: center;
@@ -67,11 +67,10 @@ const FooterContainer = styled.div`
   width: 100%;
   padding: 20px;
   margin-top: auto;
-  color: grey;
 `;
 
 const InnerContainer = styled.div`
-  flex-basis: 1200px;
+  flex-basis: 1250px;
   width: 100vw;
   display: flex;
   align-items: center;

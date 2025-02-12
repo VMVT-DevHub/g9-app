@@ -140,6 +140,7 @@ const BusinessPlace = () => {
         title={'Pridėti teisę'}
         visible={showPopup}
         onClose={() => setShowPopup(false)}
+        canClickOut={false}
       >
         <Formik
           enableReinitialize={true}
