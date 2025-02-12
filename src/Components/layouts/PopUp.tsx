@@ -3,9 +3,9 @@ import { device } from '../../styles';
 import Icon, { IconName } from '../other/Icons';
 import Modal from './Modal';
 
-const Popup = ({ children, onClose, visible = false }: any) => {
+const Popup = ({ children, onClose, visible = false, canClickOut = true }: any) => {
   return (
-    <Modal visible={visible} onClose={onClose}>
+    <Modal visible={visible} onClose={onClose} canClickOut={canClickOut}>
       <Container>
         <IconContainer onClick={onClose}>
           <StyledIcon name={IconName.close} />

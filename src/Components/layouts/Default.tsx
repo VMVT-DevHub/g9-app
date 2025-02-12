@@ -40,7 +40,7 @@ const Container = styled.div`
 `;
 
 const InnerContainer = styled.div`
-  
+
 `;
 
 const Content = styled.div`

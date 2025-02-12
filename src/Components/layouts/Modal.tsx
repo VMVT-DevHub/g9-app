@@ -7,9 +7,10 @@ interface ModalProps {
   visible: boolean;
   onClose?: () => void;
   children?: React.ReactNode;
+  canClickOut?: boolean;
 }
 
-const Modal = ({ visible, children, onClose }: ModalProps) => {
+const Modal = ({ visible, children, onClose, canClickOut }: ModalProps) => {
   const handleCloseOnEscape = useCallback(
     (event: any) => {
       if (event.key === 'Escape') {
@@ -32,7 +33,7 @@ const Modal = ({ visible, children, onClose }: ModalProps) => {
       onClick={(e) => {
         if (e.target !== e.currentTarget) return;
 
-        onClose && onClose();
+        onClose && canClickOut && onClose();
       }}
     >
       {children}

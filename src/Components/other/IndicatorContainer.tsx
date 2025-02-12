@@ -16,6 +16,7 @@ import Table from '../Table/Table';
 import { BlueText, DangerText, TableActionContainer } from './CommonStyles';
 import Icon, { IconName } from './Icons';
 import InfoPopUp from './InfoPopUp';
+import { useDeclaration } from '../../utils/hooks';
 
 const IndicatorContainer = ({
   indicator,
@@ -41,7 +42,7 @@ const IndicatorContainer = ({
   const [showForm, setShowForm] = useState(false);
   
   const isButton = indicator.unit === 'T/N';
-  
+
   const renderValue = (item) => {
     if (isButton) {
       if (item.value === 0) return 'Ne';
@@ -149,69 +150,69 @@ const IndicatorContainer = ({
             <BookIcon name={IconName.bookOpen} />
             <BlueText>Skaityti rodiklio aprašymą</BlueText>
           </InfoRow>
-          <InputExpander onClick={() => setShowForm(prev => !prev)} $isActive={showForm}>
+          {!disabled && <InputExpander onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
             Pridėti reikšmę
-          <StyledIconInput $isActive={showForm} name={IconName.dropdownArrow} />
-
-          </InputExpander>
-          {showForm && 
-          <Formik
-            enableReinitialize={false}
-            initialValues={{ date: undefined, value: undefined }}
-            onSubmit={handleSubmit}
-            validateOnChange={false}
-          >
-            {({ values, errors, setFieldValue }) => {
-              return (
-                <FormContainer>
-                  <StyledDatePicker
-                    value={values.date}
-                    label={'Mėginio paėmimo data'}
-                    name="indicator"
-                    disabled={disabled}
-                    onChange={(value) => setFieldValue('date', value)}
-                    error={errors.date}
-                    placeHolder={formatDate(yearRange.minDate)}
-                    minDate={yearRange.minDate}
-                    maxDate={maxAllowedDate}
-                  />
-                  {isButton ? (
-                    <StyledButtonGroup
-                      options={['Taip', 'Ne']}
-                      label={indicator.description}
-                      onChange={(option) => setFieldValue('value', option)}
-                      getOptionLabel={(option) => option}
+            <StyledIconInput $isActive={showForm} name={IconName.dropdownArrow} />
+          </InputExpander>}
+          {showForm && (
+            <Formik
+              enableReinitialize={false}
+              initialValues={{ date: undefined, value: undefined }}
+              onSubmit={handleSubmit}
+              validateOnChange={false}
+            >
+              {({ values, errors, setFieldValue }) => {
+                return (
+                  <FormContainer>
+                    <StyledDatePicker
+                      value={values.date}
+                      label={'Mėginio paėmimo data'}
+                      name="indicator"
                       disabled={disabled}
-                      isSelected={(option) => option === values.value}
+                      onChange={(value) => setFieldValue('date', value)}
+                      error={errors.date}
+                      placeHolder={formatDate(yearRange.minDate)}
+                      minDate={yearRange.minDate}
+                      maxDate={maxAllowedDate}
                     />
-                  ) : (
-                    <NumericInputContainer >
-                      <StyledNumericTextField
-                        value={values.value}
-                        label={'Reikšmė'}
-                        name="value"
-                        onChange={(value) => setFieldValue('value', value)}
-                        error={errors.value}
+                    {isButton ? (
+                      <StyledButtonGroup
+                        options={['Taip', 'Ne']}
+                        label={indicator.description}
+                        onChange={(option) => setFieldValue('value', option)}
+                        getOptionLabel={(option) => option}
                         disabled={disabled}
-                        digitsAfterComma={indicator.digitsAfterComma}
+                        isSelected={(option) => option === values.value}
                       />
-                      <Unit>{indicator.unit}</Unit>
-                    </NumericInputContainer >
-                  )}
+                    ) : (
+                      <NumericInputContainer>
+                        <StyledNumericTextField
+                          value={values.value}
+                          label={'Reikšmė'}
+                          name="value"
+                          onChange={(value) => setFieldValue('value', value)}
+                          error={errors.value}
+                          disabled={disabled}
+                          digitsAfterComma={indicator.digitsAfterComma}
+                        />
+                        <Unit>{indicator.unit}</Unit>
+                      </NumericInputContainer>
+                    )}
 
-                  <ButtonLine>
-                    <Button
-                      type="submit"
-                      loading={isSubmitLoading}
-                      disabled={isSubmitLoading || !values.value || !values.date || disabled}
-                    >
-                      {'Pridėti rezultatą'}
-                    </Button>
-                  </ButtonLine>
-                </FormContainer>
-              );
-            }}
-          </Formik>}
+                    <ButtonLine>
+                      <Button
+                        type="submit"
+                        loading={isSubmitLoading}
+                        disabled={isSubmitLoading || !values.value || !values.date || disabled}
+                      >
+                        {'Pridėti rezultatą'}
+                      </Button>
+                    </ButtonLine>
+                  </FormContainer>
+                );
+              }}
+            </Formik>
+          )}
           {showTable && <Table maxHeight="300px" tableData={tableData} labels={labels} />}
           <InfoPopUp setShowPopup={setsSowPopup} showPopup={showPopup} indicator={indicator} />
         </>

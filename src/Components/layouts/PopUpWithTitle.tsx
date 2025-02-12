@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import Popup from './PopUp';
 
-const PopUpWithTitles = ({ title, subTitle, children, onClose, visible = true }: any) => {
+const PopUpWithTitles = ({ title, subTitle, children, onClose, visible = true, canClickOut = true }: any) => {
   return (
-    <Popup visible={visible} onClose={onClose}>
+    <Popup visible={visible} onClose={onClose} canClickOut={canClickOut}>
       <Title>{title}</Title>
       {children}
     </Popup>
