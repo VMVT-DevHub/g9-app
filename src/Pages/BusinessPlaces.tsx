@@ -13,11 +13,10 @@ import { Form, Formik } from 'formik';
 import TextField from '../Components/fields/TextField';
 import NumericTextField from '../Components/fields/NumericTextField';
 import { handleSuccessToast } from '../utils/functions';
-import { useMutation, useQueryClient  } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import api from '../utils/api';
 import { device } from '../styles';
 import { declarationSchema } from './SubmitDeclaration';
-
 
 const labels = {
   fis: 'Kodas',
@@ -35,8 +34,9 @@ const BusinessPlaces = () => {
   let id = user?.companyID;
   let hasRoles = user?.adminRoles.length > 0;
 
-  const { data: contactsData, isLoading: contactsLoading } = 
-  id ? useJAContacts() : { data: null, isLoading: false };
+  const { data: contactsData, isLoading: contactsLoading } = id
+    ? useJAContacts()
+    : { data: null, isLoading: false };
 
   const { mutateAsync: updateJAContactsMutation, isLoading: updateLoading } = useMutation(
     (values: any) => api.updateJAContacts(values),
@@ -58,16 +58,18 @@ const BusinessPlaces = () => {
     return { ...item, fis: item.id, name: <BoldText>{item.name}</BoldText> };
   });
 
-  const showEditContactsButton = id !== undefined && user?.companyID == JA_data[0].id ? true : false;
+  const showEditContactsButton =
+    id !== undefined && user?.companyID == JA_data[0].id ? true : false;
 
   const tablesJA = JA_data.map((JA) => {
-    const hasContactInfo = JA && JA.contactName && JA.contactLastName && JA.contactPhone && JA.contactEmail;
+    const hasContactInfo =
+      JA && JA.contactName && JA.contactLastName && JA.contactPhone && JA.contactEmail;
     const contactInfo = hasContactInfo
-    ? `${JA.contactName} ${JA.contactLastName}, ${JA.contactPhone}, ${JA.contactEmail}`
-    : "Kontaktinis asmuo nenurodytas";
+      ? `${JA.contactName} ${JA.contactLastName}, ${JA.contactPhone}, ${JA.contactEmail}`
+      : 'Kontaktinis asmuo nenurodytas';
 
-    let mappedJAData = mappedData.filter((data) => data.ja == JA.id)
-    return ( 
+    let mappedJAData = mappedData.filter((data) => data.ja == JA.id);
+    return (
       <OuterTableContainer key={JA.id}>
         <TableDiv>
           <InfoTitle>{JA.name}</InfoTitle>
@@ -79,18 +81,20 @@ const BusinessPlaces = () => {
         </TableDiv>
         <OuterContactContainer>
           <ContactContainer>
-            <Label>Kontaktinis asmuo, įvykus cheminiam, biologiniam, radiologiniam ar branduoliniui incidentui:</Label>
+            <Label>
+              Kontaktinis asmuo, įvykus cheminiam, biologiniam, radiologiniam ar branduoliniui
+              incidentui:
+            </Label>
             <Label>{contactInfo}</Label>
           </ContactContainer>
-          {showEditContactsButton && <AddIndicatorButton
-            disabled={false}
-            onClick={() => setShowPopup(true)}
-          >
-            Redaguoti kontaktus
-          </AddIndicatorButton>}
+          {showEditContactsButton && (
+            <AddIndicatorButton disabled={false} onClick={() => setShowPopup(true)}>
+              Redaguoti kontaktus
+            </AddIndicatorButton>
+          )}
         </OuterContactContainer>
       </OuterTableContainer>
-    )
+    );
   });
 
   const handleSubmit = async (values: typeof formValues) => {
@@ -114,7 +118,11 @@ const BusinessPlaces = () => {
   return (
     <PageContainer>
       <Title>Geriamojo vandens tiekimo sistemos</Title>
-      {!hasRoles && <p>Jūs nesate priskirti jokiam Juridiniam Asmeniui. Susisiekite su savo administratoriumi.</p>}
+      {!hasRoles && (
+        <p>
+          Jūs nesate priskirti jokiam Juridiniam Asmeniui. Susisiekite su savo administratoriumi.
+        </p>
+      )}
       {tablesJA}
       <PopUpWithTitles
         title={'Redaguoti kontaktinius duomenis'}
@@ -122,60 +130,56 @@ const BusinessPlaces = () => {
         onClose={() => setShowPopup(false)}
       >
         <Formik
-        enableReinitialize={true}
-        initialValues={formValues}
-        onSubmit={handleSubmit}
-        validationSchema={declarationSchema}
-        validateOnChange={true}
+          enableReinitialize={true}
+          initialValues={formValues}
+          onSubmit={handleSubmit}
+          validationSchema={declarationSchema}
+          validateOnChange={true}
         >
           {({ values, errors, setFieldValue }) => {
-            return( 
+            return (
               <FormContainer>
-                    <InnerContainerLine>
-                      <FormLine>
-                        <StyledTextField           
-                          label={'Vardas'}
-                          value={values.firstName}
-                          error={errors.firstName}
-                          name="firstName"
-                          onChange={(el) => setFieldValue('firstName', el)}
-                          showError={false}
-                        />
-                        <StyledTextField           
-                          label={'Pavardė'}
-                          value={values.lastName}
-                          error={errors.lastName}
-                          name="lastName"
-                          onChange={(el) => setFieldValue('lastName', el)}
-                          showError={false}
-                        />
-                      </FormLine>
-                      <FormLine>
-                        <StyledTextField           
-                          label={'Telefono numeris'}
-                          value={values.phone}
-                          error={errors.phone}
-                          name="phone"
-                          onChange={(el) => setFieldValue('phone', el)}
-                          showError={false}
-                        />
-                        <StyledTextField           
-                          label={'El. pašto adresas'}
-                          value={values.email}
-                          error={errors.email}
-                          name="email"
-                          onChange={(el) => setFieldValue('email', el)}
-                          showError={false}
-                        />
-                      </FormLine>
-                    </InnerContainerLine>
+                <InnerContainerLine>
+                  <FormLine>
+                    <StyledTextField
+                      label={'Vardas'}
+                      value={values.firstName}
+                      error={errors.firstName}
+                      name="firstName"
+                      onChange={(el) => setFieldValue('firstName', el)}
+                      showError={false}
+                    />
+                    <StyledTextField
+                      label={'Pavardė'}
+                      value={values.lastName}
+                      error={errors.lastName}
+                      name="lastName"
+                      onChange={(el) => setFieldValue('lastName', el)}
+                      showError={false}
+                    />
+                  </FormLine>
+                  <FormLine>
+                    <StyledTextField
+                      label={'Telefono numeris'}
+                      value={values.phone}
+                      error={errors.phone}
+                      name="phone"
+                      onChange={(el) => setFieldValue('phone', el)}
+                      showError={false}
+                    />
+                    <StyledTextField
+                      label={'El. pašto adresas'}
+                      value={values.email}
+                      error={errors.email}
+                      name="email"
+                      onChange={(el) => setFieldValue('email', el)}
+                      showError={false}
+                    />
+                  </FormLine>
+                </InnerContainerLine>
                 <ButtonContainer>
                   <ButtonRow>
-                    <Button
-                      type="submit"
-                      loading={updateLoading}
-                      disabled={updateLoading}                        
-                    >
+                    <Button type="submit" loading={updateLoading} disabled={updateLoading}>
                       {'Atnaujinti kontaktus'}
                     </Button>
                   </ButtonRow>
@@ -191,7 +195,7 @@ const BusinessPlaces = () => {
 
 const AddIndicatorButton = styled.div<{ disabled: boolean }>`
   border: 1px dashed #e5e7eb;
-  width:20%;
+  width: 20%;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
   height: 56px;
@@ -211,14 +215,13 @@ const ContactContainer = styled.div`
 `;
 
 const OuterTableContainer = styled.div`
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 `;
 const OuterContactContainer = styled.div`
   display: flex;
   margin-left: 20px;
-
 `;
 const Label = styled.div`
   font-size: 1.6rem;
@@ -230,7 +233,6 @@ const InfoTitle = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 20px;
-
 `;
 
 const TableDiv = styled.div`
