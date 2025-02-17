@@ -19,12 +19,14 @@ import { slugs } from '../utils/routes';
 export enum IndicatorStatus {
   APPROVED = 'APPROVED',
   ACTIVE = 'ACTIVE',
+  ACTIVE_APPROVED = 'ACTIVE_APPROVED',
   NOT_CHECKED = 'NOT_CHECKED',
 }
 
 const indicatorColors = {
   [IndicatorStatus.APPROVED]: theme.colors.success,
   [IndicatorStatus.ACTIVE]: theme.colors.text.active,
+  [IndicatorStatus.ACTIVE_APPROVED]: theme.colors.text.active,
   [IndicatorStatus.NOT_CHECKED]: theme.colors.grey,
 };
 
@@ -100,14 +102,16 @@ const Discrepancies = () => {
         <Column>
           {mappedIndicators.map((indicator, index) => {
             const handleGetStatus = (indicator) => {
-              if (indicator.id === activeIndicator?.id) {
-                return IndicatorStatus.ACTIVE;
-              }
-
               const isApproved = handleIsApproved(indicator);
-
-              if (isApproved) {
-                return IndicatorStatus.APPROVED;
+              if (indicator.id === activeIndicator?.id) {
+                if (isApproved) {
+                  return IndicatorStatus.ACTIVE_APPROVED;
+                }
+                return IndicatorStatus.ACTIVE;
+              } else {
+                if (isApproved) {
+                  return IndicatorStatus.APPROVED;
+                }
               }
 
               return IndicatorStatus.NOT_CHECKED;
@@ -116,6 +120,7 @@ const Discrepancies = () => {
             const status = handleGetStatus(indicator);
 
             const isApproved = status === IndicatorStatus.APPROVED;
+            const isActiveApproved = status === IndicatorStatus.ACTIVE_APPROVED;
 
             return (
               <IndicatorLine
@@ -124,6 +129,7 @@ const Discrepancies = () => {
               >
                 <Circle $status={status}>
                   {isApproved && <Verified name={IconName.checkMark} />}
+                  {isActiveApproved && <Verified name={IconName.checkMark} />}
                 </Circle>
                 <IndicatorText $status={status}>{getIndicatorLabel(indicator)}</IndicatorText>
               </IndicatorLine>

@@ -6,6 +6,7 @@ import { IoCloseOutline } from 'react-icons/io5';
 import { MdExitToApp, MdKeyboardArrowDown, MdUnfoldMore } from 'react-icons/md';
 import { RiArrowDownSFill } from 'react-icons/ri';
 import { SlBookOpen } from 'react-icons/sl';
+import { FaHome } from "react-icons/fa";
 
 export interface IconProps {
   name: IconName | string;
@@ -26,6 +27,7 @@ export enum IconName {
   info = 'info',
   arrowNext = 'arrowNext',
   bookOpen = 'bookOpen',
+  home = 'home'
 }
 
 const Icon = ({ name, className }: IconProps) => {
@@ -40,6 +42,8 @@ const Icon = ({ name, className }: IconProps) => {
       return <IoMdCheckmark className={className} />;
     case IconName.calendar:
       return <IoMdCalendar className={className} />;
+    case IconName.home:
+      return <FaHome  className={className}/>
     case IconName.dropdownArrow:
       return <MdKeyboardArrowDown className={className} />;
     case IconName.deleteItem:

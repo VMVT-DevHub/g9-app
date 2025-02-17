@@ -5,6 +5,7 @@ import { useWindowSize } from '../../utils/hooks';
 import MobileNavBar from '../other/MobileNavBar';
 import Navbar from '../other/Navbar';
 import Footer from '../other/Footer';
+import Breadcrumbs from '../other/Breadcrumb';
 
 export interface DefaultLayoutProps {
   children?: ChildrenType;
@@ -18,7 +19,10 @@ const DefaultLayout = ({ children }: DefaultLayoutProps) => {
       {!isMobile ? <Navbar /> : <MobileNavBar />}
 
       <InnerContainer>
-        <Content>{children}</Content>
+        <Content>
+          <Breadcrumbs />
+          {children}
+        </Content>
       </InnerContainer>
       <Footer />
     </Container>

@@ -230,11 +230,6 @@ const DeclarationPage = () => {
     <PageContainer>
       <TopRow>
         <div>
-          <InfoTagRow>
-            <InfoTag label={mappedDeclaration?.year} />
-            <InfoTag label={mappedDeclaration?.type?.label} />
-           
-          </InfoTagRow>
           <TitleContainer>
             <Title>{'Deklaracija'}</Title>
             <StatusTag
@@ -242,13 +237,6 @@ const DeclarationPage = () => {
                 label={lookup?.Statusas[mappedDeclaration?.status] || ""}
             />
           </TitleContainer>
-          <InfoRow
-            info={[
-              currentBusinessPlace?.name,
-              currentBusinessPlace?.code,
-              currentBusinessPlace?.address,
-            ]}
-          />
         </div>
         {canDeclare ? (
           <FlexItem>

@@ -98,17 +98,6 @@ const SubmitDeclaration = () => {
 
   return (
     <PageContainer>
-      <div>
-        <Title>{'Patvirtinti deklaracija'}</Title>
-
-        <InfoRow info={['Pateikite užpildytą geriamo vandens stebėsenos duomenų deklaraciją']} />
-      </div>
-
-      <Notification
-        description={
-          'Paspaudus mygtuką “Pateikti deklaraciją”, nebebus galima atlikti jokių papildomų pakeitimų ataskaitos turiniui.'
-        }
-      />
       <Formik
         enableReinitialize={true}
         initialValues={formValues}
@@ -117,8 +106,42 @@ const SubmitDeclaration = () => {
         validateOnChange={true}
       >
         {({ values, errors, setFieldValue }) => {
-          return( 
+          return (
             <FormContainer>
+              <TitleContainer>
+                <div>
+                  <Title>{'Patvirtinti deklaraciją'}</Title>
+                  <InfoRow
+                    info={['Pateikite užpildytą geriamo vandens stebėsenos duomenų deklaraciją']}
+                  />
+                </div>
+
+                <ButtonContainer>
+                  <ButtonRow>
+                    <Button
+                      disabled={updateLoading || submitLoading}
+                      onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
+                      variant={ButtonColors.BACK}
+                      type="button"
+                    >
+                      {'Grįžti atgal'}
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={Object.values(errors).some((error) => error)}
+                      onClick={() => setShowPopup(true)}
+                    >
+                      {'Pateikti deklaraciją'}
+                    </Button>
+                  </ButtonRow>
+                </ButtonContainer>
+              </TitleContainer>
+
+              <Notification
+                description={
+                  'Paspaudus mygtuką “Pateikti deklaraciją”, nebebus galima atlikti jokių papildomų pakeitimų ataskaitos turiniui.'
+                }
+              />
               <InfoContainer
                 title={'Kontaktinis asmuo'}
                 description={
@@ -128,7 +151,7 @@ const SubmitDeclaration = () => {
                 <Column>
                   <InnerContainerLine>
                     <FormLine>
-                      <StyledTextField           
+                      <StyledTextField
                         label={'Vardas'}
                         value={values.firstName}
                         error={errors.firstName}
@@ -136,7 +159,7 @@ const SubmitDeclaration = () => {
                         onChange={(el) => setFieldValue('firstName', el)}
                         showError={true}
                       />
-                      <StyledTextField           
+                      <StyledTextField
                         label={'Pavardė'}
                         value={values.lastName}
                         error={errors.lastName}
@@ -146,7 +169,7 @@ const SubmitDeclaration = () => {
                       />
                     </FormLine>
                     <FormLine>
-                      <StyledTextField           
+                      <StyledTextField
                         label={'Telefono numeris'}
                         value={values.phone}
                         error={errors.phone}
@@ -154,7 +177,7 @@ const SubmitDeclaration = () => {
                         onChange={(el) => setFieldValue('phone', el)}
                         showError={true}
                       />
-                      <StyledTextField           
+                      <StyledTextField
                         label={'El. pašto adresas'}
                         value={values.email}
                         error={errors.email}
@@ -166,49 +189,39 @@ const SubmitDeclaration = () => {
                   </InnerContainerLine>
                 </Column>
               </InfoContainer>
-              <ButtonContainer>
-                <ButtonRow>
-                  <Button
-                    disabled={updateLoading || submitLoading}
-                    onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
-                    variant={ButtonColors.BACK}
-                    type="button"
-                  >
-                    {'Grįžti atgal'}
-                  </Button>
-                  <Button
-                    type="button"
-                    disabled={Object.values(errors).some(error => error)}
-                    onClick={() => setShowPopup(true)}
-                  >
-                    {'Pateikti deklaraciją'}
-                  </Button>
-                </ButtonRow>
-              </ButtonContainer>
+
               <PopUpWithTitles
                 title={'Ar tikrai norite pateikti deklaraciją?'}
                 visible={showPopup}
                 onClose={() => setShowPopup(false)}
-              > 
+              >
                 <ConfirmDeclarationContainer>
-                  <p>Paspaudus mygtuką “Pateikti deklaraciją”, nebebus galima atlikti jokių papildomų pakeitimų ataskaitos turiniui.</p>
+                  <p>
+                    Paspaudus mygtuką “Pateikti deklaraciją”, nebebus galima atlikti jokių papildomų
+                    pakeitimų ataskaitos turiniui.
+                  </p>
                   <Button
                     type="submit"
                     loading={updateLoading || submitLoading}
-                    disabled={updateLoading || submitLoading}                        
+                    disabled={updateLoading || submitLoading}
                   >
                     {'Pateikti deklaraciją'}
                   </Button>
                 </ConfirmDeclarationContainer>
               </PopUpWithTitles>
             </FormContainer>
-            
           );
         }}
       </Formik>
     </PageContainer>
   );
 };
+
+const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`
 const ConfirmDeclarationContainer = styled.div`
   display: flex;
   flex-direction: column;
