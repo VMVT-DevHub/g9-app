@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { JSX, useEffect } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import styled from 'styled-components';
 import FieldWrapper from './components/FieldWrapper';

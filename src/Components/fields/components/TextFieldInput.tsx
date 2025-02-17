@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import styled from 'styled-components';
+
 export interface TextFieldProps {
   value?: string | number;
   name?: string;

@@ -1,4 +1,5 @@
 import { isEmpty, map } from 'lodash';
+import { JSX } from 'react';
 import styled from 'styled-components';
 import { device } from '../../styles';
 import FullscreenLoader from '../other/FullscreenLoader';
