@@ -3,6 +3,7 @@ import MultiTextField from './components/MultiTextFieldInput';
 import OptionsContainer from './components/OptionsContainer';
 import { filterSelectedOptions, handleRemove } from './utils/functions';
 import { useSelectData } from './utils/hooks';
+import { JSX } from 'react';
 
 export interface SelectOption {
   id?: string;

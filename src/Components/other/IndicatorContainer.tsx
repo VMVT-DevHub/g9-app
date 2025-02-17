@@ -131,7 +131,12 @@ const IndicatorContainer = ({
 
   return (
     <>
-      <Expander onClick={() => setOpen(!open)} $isActive={open}>
+      <Expander
+        onClick={() => {
+          setOpen(!open), setShowForm(open);
+        }}
+        $isActive={open}
+      >
         <TitleContainer>
           <IndicatorValue $isActive={open}>
             {`${getIndicatorLabel(indicator)} ${tableData.length ? `(${tableData.length})` : ''}`}{' '}
@@ -150,10 +155,12 @@ const IndicatorContainer = ({
             <BookIcon name={IconName.bookOpen} />
             <BlueText>Skaityti rodiklio aprašymą</BlueText>
           </InfoRow>
-          {!disabled && <InputExpander onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
-            Pridėti reikšmę
-            <StyledIconInput $isActive={showForm} name={IconName.dropdownArrow} />
-          </InputExpander>}
+          {!disabled && (
+            <InputExpander onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
+              Pridėti reikšmę
+              <StyledIconInput $isActive={showForm} name={IconName.dropdownArrow} />
+            </InputExpander>
+          )}
           {showForm && (
             <Formik
               enableReinitialize={false}

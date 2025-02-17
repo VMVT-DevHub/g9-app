@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { JSX } from 'react';
+
 import { theme } from '../../styles';
 import Loader from '../other/Loader';
 

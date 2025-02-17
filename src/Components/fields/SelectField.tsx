@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import styled from 'styled-components';
 import Icon, { IconName } from '../other/Icons';
 import FieldWrapper from './components/FieldWrapper';

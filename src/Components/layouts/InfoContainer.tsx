@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { device } from '../../styles';
+import { ChildrenType } from '../../types';
 
 export interface LoginLayoutProps {
-  children?: React.ReactNode;
+  children?: ChildrenType;
   title: string;
   description: string;
 }
