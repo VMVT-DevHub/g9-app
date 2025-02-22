@@ -2,7 +2,7 @@ export const manifestForPlugIn = {
   registerType: 'prompt',
   includeAssests: ['favicon.ico', 'apple-touc-icon.png', 'masked-icon.svg'],
   workbox: {
-    navigateFallbackDenylist: [/^\/(api|auth|swagger)\/.*/],
+    navigateFallbackDenylist: [/^\/(api|auth|swagger|files)\/.*/],
   },
   manifest: {
     name: 'G9 App',
