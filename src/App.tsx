@@ -50,6 +50,7 @@ const App = () => {
         </Route>
         <Route path="/api/*" element={null} />
         <Route path="/auth/*" element={null} />
+        <Route path="/files/*" element={null} />
         <Route path="/swagger/*" element={null} />
         <Route path="*" element={<Navigate to={loggedIn ? slugs.businessPlaces : slugs.login} />} />
       </Routes>
