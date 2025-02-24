@@ -86,6 +86,7 @@ export interface IndicatorOptionWithDiscrepancies {
   max: number;
   step: number;
   unit: string;
+  isDeclared: boolean;
   data: {
     repeats: {
       id: any;

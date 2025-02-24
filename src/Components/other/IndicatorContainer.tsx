@@ -157,8 +157,8 @@ const IndicatorContainer = ({
           </InfoRow>
           {!disabled && (
             <InputExpander onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
-              Pridėti reikšmę
-              <StyledIconInput $isActive={showForm} name={IconName.dropdownArrow} />
+              <StyledIconInput $isActive={showForm} name={IconName.add} />
+              Pridėti reikšmę 
             </InputExpander>
           )}
           {showForm && (
@@ -295,10 +295,10 @@ const StyledIcon = styled(Icon)<{ $isActive: boolean }>`
 
 const StyledIconInput = styled(Icon)<{ $isActive: boolean }>`
   position: relative;
-  transform: ${({ $isActive }) => ($isActive ? 'rotateX(180deg)' : '')};
   color: ${({ theme }) => theme.colors.text.active};
-  font-size: 2rem;
-  top: 0px;
+  font-size: 1.2rem;
+  font-weight: 400;
+  top: 4px;
 `;
 
 const Unit = styled.div`

@@ -86,6 +86,7 @@ const ExceededContainer = ({
   yearRange,
   description,
   groupId,
+  isDeclared,
 }: {
   description: string;
   yearRange: any;
@@ -93,6 +94,7 @@ const ExceededContainer = ({
   unit: string;
   options?: ServerDiscrepancy['Virsijimas']['Lookup'];
   groupId?: any;
+  isDeclared: boolean;
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [currentExceeded, setCurrentExceeded] = useState<Exceeded | any>({});
@@ -150,7 +152,7 @@ const ExceededContainer = ({
         </LoaderComponent>
       );
     }
-
+    if(isDeclared) return;
     return (
       <BlueText
         disabled={disabled}
@@ -182,41 +184,113 @@ const ExceededContainer = ({
 
     handleUpdateExceeded(values);
   };
+  const exceededMapValues = exceeded?.map((item) => {
+    return (
+      <ExceededMapContainer key = {item.id}>
+        <p>
+          <b>Maksimali reikšmė:</b> {item.max}
+        </p>
+        {item.insignificant && (
+          <>
+            <p>
+              <b>Ar viršijimas nereikšmingas:</b> {item.insignificant ? 'Taip' : 'Ne'}
+            </p>
+            <p>{item.insignificantDescription}</p>
+          </>
+        )}
+        {item.userCount && (
+          <>
+            <p>
+              <b>Viršijimo paveiktų žmonių skaičius:</b> {item.userCount}
+            </p>
+          </>
+        )}
+        {item.type && (
+          <>
+            <p>
+              <b>Mėginių ėmimo vieta:</b> {typeLabels && typeLabels[item.type]}
+            </p>
+          </>
+        )}
+        {item.isBelowLOQ && (
+          <>
+            <p>
+              <b>Ar nustatyta vertė žemiau nei LOQ?:</b> {item.isBelowLOQ ? 'Taip,' : 'Ne'}{' '}
+              {item.LOQValue && 'vertė: ' + item.LOQValue}
+            </p>
+          </>
+        )}
+        {item.reason && (
+          <>
+            <p>
+              <b>Priežastis:</b> {reasonLabels && reasonLabels[item.reason]}
+            </p>
+          </>
+        )}
+        {item.action && (
+          <>
+            <p>
+              <b>Taisomasis veiksmas:</b> {actionLabels && actionLabels[item.action]}
+            </p>
+          </>
+        )}
+        {item.startDate && (
+          <>
+            <p>
+              <b>Taisomojo veiksmo trukmė:</b> nuo {item.startDate} iki {item.endDate}
+            </p>
+          </>
+        )}
+        {item.status && (
+          <>
+            <p>
+              <b>Stebėjimo statusas:</b> {statusLabels && statusLabels[item.status]}
+            </p>
+          </>
+        )}
+      </ExceededMapContainer>
+    );
+  });
   const labels = {
     dateFrom: 'Data nuo',
     dateTo: 'Data iki',
     max: isButton ? description : 'Maksimali reikšmė',
     edit: '',
   };
-
   const validationSchema = isExtendedForm ? extendedExceededSchema : exceededSchema;
   return (
     <>
       <InfoContainer
         title={'Viršijamos reikšmės'}
         description={
-          'Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas. Įveskite pastabas.'
+          isDeclared
+            ? 'Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas.'
+            : 'Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas. Įveskite pastabas.'
         }
       >
         <Column>
           <ButtonContainer>
             <div>
-              <Button
-                disabled={disabled || buttonLoading}
-                loading={buttonLoading}
-                height={40}
-                variant={ButtonColors.ALL}
-                onClick={() => setShowPopup(true)}
-              >
-                Įvesti visiems
-              </Button>
+              {!isDeclared && (
+                <Button
+                  disabled={disabled || buttonLoading}
+                  loading={buttonLoading}
+                  height={40}
+                  variant={ButtonColors.ALL}
+                  onClick={() => setShowPopup(true)}
+                >
+                  Įvesti visiems
+                </Button>
+              )}
             </div>
           </ButtonContainer>
           <TableContainer>
             <StyledTable tableData={mapValues} labels={labels} />
           </TableContainer>
         </Column>
+        
       </InfoContainer>
+      {isDeclared && exceededMapValues}
       <PopUpWithTitles
         title={'Įvesti pastabas'}
         visible={showPopup}
@@ -390,9 +464,12 @@ const ExceededContainer = ({
     </>
   );
 };
+const ExceededMapContainer = styled.div`
+  margin: 0;
+`;
 
 const StyledTable = styled(Table)`
-  width: 550px;
+  max-width: 550px;
 
   @media ${device.mobileL} {
     width: 100%;

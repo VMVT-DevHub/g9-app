@@ -154,6 +154,7 @@ export const mapDeclaration = (declaration?: ServerDeclaration) => {
     usersCount: declaration?.Data[0]?.[6],
     waterMaterial: declaration?.Data?.[0]?.[7],
     waterPreparation: declaration?.Data?.[0]?.[16],
+    isWaterBeingPrepared: declaration?.Data?.[0]?.[17],
   };
 };
 

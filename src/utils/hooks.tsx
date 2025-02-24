@@ -218,8 +218,9 @@ export const useDeclaration = () => {
 
   //check if the form can be declared
   const canDeclare = mappedDeclaration.status == 2 && mappedDeclaration?.usersCount;
+  const isDeclared = mappedDeclaration.status == 3;
 
-  return { mappedDeclaration, declarationLoading, lookup: data?.Lookup, disabled, canDeclare };
+  return { mappedDeclaration, declarationLoading, lookup: data?.Lookup, disabled, canDeclare, isDeclared };
 };
 
 export const useJAContacts = () => {

@@ -33,16 +33,16 @@ const indicatorColors = {
 const Discrepancies = () => {
   const { businessPlaceId = '', id = '' } = useParams();
 
-  const { canDeclare, declarationLoading, mappedDeclaration } = useDeclaration();
+  const { canDeclare, isDeclared, declarationLoading, mappedDeclaration } = useDeclaration();
 
   const yearRange = getYearRange(mappedDeclaration?.year);
 
   useEffect(() => {
     if (declarationLoading) return;
 
-    if (!canDeclare) {
-      navigate(slugs.declaration(businessPlaceId, id));
-    }
+    // if (!canDeclare) {
+    //   navigate(slugs.declaration(businessPlaceId, id));
+    // }
   }, [declarationLoading]);
 
   const navigate = useNavigate();
@@ -71,14 +71,16 @@ const Discrepancies = () => {
     typeof activeIndicator?.index === 'number' && !!mappedIndicators[activeIndicator?.index - 1];
 
   if (isLoading || declarationLoading) return <FullscreenLoader />;
-
   return (
     <PageContainer>
       <TopRow>
         <div>
           <Title>{'Neatitikčių peržiūra ir patvirtinimas'}</Title>
-
-          <InfoRow info={['Prašome pateikite pastabas prie rodiklių kurie viršija ribas.']} />
+          {canDeclare ? (
+            <InfoRow info={['Prašome pateikite pastabas prie rodiklių kurie viršija ribas.']} />
+          ) : (
+            <InfoRow info={['Žemiau matomos deklaracijos metu pateiktos pastabos.']} />
+          )}
         </div>
         <ButtonRow>
           <Button
@@ -88,13 +90,15 @@ const Discrepancies = () => {
           >
             {'Grįžti atgal'}
           </Button>
-          {isAllApproved && (
+          {isAllApproved && canDeclare ? (
             <Button
               onClick={() => navigate(slugs.submitDeclaration(businessPlaceId, id))}
               type="button"
             >
               {'Deklaruoti'}
             </Button>
+          ) : (
+            ''
           )}
         </ButtonRow>
       </TopRow>
@@ -144,10 +148,16 @@ const Discrepancies = () => {
             <p>Neatitikčių nerasta, galima deklaruoti.</p>
           )}
           {activeIndicator?.data?.repeats && (
-            <RepeatContainer unit={activeIndicator.unit} repeats={activeIndicator?.data?.repeats} />
+            <RepeatContainer
+              unit={activeIndicator.unit}
+              repeats={activeIndicator?.data?.repeats}
+              isDeclared={isDeclared}
+            />
           )}
 
-          {activeIndicator?.data?.lack && <LackContainer lack={activeIndicator?.data?.lack} />}
+          {activeIndicator?.data?.lack && (
+            <LackContainer lack={activeIndicator?.data?.lack} isDeclared={isDeclared} />
+          )}
 
           {activeIndicator?.data?.exceeded && (
             <ExceededContainer
@@ -157,6 +167,7 @@ const Discrepancies = () => {
               unit={activeIndicator.unit}
               exceeded={activeIndicator?.data?.exceeded}
               description={activeIndicator.description}
+              isDeclared={isDeclared}
             />
           )}
           {hasNext ? (
@@ -193,6 +204,12 @@ const Discrepancies = () => {
     </PageContainer>
   );
 };
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const NextIcon = styled(Icon)`
    position: relative;
    top: 3px;
@@ -235,7 +252,7 @@ const IndicatorText = styled.div<{ $status: IndicatorStatus }>`
 
 const TopRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
   justify-content: space-between;
 `;
@@ -273,7 +290,13 @@ const Circle = styled.div<{ $status: IndicatorStatus }>`
 const Column = styled.div`
   display: flex;
   flex-direction: column;
+  max-height: 400px;
+  width: 40%;
+  overflow-y: auto;
   gap: 20px;
+  @media ${device.mobileL} {
+    width: 100%;
+  }
 `;
 
 const IndicatorTitle = styled.div`
