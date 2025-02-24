@@ -229,11 +229,12 @@ const ConfirmDeclarationContainer = styled.div`
 `;
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 `;
 
 const ButtonRow = styled.div`
   display: flex;
+  align-items: baseline;
   gap: 16px;
 `;
 

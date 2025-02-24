@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import Button from '../Components/buttons/Button';
+import Button, { ButtonColors } from '../Components/buttons/Button';
 import ButtonsGroup from '../Components/buttons/ButtonGroup';
 import MultiSelect from '../Components/fields/MultiSelect';
 import NumericTextField from '../Components/fields/NumericTextField';
@@ -153,10 +153,11 @@ const DeclarationPage = () => {
         }
 
         return item;
-      }),
+      })
     );
     handleSuccessToast();
   };
+
 
   useEffect(() => {
     if (!declarationLoading) {
@@ -185,11 +186,13 @@ const DeclarationPage = () => {
     const params = {
       Kiekis: values.waterQuantity,
       Vartotojai: values.usersCount,
+      VanduoRuosiamas: values.isPreparedWater,
       ...(values.isPreparedWater && { RuosimoMedziagos: values.waterMaterial, RuosimoBudai: values.waterPreparation }),
     };
 
     updateDeclarationMutation(params);
   };
+
 
   const { mutateAsync: updateDeclarationMutation, isLoading: isSubmitLoading } = useMutation(
     (values: any) => api.updateDeclaration(id, values),
@@ -208,7 +211,7 @@ const DeclarationPage = () => {
     waterPreparation: mappedDeclaration?.waterPreparation || [],
     waterQuantity: mappedDeclaration?.waterQuantity || '',
     usersCount: mappedDeclaration?.usersCount || '',
-    isPreparedWater: !!mappedDeclaration?.waterMaterial,
+    isPreparedWater: !!mappedDeclaration?.isWaterBeingPrepared || '',
   };
 
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
@@ -238,18 +241,28 @@ const DeclarationPage = () => {
             />
           </TitleContainer>
         </div>
-        {canDeclare ? (
           <FlexItem>
+            <Button
+              onClick={() => navigate(slugs.businessPlaceDeclarations(businessPlaceId))}
+              variant={ButtonColors.BACK}
+              type="button"
+            >
+              {'Grįžti atgal'}
+          </Button>
+          {canDeclare ? (
             <Button
               onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
               type="button"
             >
               {'Tikrinti neatitikimus'}
             </Button>
+          ) : ( disabled && <Button
+            onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
+            type="button"
+          >
+            {'Deklaruoti neatitikimai'}
+          </Button>)}
           </FlexItem>
-        ) : (
-          ''
-        )}
       </TopRow>
       <MainCard>
         <Image src="/formImage.webp" />
@@ -373,6 +386,7 @@ const DeclarationPage = () => {
             <Column>
               {selectedIndicators
                 .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
+                .sort((a, b) => a.name.localeCompare(b.name))
                 .map((indicator, index) => {
                   const initialOpen = indicator.initialOpen || index === 0;
 
@@ -550,6 +564,7 @@ const ButtonLine = styled.div`
 
 const FlexItem = styled.div`
   display: flex;
+  gap: 16px;
 `;
 const ButtonRow = styled.div`
   display: flex;
@@ -666,7 +681,7 @@ const Column = styled.div`
 
 const TopRow = styled.div`
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   flex-wrap: wrap;
 `;

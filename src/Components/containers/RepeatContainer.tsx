@@ -24,9 +24,11 @@ const mapPayload = (item) => {
 const RepeatContainer = ({
   repeats,
   unit,
+  isDeclared,
 }: {
   repeats: IndicatorOptionWithDiscrepancies['data']['repeats'];
   unit: string;
+  isDeclared: IndicatorOptionWithDiscrepancies['isDeclared'];
 }) => {
   const { id = '' } = useParams();
   const { handleSuccess } = useSuccess();
@@ -94,12 +96,13 @@ const RepeatContainer = ({
       }) || [];
 
   const isAllApproved = repeats.filter((item) => item.approved).length === repeats.length;
-
   return (
     <InfoContainer
       title={'Tyrimų datos sutampa'}
       description={
-        'Ištrinkite iš reikšmių lentelės perteklinius duomenis arba patvirtinkite, kad duomenys suvesti teisingai.'
+        !isDeclared
+          ? 'Ištrinkite iš reikšmių lentelės perteklinius duomenis arba patvirtinkite, kad duomenys suvesti teisingai.'
+          : 'Pakartotinai suvesti duomenys buvo patvirtinti.'
       }
     >
       <Column>
@@ -127,7 +130,7 @@ const RepeatContainer = ({
 };
 
 const StyledTable = styled(Table)`
-  width: 550px;
+  max-width: 550px;
 `;
 
 const LoaderComponent = styled.div`

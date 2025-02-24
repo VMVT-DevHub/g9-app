@@ -115,16 +115,27 @@ const BusinessPlace = () => {
 
   return (
     <PageContainer>
-      <div>
-        <Title>{currentBusinessPlace?.name || '-'}</Title>
-        <InfoRow
-          info={[
-            currentBusinessPlace?.id,
-            currentBusinessPlace?.code,
-            currentBusinessPlace?.address,
-          ]}
-        />
-      </div>
+      <TopRow>
+        <div>
+          <Title>{currentBusinessPlace?.name || '-'}</Title>
+          <InfoRow
+            info={[
+              currentBusinessPlace?.id,
+              currentBusinessPlace?.code,
+              currentBusinessPlace?.address,
+            ]}
+          />
+        </div>
+        <ButtonContainer>
+          <Button
+              onClick={() => navigate(slugs.businessPlaces)}
+              variant={ButtonColors.BACK}
+              type="button"
+            >
+              {'Grįžti atgal'}
+          </Button>
+        </ButtonContainer>
+      </TopRow>
       <Container>
         <SpaceBetweenRow>
           <TabBar tabs={tabs} />
@@ -209,6 +220,17 @@ const BusinessPlace = () => {
   );
 };
 
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 8px;
+`
+
+const TopRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+`;
 const Container = styled.div`
   display: flex;
   flex-direction: column;

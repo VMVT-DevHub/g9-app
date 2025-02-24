@@ -7,6 +7,7 @@ import { MdExitToApp, MdKeyboardArrowDown, MdUnfoldMore } from 'react-icons/md';
 import { RiArrowDownSFill } from 'react-icons/ri';
 import { SlBookOpen } from 'react-icons/sl';
 import { FaHome } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa6";
 
 export interface IconProps {
   name: IconName | string;
@@ -27,7 +28,8 @@ export enum IconName {
   info = 'info',
   arrowNext = 'arrowNext',
   bookOpen = 'bookOpen',
-  home = 'home'
+  home = 'home',
+  add = 'add'
 }
 
 const Icon = ({ name, className }: IconProps) => {
@@ -46,6 +48,8 @@ const Icon = ({ name, className }: IconProps) => {
       return <FaHome  className={className}/>
     case IconName.dropdownArrow:
       return <MdKeyboardArrowDown className={className} />;
+    case IconName.add:
+      return <FaPlus className={className}/>;
     case IconName.deleteItem:
       return (
         <svg

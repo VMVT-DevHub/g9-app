@@ -44,7 +44,7 @@ const Container = styled.div`
 `;
 
 const InnerContainer = styled.div`
-
+  margin-bottom: 50px;
 `;
 
 const Content = styled.div`
