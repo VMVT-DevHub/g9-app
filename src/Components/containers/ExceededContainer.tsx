@@ -260,36 +260,15 @@ const ExceededContainer = ({
   const validationSchema = isExtendedForm ? extendedExceededSchema : exceededSchema;
   return (
     <>
-      <InfoContainer
-        title={'Viršijamos reikšmės'}
-        description={
-          isDeclared
-            ? 'Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas.'
-            : 'Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas. Įveskite pastabas.'
-        }
-      >
-        <Column>
-          <ButtonContainer>
-            <div>
-              {!isDeclared && (
-                <Button
-                  disabled={disabled || buttonLoading}
-                  loading={buttonLoading}
-                  height={40}
-                  variant={ButtonColors.ALL}
-                  onClick={() => setShowPopup(true)}
-                >
-                  Įvesti visiems
-                </Button>
-              )}
-            </div>
-          </ButtonContainer>
-          <TableContainer>
-            <StyledTable tableData={mapValues} labels={labels} />
-          </TableContainer>
-        </Column>
-        
-      </InfoContainer>
+      <TitleContainer>
+        <ContainerTitle>Viršijamos reikšmės</ContainerTitle>
+        {isDeclared
+            ? <Description>Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas.</Description>
+            : <Description>Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas. Įveskite pastabas.</Description>}
+        <TableContainer>
+          <StyledTable tableData={mapValues} labels={labels} />
+        </TableContainer>
+      </TitleContainer>
       {isDeclared && exceededMapValues}
       <PopUpWithTitles
         title={'Įvesti pastabas'}
@@ -298,6 +277,7 @@ const ExceededContainer = ({
           setCurrentExceeded({});
           setShowPopup(false);
         }}
+        canClickOut={false}
       >
         <Formik
           enableReinitialize={true}
@@ -464,16 +444,41 @@ const ExceededContainer = ({
     </>
   );
 };
+const ContainerTitle = styled.div`
+  font-weight: bold;
+  line-height: 22px;
+  font-size: 1.6rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const Description = styled.div`
+  font-size: 1.4rem;
+  line-height: 22px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  opacity: 1;
+  @media ${device.mobileL} {
+    margin: 16px 0;
+  }
+`;
+const TitleContainer = styled.div`
+  padding-top: 32px;
+  
+`;
+
 const ExceededMapContainer = styled.div`
   margin: 0;
 `;
 
 const StyledTable = styled(Table)`
-  max-width: 550px;
+  max-width: 100%;
+  th {
+    min-width: auto !important;
+  }
 
   @media ${device.mobileL} {
     width: 100%;
   }
+  
 `;
 
 const ButtonRow = styled.div`
@@ -508,6 +513,7 @@ const Column = styled.div`
 const TableContainer = styled.div`
   min-width: 0;
   overflow-x: auto;
+  padding-top: 16px;
 `;
 
 const LoaderComponent = styled.div`

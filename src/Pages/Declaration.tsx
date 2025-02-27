@@ -211,7 +211,7 @@ const DeclarationPage = () => {
     waterPreparation: mappedDeclaration?.waterPreparation || [],
     waterQuantity: mappedDeclaration?.waterQuantity || '',
     usersCount: mappedDeclaration?.usersCount || '',
-    isPreparedWater: !!mappedDeclaration?.isWaterBeingPrepared || '',
+    isPreparedWater: !!mappedDeclaration?.isWaterBeingPrepared,
   };
 
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
@@ -228,7 +228,6 @@ const DeclarationPage = () => {
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
 
   if (isLoading) return <FullscreenLoader />;
-
   return (
     <PageContainer>
       <TopRow>

@@ -9,6 +9,7 @@ import { validationTexts } from '../../utils/texts';
 import Button, { ButtonColors } from '../buttons/Button';
 import TextAreaField from '../fields/TextAreaField';
 import InfoContainer from '../layouts/InfoContainer';
+import { device } from '../../styles';
 
 const mapPayload = (lack: IndicatorOptionWithDiscrepancies['data']['lack']) => {
   return {
@@ -62,11 +63,10 @@ const LackContainer = ({
 
     await updateRepeat({ Trukumas: [mapPayload({ ...lack, notes })] });
   };
-
   const handleDelete = async () => {
     if (!lack) return;
-
     setNotes('');
+
     await updateRepeat({ Trukumas: [mapPayloadDeleteEntry({ ...lack })] });
   };
   if (isDeclared) {
@@ -78,41 +78,61 @@ const LackContainer = ({
     );
   }
   return (
-    <InfoContainer
-      title={'Trūksta duomenų'}
-      description={
-        'Pagal planą reikia įvesti 1 tyrimą. Įveskite trūkstamus mėginius arba nurodykite pastabas'
-      }
-    >
-      <Column>
-        <StyledTextAreaField
-          error={error}
-          disabled={isLoading}
-          value={notes}
-          onChange={(val) => {
-            setError('');
-            setNotes(val);
-          }}
-        />
-        <ButtonContainer>
-          {notes && (
-            <Button
-              variant={ButtonColors.BACK}
-              disabled={isLoading}
-              loading={isLoading}
-              onClick={handleDelete}
-            >
-              Išvalyti
-            </Button>
-          )}
-          <Button disabled={isLoading} loading={isLoading} onClick={handleUpdateRepeat}>
-            Patvirtinti
+    <>
+      <TitleContainer>
+        <ContainerTitle>Trūksta duomenų</ContainerTitle>
+        <Description>
+          Pagal planą reikia įvesti 1 tyrimą. Įveskite trūkstamus mėginius arba nurodykite pastabas.
+        </Description>
+      </TitleContainer>
+      <StyledTextAreaField
+        error={error}
+        disabled={isLoading}
+        value={notes}
+        onChange={(val) => {
+          setError('');
+          setNotes(val);
+        }}
+      />
+      <ButtonContainer>
+        {lack?.notes && (
+          <Button
+            variant={ButtonColors.BACK}
+            disabled={isLoading}
+            loading={isLoading}
+            onClick={handleDelete}
+          >
+            Išvalyti
           </Button>
-        </ButtonContainer>
-      </Column>
-    </InfoContainer>
+        )}
+        <Button disabled={isLoading} loading={isLoading} onClick={handleUpdateRepeat}>
+          Patvirtinti
+        </Button>
+      </ButtonContainer>
+    </>
   );
 };
+const ContainerTitle = styled.div`
+  font-weight: bold;
+  line-height: 22px;
+  font-size: 1.6rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const Description = styled.div`
+  font-size: 1.4rem;
+  line-height: 22px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  opacity: 1;
+  @media ${device.mobileL} {
+    margin: 16px 0;
+  }
+`;
+const TitleContainer = styled.div`
+  padding-top: 32px;
+  
+`;
+
 const DisplayContainer = styled.div`
   margin-top: 0;
 `
@@ -120,6 +140,8 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 12px;
+  align-self: flex-end;
+
 `;
 
 const StyledTextAreaField = styled(TextAreaField)`
