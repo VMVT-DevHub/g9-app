@@ -145,7 +145,7 @@ const Discrepancies = () => {
           {activeIndicator ? (
             <IndicatorTitle>{getIndicatorLabel(activeIndicator)}</IndicatorTitle>
           ) : (
-            <p>Neatitikčių nerasta, galima deklaruoti.</p>
+            isDeclared ? <p>Neatitikčių nebuvo.</p> : <p>Neatitikčių nerasta, galima deklaruoti.</p>
           )}
           {activeIndicator?.data?.repeats && (
             <RepeatContainer

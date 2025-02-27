@@ -10,6 +10,7 @@ import InfoContainer from '../layouts/InfoContainer';
 import { BlueText, SuccessText, TableActionContainer } from '../other/CommonStyles';
 import Loader from '../other/Loader';
 import Table from '../Table/Table';
+import { device } from '../../styles';
 
 const labels = {
   date: 'Data',
@@ -97,15 +98,22 @@ const RepeatContainer = ({
 
   const isAllApproved = repeats.filter((item) => item.approved).length === repeats.length;
   return (
-    <InfoContainer
-      title={'Tyrimų datos sutampa'}
-      description={
-        !isDeclared
-          ? 'Ištrinkite iš reikšmių lentelės perteklinius duomenis arba patvirtinkite, kad duomenys suvesti teisingai.'
-          : 'Pakartotinai suvesti duomenys buvo patvirtinti.'
-      }
-    >
+    <>
+      <TitleContainer>
+        <ContainerTitle>Tyrimų datos sutampa</ContainerTitle>
+        {isDeclared ? (
+          <Description>
+            Ištrinkite iš reikšmių lentelės perteklinius duomenis arba patvirtinkite, kad duomenys
+            suvesti teisingai.
+          </Description>
+        ) : (
+          <Description>Pakartotinai suvesti duomenys buvo patvirtinti.</Description>
+        )}
+      </TitleContainer>
       <Column>
+        <TableContainer>
+          <StyledTable tableData={mapValues} labels={labels} />
+        </TableContainer>
         {!isAllApproved && (
           <ButtonContainer>
             <div>
@@ -121,16 +129,41 @@ const RepeatContainer = ({
             </div>
           </ButtonContainer>
         )}
-        <TableContainer>
-          <StyledTable tableData={mapValues} labels={labels} />
-        </TableContainer>
       </Column>
-    </InfoContainer>
+    </>
   );
 };
 
+const ContainerTitle = styled.div`
+  font-weight: bold;
+  line-height: 22px;
+  font-size: 1.6rem;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const Description = styled.div`
+  font-size: 1.4rem;
+  line-height: 22px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  opacity: 1;
+  @media ${device.mobileL} {
+    margin: 16px 0;
+  }
+`;
+const TitleContainer = styled.div`
+  padding-top: 32px;
+  
+`;
+
 const StyledTable = styled(Table)`
-  max-width: 550px;
+  min-width: 100%;
+  max-width: 100%;
+  th {
+    min-width: auto !important;
+  }
+  td:last-child {
+    width: auto !important;
+  }
 `;
 
 const LoaderComponent = styled.div`
@@ -142,7 +175,7 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 0;
+  min-width: 60%;
   overflow-x: auto;
 `;
 
