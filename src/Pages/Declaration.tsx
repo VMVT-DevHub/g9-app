@@ -23,6 +23,7 @@ import { device } from '../styles';
 import { IndicatorOption } from '../types';
 import api from '../utils/api';
 import {
+  formatDate,
   getGroupedIndicatorValues,
   getIndicatorLabel,
   getOptions,
@@ -34,6 +35,7 @@ import {
 import { useBusinessPlaces, useDeclaration, useIndicators } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 import { validationTexts } from '../utils/texts';
+import DateField from '../Components/fields/DateField';
 
 const statusToColor = {
   1: TagColors.GREY,
@@ -193,6 +195,13 @@ const DeclarationPage = () => {
     updateDeclarationMutation(params);
   };
 
+  const handleDateSubmit = (values: typeof dateFormValue) => {
+    const params = {
+      date: formatDate(values.date)
+    };
+    navigate(slugs.indicatorDeclaration(businessPlaceId, id, params.date), {state: params.date})
+  };
+
 
   const { mutateAsync: updateDeclarationMutation, isLoading: isSubmitLoading } = useMutation(
     (values: any) => api.updateDeclaration(id, values),
@@ -214,6 +223,20 @@ const DeclarationPage = () => {
     isPreparedWater: !!mappedDeclaration?.isWaterBeingPrepared,
   };
 
+  const yearRange = getYearRange(mappedDeclaration?.year);
+
+  const dateFormValue = {
+    date: undefined
+  }
+
+  const currentDate = new Date();
+  let maxAllowedDate = yearRange.maxDate;
+
+  if(yearRange.maxDate >= currentDate)
+  {
+    maxAllowedDate = currentDate;
+  }
+
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
 
   const isLoading = [
@@ -223,7 +246,6 @@ const DeclarationPage = () => {
     mandatoryIndicatorsLoading,
   ].some((loading) => loading);
 
-  const yearRange = getYearRange(mappedDeclaration?.year);
 
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
 
@@ -359,6 +381,39 @@ const DeclarationPage = () => {
           </Formik>
         </MainCardContainer>
       </MainCard>
+      <Formik
+        enableReinitialize={false}
+        initialValues={dateFormValue}
+        onSubmit={handleDateSubmit}
+        validateOnChange={false}
+      >
+        {({ values, errors, setFieldValue }) => {
+          return (
+            <DatePickerContainer>
+            <StyledDatePicker
+              value={values.date}
+              label={'Mėginių paėmimo data'}
+              name="indicator"
+              disabled={disabled}
+              onChange={(value) => setFieldValue('date', value)}
+              error={errors.date}
+              placeHolder={formatDate(yearRange.minDate)}
+              minDate={yearRange.minDate}
+              maxDate={maxAllowedDate}
+            />
+            <div>
+              <Button
+                type="submit"
+                disabled={!values.date}
+              >
+                {'Pildyti duomenis'}
+              </Button>
+            </div>
+          </DatePickerContainer>
+          )
+        }}
+      </Formik>
+
       {mappedDeclaration?.waterQuantity && (
         <>
           <InfoTitle>Rodiklių duomenys</InfoTitle>
@@ -402,6 +457,8 @@ const DeclarationPage = () => {
                         yearRange={yearRange}
                         disabled={disabled}
                         indicator={indicator}
+                        viewOnly={true}
+                        
                       />
                     </div>
                   );
@@ -470,8 +527,22 @@ const DeclarationPage = () => {
     </PageContainer>
   );
 };
+const DatePickerContainer = styled(Form)`
+  display: flex;
+  gap: 16px;
+  justify-content: end;
+  align-items: flex-end;
+  margin: 20px 0;
+`
 
+const StyledDatePicker = styled(DateField)`
+  width: 200px;
 
+  @media ${device.mobileL} {
+    max-width: 100%;
+    width: 100%;
+  }
+`;
 
 const TitleContainer = styled.div`
   display: flex;

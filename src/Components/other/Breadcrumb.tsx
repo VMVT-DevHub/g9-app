@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useBusinessPlaces, useDeclaration } from '../../utils/hooks';
 import Icon, { IconName } from './Icons';
+import { device } from '../../styles';
 
 const Breadcrumb = () => {
   const location = useLocation();
@@ -76,6 +77,8 @@ export default Breadcrumb;
 const BreadcrumbContainer = styled.div`
   color: black;
   margin-bottom: 40px;
+ 
+
 `;
 const HomeIcon = styled(Icon)`
   font-size: 2.4rem;
@@ -96,6 +99,9 @@ const StyledLink = styled(Link)`
   border-radius: 4px;
   padding: 6px 12px;
   gap: 5px;
+  @media ${device.mobileL} {
+    display: flex;
+  }
 `;
 
 const Container = styled.div`
