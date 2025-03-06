@@ -17,6 +17,7 @@ import { BlueText, DangerText, TableActionContainer } from './CommonStyles';
 import Icon, { IconName } from './Icons';
 import InfoPopUp from './InfoPopUp';
 import { useDeclaration } from '../../utils/hooks';
+import { current } from '@reduxjs/toolkit';
 
 const IndicatorContainer = ({
   indicator,
@@ -25,6 +26,8 @@ const IndicatorContainer = ({
   yearRange,
   updateIndicatorTable,
   initialOpen = false,
+  viewOnly,
+  activeDate,
 }: {
   yearRange: {
     minDate: Date;
@@ -34,6 +37,8 @@ const IndicatorContainer = ({
   updateIndicatorTable: (id: string) => Promise<void>;
   indicator: IndicatorOption;
   disabled: boolean;
+  viewOnly: boolean;
+  activeDate?: any
   onDelete: (id: string) => void;
 }) => {
   const [open, setOpen] = useState(initialOpen);
@@ -64,8 +69,7 @@ const IndicatorContainer = ({
   {
     maxAllowedDate = currentDate;
   }
-
-  const tableData =
+  let tableData =
     indicator.tableData?.map((item) => {
       return {
         ...item,
@@ -79,6 +83,7 @@ const IndicatorContainer = ({
         }),
       };
     }) || [];
+  tableData = !viewOnly ? tableData.filter((item) => item.date == activeDate.toString()) : tableData;
 
   const { mutateAsync: updateDeclarationValuesMutation, isLoading: isSubmitLoading } = useMutation(
     (values: any) => api.postValue(id, values),
@@ -103,21 +108,17 @@ const IndicatorContainer = ({
     },
   );
 
-  const handleSubmit = async (values: { date: any; value: any }, { resetForm }) => {
+  const handleSubmit = async (values: {value: any }, { resetForm }) => {
     const params = [
       {
         Rodiklis: indicator.id,
-        Data: formatDate(values.date),
+        Data: activeDate,
         Reiksme: isButton ? (values.value === 'Taip' ? 1 : 0) : values.value,
       },
     ];
 
     await updateDeclarationValuesMutation(params);
-    resetForm({
-      values: {
-        date: values.date,
-      },
-    });
+    resetForm({});
     
   };
 
@@ -155,33 +156,16 @@ const IndicatorContainer = ({
             <BookIcon name={IconName.bookOpen} />
             <BlueText>Skaityti rodiklio aprašymą</BlueText>
           </InfoRow>
-          {!disabled && (
-            <InputExpander onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
-              <StyledIconInput $isActive={showForm} name={IconName.add} />
-              Pridėti reikšmę 
-            </InputExpander>
-          )}
-          {showForm && (
+          {!disabled && !viewOnly && (
             <Formik
               enableReinitialize={false}
-              initialValues={{ date: undefined, value: undefined }}
+              initialValues={{ value: undefined }}
               onSubmit={handleSubmit}
               validateOnChange={false}
             >
               {({ values, errors, setFieldValue }) => {
                 return (
                   <FormContainer>
-                    <StyledDatePicker
-                      value={values.date}
-                      label={'Mėginio paėmimo data'}
-                      name="indicator"
-                      disabled={disabled}
-                      onChange={(value) => setFieldValue('date', value)}
-                      error={errors.date}
-                      placeHolder={formatDate(yearRange.minDate)}
-                      minDate={yearRange.minDate}
-                      maxDate={maxAllowedDate}
-                    />
                     {isButton ? (
                       <StyledButtonGroup
                         options={['Taip', 'Ne']}
@@ -210,7 +194,7 @@ const IndicatorContainer = ({
                       <Button
                         type="submit"
                         loading={isSubmitLoading}
-                        disabled={isSubmitLoading || !values.value || !values.date || disabled}
+                        disabled={isSubmitLoading || !values.value || disabled}
                       >
                         {'Pridėti rezultatą'}
                       </Button>
@@ -220,7 +204,11 @@ const IndicatorContainer = ({
               }}
             </Formik>
           )}
-          {showTable && <Table maxHeight="300px" tableData={tableData} labels={labels} />}
+          {showTable ? (
+            <Table maxHeight="300px" tableData={tableData} labels={labels} />
+          ) : (
+            viewOnly && 'Mėginių duomenų nėra.'
+          )}
           <InfoPopUp setShowPopup={setsSowPopup} showPopup={showPopup} indicator={indicator} />
         </>
       )}

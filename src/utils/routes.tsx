@@ -1,6 +1,7 @@
 import BusinessPlace from '../Pages/BusinessPlace';
 import BusinessPlaces from '../Pages/BusinessPlaces';
 import DeclarationPage from '../Pages/Declaration';
+import IndicatorDeclarationPage from '../Pages/IndicatorDeclaration';
 import Discrepancies from '../Pages/Discrepancies';
 import SubmitDeclaration from '../Pages/SubmitDeclaration';
 
@@ -15,11 +16,14 @@ export const slugs = {
     `/veiklavietes/${businessPlaceId}/deklaracijos/${id}/pateikti`,
   discrepancies: (businessPlaceId: string, id: string) =>
     `/veiklavietes/${businessPlaceId}/deklaracijos/${id}/neatitikimai`,
+  indicatorDeclaration: (businessPlaceId: string, id: string, date: string) =>
+    `/veiklavietes/${businessPlaceId}/deklaracijos/${id}/${date}`,
 };
 
 export enum Ids {
   ID = ':id',
   BUSINESS_PLACE_ID = ':businessPlaceId',
+  DATE = ':date'
 }
 
 export const routes = [
@@ -39,6 +43,10 @@ export const routes = [
   {
     slug: slugs.declaration(Ids.BUSINESS_PLACE_ID, Ids.ID),
     component: <DeclarationPage />,
+  },
+  {
+    slug: slugs.indicatorDeclaration(Ids.BUSINESS_PLACE_ID, Ids.ID, Ids.DATE),
+    component: <IndicatorDeclarationPage />,
   },
   {
     slug: slugs.discrepancies(Ids.BUSINESS_PLACE_ID, Ids.ID),
