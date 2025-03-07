@@ -132,7 +132,6 @@ const IndicatorContainer = ({
   };
 
   const showTable = !isEmpty(tableData);
-
   return (
     <>
       <Expander
@@ -140,10 +139,12 @@ const IndicatorContainer = ({
           setOpen(!open), setShowForm(open);
         }}
         $isActive={open}
+        $hasData={tableData.length}
       >
         <TitleContainer>
-          <IndicatorValue $isActive={open}>
-            {`${getIndicatorLabel(indicator)} ${tableData.length ? `(${tableData.length})` : ''}`}{' '}
+        
+        <IndicatorValue $isActive={open}  $hasData={tableData.length}>
+            {`${getIndicatorLabel(indicator)} ${tableData.length ? `(${tableData.length})` : ''}`}
           </IndicatorValue>
           {!showTable && (
             <Delete onClick={() => onDelete(indicator.id)} $isActive={open}>
@@ -356,15 +357,17 @@ const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  
 `;
 
-const Expander = styled.div<{ $isActive: boolean }>`
+const Expander = styled.div<{ $isActive: boolean, $hasData: number}>`
   padding: 18px 14px;
-  background-color: ${({ $isActive, theme }) => ($isActive ? theme.colors.primary : '#f3f4f6')};
+  background-color: ${({ $isActive, theme, $hasData }) => ($isActive ? theme.colors.primary : ($hasData ? '#e5e7eb' : '#f3f4f6'))};
   border-radius: 4px;
   display: flex;
   justify-content: space-between;
   cursor: pointer;
+
 `;
 
 const InputExpander = styled.div<{ $isActive: boolean }>`
@@ -379,8 +382,8 @@ const InputExpander = styled.div<{ $isActive: boolean }>`
 
 `;
 
-const IndicatorValue = styled.div<{ $isActive: boolean }>`
-  font-weight: 600;
+const IndicatorValue = styled.div<{ $isActive: boolean, $hasData: number  }>`
+  font-weight: ${({$hasData})  => ($hasData !== 0 ? '600' : '400')};
   color: ${({ $isActive, theme }) => (!$isActive ? theme.colors.text.primary : 'white')};
 `;
 
