@@ -474,6 +474,9 @@ const StyledTable = styled(Table)`
   th {
     min-width: auto !important;
   }
+  td:last-child {
+    width: auto !important;
+  }
 
   @media ${device.mobileL} {
     width: 100%;

@@ -35,7 +35,7 @@ const Container = styled.div`
   height: 100%;
   background-color: white;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: scroll;
   min-height: 100vh;
   @media ${device.mobileL} {
     overflow-y: auto;

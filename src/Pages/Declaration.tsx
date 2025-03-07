@@ -155,11 +155,10 @@ const DeclarationPage = () => {
         }
 
         return item;
-      })
+      }),
     );
     handleSuccessToast();
   };
-
 
   useEffect(() => {
     if (!declarationLoading) {
@@ -168,8 +167,14 @@ const DeclarationPage = () => {
   }, [id, declarationLoading]);
 
   useEffect(() => {
-    if (isEmpty(values) || isEmpty(indicators) || mandatoryIndicatorsLoading || valuesLoading || 
-    declarationLoading) return;
+    if (
+      isEmpty(values) ||
+      isEmpty(indicators) ||
+      mandatoryIndicatorsLoading ||
+      valuesLoading ||
+      declarationLoading
+    )
+      return;
 
     const mappedValues = mapValues(indicatorOptions, values, mandatoryIndicators);
 
@@ -189,7 +194,10 @@ const DeclarationPage = () => {
       Kiekis: values.waterQuantity,
       Vartotojai: values.usersCount,
       VanduoRuosiamas: values.isPreparedWater,
-      ...(values.isPreparedWater && { RuosimoMedziagos: values.waterMaterial, RuosimoBudai: values.waterPreparation }),
+      ...(values.isPreparedWater && {
+        RuosimoMedziagos: values.waterMaterial,
+        RuosimoBudai: values.waterPreparation,
+      }),
     };
 
     updateDeclarationMutation(params);
@@ -197,11 +205,10 @@ const DeclarationPage = () => {
 
   const handleDateSubmit = (values: typeof dateFormValue) => {
     const params = {
-      date: formatDate(values.date)
+      date: formatDate(values.date),
     };
-    navigate(slugs.indicatorDeclaration(businessPlaceId, id, params.date), {state: params.date})
+    navigate(slugs.indicatorDeclaration(businessPlaceId, id, params.date));
   };
-
 
   const { mutateAsync: updateDeclarationMutation, isLoading: isSubmitLoading } = useMutation(
     (values: any) => api.updateDeclaration(id, values),
@@ -226,14 +233,13 @@ const DeclarationPage = () => {
   const yearRange = getYearRange(mappedDeclaration?.year);
 
   const dateFormValue = {
-    date: undefined
-  }
+    date: undefined,
+  };
 
   const currentDate = new Date();
   let maxAllowedDate = yearRange.maxDate;
 
-  if(yearRange.maxDate >= currentDate)
-  {
+  if (yearRange.maxDate >= currentDate) {
     maxAllowedDate = currentDate;
   }
 
@@ -246,7 +252,6 @@ const DeclarationPage = () => {
     mandatoryIndicatorsLoading,
   ].some((loading) => loading);
 
-
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
 
   if (isLoading) return <FullscreenLoader />;
@@ -257,18 +262,18 @@ const DeclarationPage = () => {
           <TitleContainer>
             <Title>{'Deklaracija'}</Title>
             <StatusTag
-                color={statusToColor[mappedDeclaration?.status]}
-                label={lookup?.Statusas[mappedDeclaration?.status] || ""}
+              color={statusToColor[mappedDeclaration?.status]}
+              label={lookup?.Statusas[mappedDeclaration?.status] || ''}
             />
           </TitleContainer>
         </div>
-          <FlexItem>
-            <Button
-              onClick={() => navigate(slugs.businessPlaceDeclarations(businessPlaceId))}
-              variant={ButtonColors.BACK}
-              type="button"
-            >
-              {'Grįžti atgal'}
+        <FlexItem>
+          <Button
+            onClick={() => navigate(slugs.businessPlaceDeclarations(businessPlaceId))}
+            variant={ButtonColors.BACK}
+            type="button"
+          >
+            {'Grįžti atgal'}
           </Button>
           {canDeclare ? (
             <Button
@@ -277,13 +282,17 @@ const DeclarationPage = () => {
             >
               {'Tikrinti neatitikimus'}
             </Button>
-          ) : ( disabled && <Button
-            onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
-            type="button"
-          >
-            {'Deklaruoti neatitikimai'}
-          </Button>)}
-          </FlexItem>
+          ) : (
+            disabled && (
+              <Button
+                onClick={() => navigate(slugs.discrepancies(businessPlaceId, id))}
+                type="button"
+              >
+                {'Deklaruoti neatitikimai'}
+              </Button>
+            )
+          )}
+        </FlexItem>
       </TopRow>
       <MainCard>
         <Image src="/formImage.webp" />
@@ -360,7 +369,6 @@ const DeclarationPage = () => {
                               error={errors.waterMaterial}
                             />
                           </FormLine>
-                          
                         </>
                       )}
                     </InnerContainerLine>
@@ -381,42 +389,41 @@ const DeclarationPage = () => {
           </Formik>
         </MainCardContainer>
       </MainCard>
-      <Formik
-        enableReinitialize={false}
-        initialValues={dateFormValue}
-        onSubmit={handleDateSubmit}
-        validateOnChange={false}
-      >
-        {({ values, errors, setFieldValue }) => {
-          return (
-            <DatePickerContainer>
-            <StyledDatePicker
-              value={values.date}
-              label={'Mėginių paėmimo data'}
-              name="indicator"
-              disabled={disabled}
-              onChange={(value) => setFieldValue('date', value)}
-              error={errors.date}
-              placeHolder={formatDate(yearRange.minDate)}
-              minDate={yearRange.minDate}
-              maxDate={maxAllowedDate}
-            />
-            <div>
-              <Button
-                type="submit"
-                disabled={!values.date}
-              >
-                {'Pildyti duomenis'}
-              </Button>
-            </div>
-          </DatePickerContainer>
-          )
-        }}
-      </Formik>
 
       {mappedDeclaration?.waterQuantity && (
         <>
-          <InfoTitle>Rodiklių duomenys</InfoTitle>
+          <IndicatorTitleContainer>
+            <InfoTitle>Rodiklių duomenys</InfoTitle>
+            <Formik
+              enableReinitialize={false}
+              initialValues={dateFormValue}
+              onSubmit={handleDateSubmit}
+              validateOnChange={false}
+            >
+              {({ values, errors, setFieldValue }) => {
+                return (
+                  <DatePickerContainer>
+                    <StyledDatePicker
+                      value={values.date}
+                      label={'Mėginių paėmimo data'}
+                      name="indicator"
+                      disabled={disabled}
+                      onChange={(value) => setFieldValue('date', value)}
+                      error={errors.date}
+                      placeHolder={formatDate(yearRange.minDate)}
+                      minDate={yearRange.minDate}
+                      maxDate={maxAllowedDate}
+                    />
+                    <div>
+                      <Button type="submit" disabled={!values.date}>
+                        {'Pildyti duomenis'}
+                      </Button>
+                    </div>
+                  </DatePickerContainer>
+                );
+              }}
+            </Formik>
+          </IndicatorTitleContainer>
           <InfoContainer>
             <IndicatorGroupContainer>
               {indicatorGroups.map((group) => {
@@ -442,8 +449,6 @@ const DeclarationPage = () => {
                 .filter((item) => item.groupId.toString() === selectedIndicatorGroup)
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((indicator, index) => {
-                  const initialOpen = indicator.initialOpen || index === 0;
-
                   return (
                     <div key={`indicator-group-${indicator.id}`}>
                       <IndicatorContainer
@@ -452,13 +457,12 @@ const DeclarationPage = () => {
                             selectedIndicators.filter((indicator) => indicator.id !== id),
                           )
                         }
-                        initialOpen={initialOpen}
+                        initialOpen={false}
                         updateIndicatorTable={(id) => updateIndicatorTable(id)}
                         yearRange={yearRange}
                         disabled={disabled}
                         indicator={indicator}
                         viewOnly={true}
-                        
                       />
                     </div>
                   );
@@ -527,16 +531,22 @@ const DeclarationPage = () => {
     </PageContainer>
   );
 };
+
+const IndicatorTitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
 const DatePickerContainer = styled(Form)`
   display: flex;
   gap: 16px;
   justify-content: end;
   align-items: flex-end;
   margin: 20px 0;
-`
+`;
 
 const StyledDatePicker = styled(DateField)`
-  width: 200px;
+  width: 250px;
 
   @media ${device.mobileL} {
     max-width: 100%;
@@ -683,7 +693,6 @@ const MainCardContainer = styled.div`
 const InfoTitle = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
-  margin-bottom: 12px;
 `;
 
 const InfoTagRow = styled.div`

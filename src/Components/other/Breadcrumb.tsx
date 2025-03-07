@@ -27,7 +27,7 @@ const Breadcrumb = () => {
     if (!isNaN(Number(segment)) && index > 2) {
       return declarationLoading
         ? '2020 - Geriamojo vandens stebėsenos'
-        : `${declarationYear} - Geriamojo vandens stebėsenos`;
+        : `${declarationYear} - ${mappedDeclaration.type?.label}`;
     }
     switch (segment) {
       case `veiklavietes`:
@@ -50,7 +50,7 @@ const Breadcrumb = () => {
       const label = businessName;
       return (
         <span key={index}>
-          <StyledLink to={path}>{label}</StyledLink>
+          <StyledLink to={path} $isLast={index == pathSegments.length - 2 }>{label}</StyledLink>
           {index < pathSegments.length - 2 && ' -> '}
         </span>
       );
@@ -58,11 +58,12 @@ const Breadcrumb = () => {
     if (index === 2) {
       return null;
     }
+    //regular segments:
     const path = '/' + pathSegments.slice(0, index + 1).join('/');
     const label = getCrumbLabel(segment, index);
     return (
       <span key={index}>
-        <StyledLink to={path}>{label}</StyledLink>
+        <StyledLink to={path} $isLast={index == pathSegments.length -1 }>{label}</StyledLink>
         {index < pathSegments.length - 1 && ' -> '}
       </span>
     );
@@ -86,10 +87,10 @@ const HomeIcon = styled(Icon)`
   top: 5px;
   padding-top: 3px;
 `;
-const StyledLink = styled(Link)`
+const StyledLink = styled(Link)<{ $isLast: boolean }>`
   text-decoration: none;
   color: #175cd3;
-
+  pointer-events: ${({ $isLast }) => ($isLast ? 'none' : 'auto')};
   &:hover {
     cursor: pointer;
     color: ${({ theme }) => theme.colors.hover.primary};

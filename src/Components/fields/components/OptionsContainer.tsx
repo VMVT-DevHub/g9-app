@@ -69,7 +69,7 @@ const OptionContainer = styled.div<{ $display: boolean }>`
   z-index: 9;
   width: 100%;
   padding: 10px 0px;
-  max-height: 200px;
+  max-height: 350px;
   overflow-y: auto;
   overflow-x: hidden;
   border: none;
