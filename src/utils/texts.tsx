@@ -1,8 +1,8 @@
 export const validationTexts = {
-  requireText: 'Privalomas laukelis',
+  requireText: 'Šis laukas yra privalomas',
   positiveNumber: 'Turi būti teigiamas skaičius',
   shortDescription: 'Per trumpas aprašymas',
   requireSelect: 'Privalote pasirinkti',
   personalCode: 'Asmens kodas yra klaidingas',
-  phoneNumber: 'Telefono numeris nėra tinkamas'
+  phoneNumber: 'Telefono numeris yra klaidingas'
 };
