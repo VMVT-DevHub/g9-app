@@ -73,7 +73,7 @@ const BusinessPlaces = () => {
       <OuterTableContainer key={JA.id}>
         <TableDiv>
           <InfoTitle>{JA.name}</InfoTitle>
-          <Table
+          <StyledTable
             onClick={(businessPlace) => navigate(slugs.businessPlaceDeclarations(businessPlace.id))}
             tableData={mappedJAData}
             labels={labels}
@@ -192,7 +192,15 @@ const BusinessPlaces = () => {
     </PageContainer>
   );
 };
-
+const StyledTable = styled(Table)`
+   max-width: 100%;
+  th {
+    min-width: auto !important;
+  }
+  td:last-child {
+    width: auto !important;
+  }
+`
 const AddIndicatorButton = styled.div<{ disabled: boolean }>`
   border: 1px dashed #e5e7eb;
   width: 20%;

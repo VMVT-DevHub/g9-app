@@ -44,7 +44,7 @@ const IndicatorContainer = ({
   const [open, setOpen] = useState(initialOpen);
   const { id = '' } = useParams();
   const [showPopup, setsSowPopup] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   
   const isButton = indicator.unit === 'T/N';
 
@@ -108,18 +108,21 @@ const IndicatorContainer = ({
     },
   );
 
-  const handleSubmit = async (values: {value: any }, { resetForm }) => {
+  const handleSubmit = async (values: {date: any, value: any }, { resetForm }) => {
     const params = [
       {
         Rodiklis: indicator.id,
-        Data: activeDate,
+        Data: activeDate ? activeDate : formatDate(values.date),
         Reiksme: isButton ? (values.value === 'Taip' ? 1 : 0) : values.value,
       },
     ];
-
     await updateDeclarationValuesMutation(params);
-    resetForm({});
-    
+    resetForm({
+      values: {
+        date: values.date,
+      },
+    });
+    setShowForm(false)
   };
 
   const labels = {
@@ -152,20 +155,40 @@ const IndicatorContainer = ({
       </Expander>
       {open && (
         <>
-          <InfoRow onClick={() => setsSowPopup(true)}>
-            <BookIcon name={IconName.bookOpen} />
-            <BlueText>Skaityti rodiklio aprašymą</BlueText>
-          </InfoRow>
-          {!disabled && !viewOnly && (
+          <InfoRowContainer>
+            {!disabled && (
+              <StyledInfoRow onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
+                <BlueText>+ Pridėti reikšmę</BlueText>
+              </StyledInfoRow>
+            )}
+            <InfoRow onClick={() => setsSowPopup(true)}>
+              <BookIcon name={IconName.bookOpen} />
+              <BlueText>Skaityti rodiklio aprašymą</BlueText>
+            </InfoRow>
+          </InfoRowContainer>
+          {!disabled && showForm && (
             <Formik
               enableReinitialize={false}
-              initialValues={{ value: undefined }}
+              initialValues={{ date: undefined, value: undefined }}
               onSubmit={handleSubmit}
               validateOnChange={false}
             >
               {({ values, errors, setFieldValue }) => {
                 return (
                   <FormContainer>
+                    {viewOnly && (
+                      <StyledDatePicker
+                        value={values.date}
+                        label={'Mėginio paėmimo data'}
+                        name="indicator"
+                        disabled={disabled}
+                        onChange={(value) => setFieldValue('date', value)}
+                        error={errors.date}
+                        placeHolder={formatDate(yearRange.minDate)}
+                        minDate={yearRange.minDate}
+                        maxDate={maxAllowedDate}
+                      />
+                    )}
                     {isButton ? (
                       <StyledButtonGroup
                         options={['Taip', 'Ne']}
@@ -196,7 +219,7 @@ const IndicatorContainer = ({
                         loading={isSubmitLoading}
                         disabled={isSubmitLoading || !values.value || disabled}
                       >
-                        {'Pridėti rezultatą'}
+                        {'Pridėti'}
                       </Button>
                     </ButtonLine>
                   </FormContainer>
@@ -204,18 +227,21 @@ const IndicatorContainer = ({
               }}
             </Formik>
           )}
-          {showTable ? (
-            <Table maxHeight="300px" tableData={tableData} labels={labels} />
-          ) : (
-            viewOnly && 'Mėginių duomenų nėra.'
-          )}
+
+          <StyledTable maxHeight="300px" tableData={tableData} labels={labels} />
+
           <InfoPopUp setShowPopup={setsSowPopup} showPopup={showPopup} indicator={indicator} />
         </>
       )}
     </>
   );
 };
-
+const StyledTable = styled(Table)`
+  max-width: 100%;
+  td:last-child {
+    width: auto !important;
+  }
+`
 const NumericInputContainer = styled.div`
   display: flex;
   align-items: center;
@@ -227,7 +253,10 @@ const NumericInputContainer = styled.div`
     max-width: 100%;
   }
 `;
-
+const InfoRowContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
 const FormContainer = styled(Form)`
   display: flex;
   flex-wrap: wrap;
@@ -254,7 +283,7 @@ const ButtonLine = styled.div`
 `;
 
 const StyledButtonGroup = styled(ButtonsGroup)`
-  max-width: 300px;
+  max-width: 390px;
   @media ${device.mobileL} {
     max-width: 100%;
     width: 100%;
@@ -267,7 +296,7 @@ const StyledNumericTextField = styled(NumericTextField)`
 `;
 
 const StyledDatePicker = styled(DateField)`
-  max-width: 300px;
+  width: 250px;
   @media ${device.mobileL} {
     max-width: 100%;
     width: 100%;
@@ -302,10 +331,23 @@ const BookIcon = styled(Icon)`
   color: ${({ theme }) => theme.colors.text.active};
 `;
 
+const StyledInfoRow = styled.div<{$isActive: boolean}>`
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 8px 8px 12px 8px;
+  gap: 4px;
+  justify-content: flex-end;
+  background-color: ${({ $isActive }) => ($isActive ? 'rgb(243, 244, 246)': '')};
+  border-radius: 4px 4px 0 0;
+
+`;
+
 const InfoRow = styled.div`
   display: flex;
   align-items: center;
-  margin: 12px 0;
+  margin-top: 8px;
+  padding: 8px 8px 12px 8px;
   gap: 4px;
   justify-content: flex-end;
 `;

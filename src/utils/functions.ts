@@ -1,4 +1,4 @@
-import { endOfYear, format, startOfYear } from 'date-fns';
+import { endOfYear, format, isAfter, isBefore, isEqual, startOfYear } from 'date-fns';
 import { toast } from 'react-toastify';
 import {
   IndicatorOption,
@@ -55,6 +55,18 @@ export const formatDate = (date?: Date | string) =>
 export const inRange = (num: number, start: number, end: number) => {
   return num >= start && num <= end;
 };
+
+export const isDateInRange = (date: Date | string, min: Date | string, max: Date | string ): boolean => {
+  const isDate = new Date(date).getTime();
+  const minDate = new Date(min).getTime();
+  const maxDate = new Date(max).getTime();
+
+  return (
+    (isAfter(isDate, minDate) || isEqual(isDate, minDate)) &&
+    (isBefore(isDate, maxDate) || isEqual(isDate, maxDate))
+  );
+
+}
 
 export const getUniqueIndicatorIds = (
   discrepancies?: ServerDiscrepancy,

@@ -17,10 +17,13 @@ import { device } from '../styles';
 import { IndicatorOption } from '../types';
 import api from '../utils/api';
 import {
+  formatDate,
   getGroupedIndicatorValues,
   getIndicatorLabel,
   getYearRange,
   handleSuccessToast,
+  inRange,
+  isDateInRange,
   mapArraysToJson,
 } from '../utils/functions';
 import { useBusinessPlaces, useDeclaration, useIndicators } from '../utils/hooks';
@@ -65,8 +68,10 @@ const IndicatorDeclarationPage = () => {
   const { businessPlaceId = '', id = '' } = useParams();
   const [selectedIndicatorGroup, setSelectedIndicatorGroup] = useState('');
   const navigate = useNavigate();
-  const location = useLocation().state;
+  const location = useLocation();
   const queryClient = useQueryClient();
+
+  const locationDate = location.pathname.split('/').pop();
 
   const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
 
@@ -79,6 +84,22 @@ const IndicatorDeclarationPage = () => {
       enabled: !declarationLoading,
     },
   );
+
+  const yearRange = getYearRange(mappedDeclaration?.year);
+  const currentDate = new Date();
+  let maxAllowedDate = yearRange.maxDate;
+
+  if (yearRange.maxDate >= currentDate) {
+    maxAllowedDate = currentDate;
+  }
+
+  useEffect(() => {
+    if (!declarationLoading && !isLoading && yearRange && locationDate) {
+      if (!isDateInRange(locationDate, yearRange.minDate, maxAllowedDate)) {
+        navigate(slugs.declaration(businessPlaceId, id));
+      }
+    }
+  }, [locationDate, yearRange]);
 
   const { data: mandatoryIndicators, isFetching: mandatoryIndicatorsLoading } = useQuery(
     ['mandatory', mappedDeclaration.waterQuantity],
@@ -131,16 +152,20 @@ const IndicatorDeclarationPage = () => {
     if (
       isEmpty(values) ||
       isEmpty(indicators) ||
-      mandatoryIndicatorsLoading ||
       valuesLoading ||
       declarationLoading
     )
       return;
 
-    const mappedValues = mapValues(indicatorOptions, values, mandatoryIndicators);
+    let mappedValues = mapValues(indicatorOptions, values);
+
+    mappedValues = mappedValues.filter((item) =>
+      item.tableData.some((element) => element.date === locationDate?.toString()),
+    );
 
     setSelectedIndicators(mappedValues);
-  }, [values, indicators, mandatoryIndicatorsLoading, mandatoryIndicators]);
+  }, [values, indicators, mandatoryIndicatorsLoading, locationDate]);
+
 
   const filteredIndicatorOptions = indicatorOptions
     ?.filter(
@@ -150,32 +175,21 @@ const IndicatorDeclarationPage = () => {
     )
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const yearRange = getYearRange(mappedDeclaration?.year);
-
-  const currentDate = new Date();
-  let maxAllowedDate = yearRange.maxDate;
-
-  if (yearRange.maxDate >= currentDate) {
-    maxAllowedDate = currentDate;
-  }
-
   const indicatorInitialValues: { indicator?: IndicatorOption } = { indicator: undefined };
 
-  const isLoading = [
-    valuesLoading,
-    declarationLoading,
-    mandatoryIndicatorsLoading,
-  ].some((loading) => loading);
+  const isLoading = [valuesLoading, declarationLoading, mandatoryIndicatorsLoading].some(
+    (loading) => loading,
+  );
 
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
-
+  
   if (isLoading) return <FullscreenLoader />;
   return (
     <PageContainer>
       <TopRow>
         <div>
           <TitleContainer>
-            <Title>{`${location} tyrimo pildymas`}</Title>
+            <Title>{`${locationDate} tyrimų pildymas`}</Title>
             <StatusTag
               color={statusToColor[mappedDeclaration?.status]}
               label={lookup?.Statusas[mappedDeclaration?.status] || ''}
@@ -237,7 +251,7 @@ const IndicatorDeclarationPage = () => {
                         disabled={disabled}
                         indicator={indicator}
                         viewOnly={false}
-                        activeDate={location}
+                        activeDate={locationDate}
                       />
                     </div>
                   );
@@ -287,10 +301,7 @@ const IndicatorDeclarationPage = () => {
                     />
                     <ButtonRow>
                       <ButtonInnerRow>
-                        <Button
-                          type="submit"
-                          disabled={!values.indicator}
-                        >
+                        <Button type="submit" disabled={!values.indicator}>
                           {'Pridėti rodiklį'}
                         </Button>
                       </ButtonInnerRow>

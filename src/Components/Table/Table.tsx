@@ -48,7 +48,7 @@ const Table = ({
     } else {
       return (
         <TR $pointer={false} $hide_border={true}>
-          <TdSecond colSpan={keys.length}>Nieko nerasta</TdSecond>
+          <TdSecond colSpan={keys.length}><i>Nieko nerasta</i></TdSecond>
         </TR>
       );
     }
