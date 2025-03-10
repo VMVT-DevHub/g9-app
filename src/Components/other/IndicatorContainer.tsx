@@ -130,7 +130,6 @@ const IndicatorContainer = ({
     value: isButton ? indicator.description : 'Reikšmė',
     delete: '',
   };
-
   const showTable = !isEmpty(tableData);
   return (
     <>
@@ -156,7 +155,7 @@ const IndicatorContainer = ({
       </Expander>
       {open && (
         <>
-          <InfoRowContainer>
+          <InfoRowContainer $disabled={disabled}>
             {!disabled && (
               <StyledInfoRow onClick={() => setShowForm((prev) => !prev)} $isActive={showForm}>
                 <BlueText>+ Pridėti reikšmę</BlueText>
@@ -254,9 +253,9 @@ const NumericInputContainer = styled.div`
     max-width: 100%;
   }
 `;
-const InfoRowContainer = styled.div`
+const InfoRowContainer = styled.div<{$disabled:boolean}>`
   display: flex;
-  justify-content: space-between;
+  justify-content:${({ $disabled }) => $disabled ? 'flex-end' : 'space-between'};
 `
 const FormContainer = styled(Form)`
   display: flex;

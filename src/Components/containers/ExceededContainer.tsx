@@ -191,12 +191,10 @@ const ExceededContainer = ({
           <b>Maksimali reikšmė:</b> {item.max}
         </p>
         {item.insignificant && (
-          <>
             <p>
-              <b>Ar viršijimas nereikšmingas:</b> {item.insignificant ? 'Taip' : 'Ne'}
+              <b>Ar viršijimas nereikšmingas:</b> {item.insignificant ? 'Taip, ' : 'Ne'}
+              {item.insignificantDescription && item.insignificantDescription}
             </p>
-            <p>{item.insignificantDescription}</p>
-          </>
         )}
         {item.userCount && (
           <>
@@ -248,6 +246,13 @@ const ExceededContainer = ({
             </p>
           </>
         )}
+        {item.notes && (
+          <>
+            <p>
+              <b>Papildoma informacija:</b> {item.notes}
+            </p>
+          </>
+        )}
       </ExceededMapContainer>
     );
   });
@@ -292,6 +297,7 @@ const ExceededContainer = ({
                 {isExtendedForm && (
                   <Grid $columns={2}>
                     <ButtonsGroup
+                      showError={true}
                       options={[true, false]}
                       label={'Ar nereikšmingas viršijimas?'}
                       onChange={(option) => {
@@ -328,7 +334,7 @@ const ExceededContainer = ({
                   )}
                   <SelectField
                     options={typeOptions}
-                    showError={false}
+                    showError={true}
                     getOptionLabel={(option) => (typeLabels ? typeLabels[option] : '-')}
                     value={values?.type}
                     label={'Mėginių ėmimo vietos tipas'}
@@ -342,6 +348,7 @@ const ExceededContainer = ({
                     <Grid $columns={2}>
                       <ButtonsGroup
                         options={[true, false]}
+                        showError={true}
                         label={'Ar nustatyta vertė žemiau nei LOQ?'}
                         onChange={(option) => {
                           setFieldValue('isBelowLOQ', option);
@@ -366,7 +373,7 @@ const ExceededContainer = ({
                 <Grid $columns={2}>
                   <SelectField
                     options={reasonOptions}
-                    showError={false}
+                    showError={true}
                     getOptionLabel={(option) => (reasonLabels ? reasonLabels[option] : '-')}
                     value={values?.reason}
                     label={'Priežastis'}
@@ -375,7 +382,7 @@ const ExceededContainer = ({
                   />
                   <SelectField
                     options={actionOptions}
-                    showError={false}
+                    showError={true}
                     getOptionLabel={(option) => (actionLabels ? actionLabels[option] : '-')}
                     value={values?.action}
                     label={'Taisomasis veiksmas'}
@@ -405,7 +412,7 @@ const ExceededContainer = ({
                   <Grid $columns={1}>
                     <SelectField
                       options={statusOptions}
-                      showError={false}
+                      showError={true}
                       getOptionLabel={(option) => (statusLabels ? statusLabels[option] : '-')}
                       value={values?.status}
                       label={'Stebėjimo statusas'}
