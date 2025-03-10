@@ -13,7 +13,7 @@ import InfoRow from '../Components/other/InfoRow';
 import { device, theme } from '../styles';
 import { IndicatorOptionWithDiscrepancies } from '../types';
 import { getIndicatorLabel, getYearRange, handleIsApproved } from '../utils/functions';
-import { useDeclaration, useMappedIndicatorsWithDiscrepancies } from '../utils/hooks';
+import { useDeclaration, useIndicators, useMappedIndicatorsWithDiscrepancies } from '../utils/hooks';
 import { slugs } from '../utils/routes';
 
 export enum IndicatorStatus {
@@ -34,6 +34,10 @@ const Discrepancies = () => {
   const { businessPlaceId = '', id = '' } = useParams();
 
   const { canDeclare, isDeclared, declarationLoading, mappedDeclaration } = useDeclaration();
+
+  const { indicatorGroupLabels, indicatorGroups } = useIndicators(
+      mappedDeclaration.type?.value,
+    );
 
   const yearRange = getYearRange(mappedDeclaration?.year);
 
@@ -71,6 +75,24 @@ const Discrepancies = () => {
     typeof activeIndicator?.index === 'number' && !!mappedIndicators[activeIndicator?.index - 1];
 
   if (isLoading || declarationLoading) return <FullscreenLoader />;
+
+  const sortedIndicators = () => {
+    const sorted = [...mappedIndicators];
+  
+    sorted.sort((a, b) => {
+      const groupIdA = a.groupId !== undefined ? a.groupId : Number.MAX_SAFE_INTEGER;
+      const groupIdB = b.groupId !== undefined ? b.groupId : Number.MAX_SAFE_INTEGER;
+      
+      if (groupIdA !== groupIdB) {
+        return groupIdA - groupIdB;
+      }
+      
+      return (a.index || 0) - (b.index || 0);
+    });
+    
+    return sorted;
+  };
+
   return (
     <PageContainer>
       <TopRow>
@@ -104,7 +126,7 @@ const Discrepancies = () => {
       </TopRow>
       <Content>
         <Column>
-          {mappedIndicators.map((indicator, index) => {
+          {sortedIndicators().map((indicator, index) => {
             const handleGetStatus = (indicator) => {
               const isApproved = handleIsApproved(indicator);
               if (indicator.id === activeIndicator?.id) {
@@ -126,17 +148,26 @@ const Discrepancies = () => {
             const isApproved = status === IndicatorStatus.APPROVED;
             const isActiveApproved = status === IndicatorStatus.ACTIVE_APPROVED;
 
+            const isFirstInGroup =
+              index === 0 || indicator.groupId !== sortedIndicators()[index - 1].groupId;
+
             return (
-              <IndicatorLine
-                key={`indicator-${indicator}-${index}`}
-                onClick={() => setActiveIndicator(indicator)}
-              >
-                <Circle $status={status}>
-                  {isApproved && <Verified name={IconName.checkMark} />}
-                  {isActiveApproved && <Verified name={IconName.checkMark} />}
-                </Circle>
-                <IndicatorText $status={status}>{getIndicatorLabel(indicator)}</IndicatorText>
-              </IndicatorLine>
+              <div key={`indicator-${indicator}-${index}`}>
+                {isFirstInGroup && (
+                  <GroupHeader>
+                    {indicatorGroupLabels[indicator.groupId ? indicator.groupId : 0]}
+                  </GroupHeader>
+                )}
+                <IndicatorLine
+                  onClick={() => setActiveIndicator(indicator)}
+                >
+                  <Circle $status={status}>
+                    {isApproved && <Verified name={IconName.checkMark} />}
+                    {isActiveApproved && <Verified name={IconName.checkMark} />}
+                  </Circle>
+                  <IndicatorText $status={status}>{getIndicatorLabel(indicator)}</IndicatorText>
+                </IndicatorLine>
+              </div>
             );
           })}
         </Column>
@@ -205,6 +236,14 @@ const Discrepancies = () => {
   );
 };
 
+const GroupHeader = styled.div`
+  font-weight: bold;
+  font-size: 1.6rem;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  color: ${theme.colors.text.primary};
+`;
+
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -269,7 +308,6 @@ const Verified = styled(Icon)`
 `;
 
 const Content = styled.div`
-  margin-top: 86px;
   display: flex;
   gap: 50px;
   @media ${device.mobileL} {
@@ -290,7 +328,7 @@ const Circle = styled.div<{ $status: IndicatorStatus }>`
 const Column = styled.div`
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  max-height: 500px;
   width: 40%;
   overflow-y: auto;
   gap: 20px;

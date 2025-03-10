@@ -394,7 +394,7 @@ const DeclarationPage = () => {
         <>
           <IndicatorTitleContainer>
             <InfoTitle>Rodiklių duomenys</InfoTitle>
-            <Formik
+            {!disabled && <Formik
               enableReinitialize={false}
               initialValues={dateFormValue}
               onSubmit={handleDateSubmit}
@@ -422,7 +422,7 @@ const DeclarationPage = () => {
                   </DatePickerContainer>
                 );
               }}
-            </Formik>
+            </Formik>}
           </IndicatorTitleContainer>
           <InfoContainer>
             <IndicatorGroupContainer>
@@ -536,6 +536,8 @@ const IndicatorTitleContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 112px;
+
 `
 const DatePickerContainer = styled(Form)`
   display: flex;
