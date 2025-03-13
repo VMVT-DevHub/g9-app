@@ -457,7 +457,7 @@ const DeclarationPage = () => {
                             selectedIndicators.filter((indicator) => indicator.id !== id),
                           )
                         }
-                        initialOpen={false}
+                        initialOpen={indicator.initialOpen}
                         updateIndicatorTable={(id) => updateIndicatorTable(id)}
                         yearRange={yearRange}
                         disabled={disabled}
