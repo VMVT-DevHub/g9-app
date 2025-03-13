@@ -50,9 +50,15 @@ const IndicatorContainer = ({
 
   const renderValue = (item) => {
     if (isButton) {
-      if (item.value === 0) return 'Ne';
+      if (inRange(item.value, indicator.min, indicator.max)) {
+        if (item.value === 0) return 'Ne';
 
-      return 'Taip';
+        return 'Taip';
+      } else {
+        if (item.value === 0) return <DangerText>Ne</DangerText>;
+
+        return <DangerText>Taip</DangerText>;
+      }
     }
 
     const value = `${item.value} ${indicator.unit}`;
@@ -130,6 +136,7 @@ const IndicatorContainer = ({
     value: isButton ? indicator.description : 'Reikšmė',
     delete: '',
   };
+
   const showTable = !isEmpty(tableData);
   return (
     <>
