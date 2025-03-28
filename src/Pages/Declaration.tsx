@@ -313,13 +313,13 @@ const DeclarationPage = () => {
                       <FormLine>
                         <StyledNumericTextField
                           rightIcon={<CubicMeter />}
-                          label={'Tiekiamo vandens kiekis'}
+                          label={'Vandens kiekis'}
                           value={values.waterQuantity}
                           error={errors.waterQuantity}
                           disabled={disabled}
                           name="waterQuantity"
                           onChange={(phone) => setFieldValue('waterQuantity', phone)}
-                          showError={false}
+                          showError={true}
                         />
                         <StyledNumericTextField
                           label={'Gyventojų skaičius'}
@@ -328,7 +328,7 @@ const DeclarationPage = () => {
                           disabled={disabled}
                           error={errors.usersCount}
                           onChange={(email) => setFieldValue('usersCount', email)}
-                          showError={false}
+                          showError={true}
                         />
                         <StyledButtonGroup
                           options={[true, false]}
@@ -604,7 +604,7 @@ const FormLine = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  align-items: flex-end;
+  align-items: flex-start;
   max-width: 616px;
   @media ${device.mobileL} {
     flex-direction: column;
@@ -637,7 +637,8 @@ const InnerContainerLine = styled.div`
 
 const ButtonLine = styled.div`
   display: flex;
-
+  margin-top: 24px;
+  align-self: baseline;
   max-width: 200px;
   @media ${device.mobileL} {
     width: 100%;
