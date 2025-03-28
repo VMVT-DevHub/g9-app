@@ -197,6 +197,9 @@ const StyledTable = styled(Table)`
   th {
     min-width: auto !important;
   }
+  th:first-child {
+    width: 140px !important;
+  }
   td:last-child {
     width: auto !important;
   }

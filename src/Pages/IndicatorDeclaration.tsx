@@ -65,15 +65,11 @@ const mapValues = (
 };
 
 const IndicatorDeclarationPage = () => {
-  const { businessPlaceId = '', id = '' } = useParams();
+  const { businessPlaceId = '', id = '', date = '' } = useParams();
   const [selectedIndicatorGroup, setSelectedIndicatorGroup] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryClient = useQueryClient();
 
-  const locationDate = location.pathname.split('/').pop();
-
-  const { mappedDeclaration, declarationLoading, lookup, disabled, canDeclare } = useDeclaration();
+  const { mappedDeclaration, declarationLoading, lookup, disabled } = useDeclaration();
 
   const { data: values, isLoading: valuesLoading } = useQuery(
     ['values', id],
@@ -94,12 +90,12 @@ const IndicatorDeclarationPage = () => {
   }
 
   useEffect(() => {
-    if (!declarationLoading && !isLoading && yearRange && locationDate) {
-      if (!isDateInRange(locationDate, yearRange.minDate, maxAllowedDate)) {
+    if (!declarationLoading && !isLoading && yearRange && date) {
+      if (!isDateInRange(date, yearRange.minDate, maxAllowedDate)) {
         navigate(slugs.declaration(businessPlaceId, id));
       }
     }
-  }, [locationDate, yearRange]);
+  }, [date, yearRange]);
 
   const { data: mandatoryIndicators, isFetching: mandatoryIndicatorsLoading } = useQuery(
     ['mandatory', mappedDeclaration.waterQuantity],
@@ -149,23 +145,16 @@ const IndicatorDeclarationPage = () => {
   }, [id, declarationLoading]);
 
   useEffect(() => {
-    if (
-      isEmpty(values) ||
-      isEmpty(indicators) ||
-      valuesLoading ||
-      declarationLoading
-    )
-      return;
+    if (isEmpty(values) || isEmpty(indicators) || valuesLoading || declarationLoading) return;
 
     let mappedValues = mapValues(indicatorOptions, values);
 
     mappedValues = mappedValues.filter((item) =>
-      item.tableData.some((element) => element.date === locationDate?.toString()),
+      item.tableData.some((element) => element.date === date?.toString()),
     );
 
     setSelectedIndicators(mappedValues);
-  }, [values, indicators, mandatoryIndicatorsLoading, locationDate]);
-
+  }, [values, indicators, mandatoryIndicatorsLoading, date]);
 
   const filteredIndicatorOptions = indicatorOptions
     ?.filter(
@@ -182,14 +171,14 @@ const IndicatorDeclarationPage = () => {
   );
 
   const showAddIndicatorButton = !disabled && !isEmpty(filteredIndicatorOptions);
-  
+
   if (isLoading) return <FullscreenLoader />;
   return (
     <PageContainer>
       <TopRow>
         <div>
           <TitleContainer>
-            <Title>{`${locationDate} tyrimų pildymas`}</Title>
+            <Title>{`${date} tyrimų pildymas`}</Title>
             <StatusTag
               color={statusToColor[mappedDeclaration?.status]}
               label={lookup?.Statusas[mappedDeclaration?.status] || ''}
@@ -251,7 +240,7 @@ const IndicatorDeclarationPage = () => {
                         disabled={disabled}
                         indicator={indicator}
                         viewOnly={false}
-                        activeDate={locationDate}
+                        activeDate={date}
                       />
                     </div>
                   );
