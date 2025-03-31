@@ -345,7 +345,7 @@ const DeclarationPage = () => {
                             <StyledFormMultiSelectField
                               disabled={disabled}
                               options={waterPreparationOptions}
-                              showError={false}
+                              showError={true}
                               getOptionLabel={(option) => waterPreparationLabels[option]}
                               getOptionValue={(option) => Number(option)}
                               values={values.waterPreparation}
@@ -359,7 +359,7 @@ const DeclarationPage = () => {
                             <StyledFormMultiSelectField
                               disabled={disabled}
                               options={waterMaterialOptions}
-                              showError={false}
+                              showError={true}
                               getOptionLabel={(option) => waterMaterialLabels[option]}
                               getOptionValue={(option) => Number(option)}
                               values={values.waterMaterial}

@@ -129,13 +129,14 @@ const Discrepancies = () => {
           {sortedIndicators().map((indicator, index) => {
             const handleGetStatus = (indicator) => {
               const isApproved = handleIsApproved(indicator);
+              
               if (indicator.id === activeIndicator?.id) {
-                if (isApproved) {
+                if (isApproved && !isDeclared) {
                   return IndicatorStatus.ACTIVE_APPROVED;
                 }
                 return IndicatorStatus.ACTIVE;
               } else {
-                if (isApproved) {
+                if (isApproved && !isDeclared) {
                   return IndicatorStatus.APPROVED;
                 }
               }
