@@ -48,14 +48,17 @@ const Table = ({
     }
     else 
     {
-      return null
+      return (
+        <TR $pointer={false} $hide_border={true}>
+          <TdSecond colSpan={keys.length}><i>Nieko nesuvesta</i></TdSecond>
+        </TR>
+      );
     } 
   };
 
   if (loading) return <FullscreenLoader />;
 
   return (
-    !isEmpty(tableData) && 
     <Container className={className}>
       <TableContainer $maxHeight={maxHeight}>
         <CustomTable>
