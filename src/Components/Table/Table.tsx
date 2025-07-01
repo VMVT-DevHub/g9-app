@@ -45,18 +45,13 @@ const Table = ({
           })}
         </TR>
       ));
-    } else {
-      return (
-        <TR $pointer={false} $hide_border={true}>
-          <TdSecond colSpan={keys.length}><i>Nieko nerasta</i></TdSecond>
-        </TR>
-      );
-    }
+    } 
   };
 
   if (loading) return <FullscreenLoader />;
 
   return (
+    !isEmpty(tableData) && 
     <Container className={className}>
       <TableContainer $maxHeight={maxHeight}>
         <CustomTable>

@@ -47,6 +47,7 @@ const IndicatorContainer = ({
   const [showForm, setShowForm] = useState(true);
   
   const isButton = indicator.unit === 'T/N';
+  const turbidityCodes = ['LT_G9_029', 'LT_G9_030','LT_G9_031','LT_G9_032'];
 
   const renderValue = (item) => {
     if (isButton) {
@@ -137,6 +138,7 @@ const IndicatorContainer = ({
     delete: '',
   };
 
+  console.log(indicator.code)
   const showTable = !isEmpty(tableData);
   return (
     <>
@@ -214,7 +216,7 @@ const IndicatorContainer = ({
                           onChange={(value) => setFieldValue('value', value)}
                           error={errors.value}
                           disabled={disabled}
-                          digitsAfterComma={indicator.digitsAfterComma}
+                          digitsAfterComma={indicator.digitsAfterComma || 3}
                         />
                         <Unit>{indicator.unit}</Unit>
                       </NumericInputContainer>

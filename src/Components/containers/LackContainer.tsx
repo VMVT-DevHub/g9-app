@@ -80,9 +80,9 @@ const LackContainer = ({
   return (
     <>
       <TitleContainer>
-        <ContainerTitle>Trūksta duomenų</ContainerTitle>
+        <ContainerTitle>Neatitiktys</ContainerTitle>
         <Description>
-          Pagal planą reikia įvesti 1 tyrimą. Įveskite trūkstamus mėginius arba nurodykite pastabas.
+          Pagal stebėsenos programą nepaimta pakankamai mėginių. Įveskite trūkstamus mėginius, arba pagrįskite, kodėl mėginys (-ai) nebuvo paimti. 
         </Description>
       </TitleContainer>
       <StyledTextAreaField
