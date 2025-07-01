@@ -45,13 +45,15 @@ const Table = ({
           })}
         </TR>
       ));
-    } else {
+    }
+    else 
+    {
       return (
         <TR $pointer={false} $hide_border={true}>
-          <TdSecond colSpan={keys.length}><i>Nieko nerasta</i></TdSecond>
+          <TdSecond colSpan={keys.length}><i>Nieko nesuvesta</i></TdSecond>
         </TR>
       );
-    }
+    } 
   };
 
   if (loading) return <FullscreenLoader />;

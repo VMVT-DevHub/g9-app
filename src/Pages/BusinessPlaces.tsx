@@ -19,7 +19,7 @@ import { device } from '../styles';
 import { declarationSchema } from './SubmitDeclaration';
 
 const labels = {
-  fis: 'Kodas',
+  // fis: 'Kodas',
   name: 'Pavadinimas',
   code: 'Teritorijos kodas',
   address: 'Teritorija',
@@ -66,7 +66,7 @@ const BusinessPlaces = () => {
       JA && JA.contactName && JA.contactLastName && JA.contactPhone && JA.contactEmail;
     const contactInfo = hasContactInfo
       ? `${JA.contactName} ${JA.contactLastName}, ${JA.contactPhone}, ${JA.contactEmail}`
-      : 'Kontaktinis asmuo nenurodytas';
+      : 'Kontaktinis asmuo nenurodytas, jis gali būti pridėtas per JA paskyrą';
 
     let mappedJAData = mappedData.filter((data) => data.ja == JA.id);
     return (

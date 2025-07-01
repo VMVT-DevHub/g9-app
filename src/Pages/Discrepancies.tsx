@@ -43,7 +43,6 @@ const Discrepancies = () => {
 
   useEffect(() => {
     if (declarationLoading) return;
-
     // if (!canDeclare) {
     //   navigate(slugs.declaration(businessPlaceId, id));
     // }
@@ -62,10 +61,8 @@ const Discrepancies = () => {
       if (!isEmpty(mappedIndicators)) {
         setActiveIndicator(mappedIndicators[0]);
       }
-
       return;
     }
-
     setActiveIndicator(() => mappedIndicators.find((item) => item.id == activeIndicator?.id));
   }, [mappedIndicators]);
 
@@ -82,11 +79,9 @@ const Discrepancies = () => {
     sorted.sort((a, b) => {
       const groupIdA = a.groupId !== undefined ? a.groupId : Number.MAX_SAFE_INTEGER;
       const groupIdB = b.groupId !== undefined ? b.groupId : Number.MAX_SAFE_INTEGER;
-      
       if (groupIdA !== groupIdB) {
         return groupIdA - groupIdB;
       }
-      
       return (a.index || 0) - (b.index || 0);
     });
     
@@ -99,7 +94,7 @@ const Discrepancies = () => {
         <div>
           <Title>{'Neatitikčių peržiūra ir patvirtinimas'}</Title>
           {canDeclare ? (
-            <InfoRow info={['Prašome pateikite pastabas prie rodiklių kurie viršija ribas.']} />
+            <InfoRow info={['Prašome pateikti papildomą informaciją prie rodiklių,  kurių reikšmės viršijo ribines vertes ir (arba) kurie nebuvo tiriami stebėsenos programoje nustatytu dažnumu.']} />
           ) : (
             <InfoRow info={['Žemiau matomos deklaracijos metu pateiktos pastabos.']} />
           )}

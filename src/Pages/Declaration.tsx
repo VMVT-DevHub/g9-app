@@ -49,12 +49,6 @@ export const declarationSchema = Yup.object().shape({
   usersCount: Yup.number()
     .min(1, validationTexts.positiveNumber)
     .required(validationTexts.requireText),
-  waterMaterial: Yup.array().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
-    if (isPreparedWater?.[0]) {
-      return schema.min(1, validationTexts.requireSelect);
-    }
-    return schema.nullable();
-  }),
   waterPreparation: Yup.array().when(['isPreparedWater'], (isPreparedWater: any, schema) => {
     if (isPreparedWater?.[0]) {
       return schema.min(1, validationTexts.requireSelect);
@@ -321,15 +315,19 @@ const DeclarationPage = () => {
                           onChange={(phone) => setFieldValue('waterQuantity', phone)}
                           showError={true}
                         />
-                        <StyledNumericTextField
-                          label={'Gyventojų skaičius'}
-                          name="usersCount"
-                          value={values.usersCount}
-                          disabled={disabled}
-                          error={errors.usersCount}
-                          onChange={(email) => setFieldValue('usersCount', email)}
-                          showError={true}
-                        />
+                        <TooltipNumericTextField>
+                          <TooltipText>Ataskaitinių metų sausio 1 d. geriamojo vandens vartotojų skaičius</TooltipText>
+                            <StyledNumericTextField
+                            label={'Gyventojų skaičius'}
+                            name="usersCount"
+                            value={values.usersCount}
+                            disabled={disabled}
+                            error={errors.usersCount}
+                            onChange={(email) => setFieldValue('usersCount', email)}
+                            showError={true}
+                          />
+                        </TooltipNumericTextField>
+                        
                         <StyledButtonGroup
                           options={[true, false]}
                           label={'Ar vanduo ruošiamas?'}
@@ -531,6 +529,44 @@ const DeclarationPage = () => {
     </PageContainer>
   );
 };
+const TooltipText = styled.p`
+  visibility: hidden;
+  background-color: #f0f4ff;
+  color: ${({theme}) => theme.colors.primary};
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  width: 280px;
+  top: 100%;
+  left: 90%;
+  margin-left: -180px;
+
+  &::after {
+  content: " ";
+  position: absolute;
+  bottom: 100%; 
+  left: 30%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #f0f4ff transparent;
+}
+`
+
+const TooltipNumericTextField = styled.div`
+ position: relative;
+  flex: 1;
+  @media ${device.mobileL} {
+    width: 100%;
+  }
+  &:hover p {
+     visibility: visible;
+  }
+  
+`;
 
 const IndicatorTitleContainer = styled.div`
   display: flex;
@@ -577,6 +613,8 @@ const StyledNumericTextField = styled(NumericTextField)`
     width: 100%;
   }
 `;
+
+
 
 const StyledButtonGroup = styled(ButtonsGroup)`
   min-width: 250px;

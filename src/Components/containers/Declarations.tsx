@@ -7,6 +7,7 @@ import { slugs } from '../../utils/routes';
 import { BoldText } from '../other/CommonStyles';
 import StatusTag from '../other/StatusTag';
 import Table from '../Table/Table';
+import styled from 'styled-components';
 
 const labels = {
   date: 'Metai',
@@ -60,13 +61,52 @@ const Declarations = () => {
   };
 
   return (
-    <Table
-      loading={isFetching}
-      onClick={(item) => navigate(slugs.declaration(id, item.id))}
-      tableData={getMappedData()}
-      labels={labels}
-    />
+    <>
+      <Table
+        loading={isFetching}
+        onClick={(item) => navigate(slugs.declaration(id, item.id))}
+        tableData={getMappedData()}
+        labels={labels}
+      />
+      <StatusInfoContainer>
+        <StatusContainer>
+          <StatusTag
+            color={statusToColor[1]}
+            label={"Pildoma"}
+          />
+          <p> - Einamojo laikotarpio duomenų pildymas</p>
+        </StatusContainer>
+        <StatusContainer>
+          <StatusTag
+            color={statusToColor[2]}
+            label={"Deklaruojama"}
+          />
+          <p> - Pasibaigusio ataskaitinio laikotarpio duomenų pildymas</p>
+        </StatusContainer>
+        <StatusContainer>
+          <StatusTag
+            color={statusToColor[3]}
+            label={"Deklaruota"}
+          />
+          <p> - Duomenų pildyti nebegalima</p>
+        </StatusContainer>
+       
+      </StatusInfoContainer>
+      
+    </>
+    
   );
 };
+const StatusContainer = styled.div`
+  display: flex;
+  align-items: center;
+  & p {
+    margin: 8px;
+    color: #697586;
+  }
+`
+const StatusInfoContainer = styled.div`
+  
+`
 
 export default Declarations;

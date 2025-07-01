@@ -27,7 +27,7 @@ export const handleSuccessToast = (message = 'Atnaujinta') => {
   });
 };
 
-export const getRole = (isAdmin: boolean) => (isAdmin ? 'Administratorius' : 'Naudotojas');
+export const getRole = (isAdmin: boolean) => (isAdmin ? 'Naudotojų administratorius' : 'Duomenų tiekėjas');
 
 export const getYesNo = (value: boolean) => (value ? 'Taip' : 'Ne');
 

@@ -35,12 +35,17 @@ export const extendedExceededSchema = Yup.object().shape({
   }),
   userCount: Yup.number()
     .required(validationTexts.requireText)
-    .min(1, validationTexts.positiveNumber),
+    .min(0, validationTexts.positiveNumber),
   reason: Yup.number().required(validationTexts.requireText),
   action: Yup.string().required(validationTexts.requireText),
   isBelowLOQ: Yup.boolean().required(validationTexts.requireSelect),
   type: Yup.number().required(validationTexts.requireText),
-  status: Yup.number().required(validationTexts.requireSelect),
+  notes: Yup.string().when(['reason'], (reason: any, schema) => {
+    if (reason == 9) {
+      return schema.required(validationTexts.requireText);
+    }
+    return schema.nullable();
+  }),
   insignificant: Yup.boolean().required(validationTexts.requireSelect),
   insignificantDescription: Yup.string().when(['insignificant'], (insignificant: any, schema) => {
     if (insignificant[0]) {
@@ -58,6 +63,12 @@ export const exceededSchema = Yup.object().shape({
   reason: Yup.number().required(validationTexts.requireText),
   action: Yup.string().required(validationTexts.requireText),
   type: Yup.number().required(validationTexts.requireText),
+  notes: Yup.string().when(['reason'], (reason: any, schema) => {
+    if (reason == 9) {
+      return schema.required(validationTexts.requireText);
+    }
+    return schema.nullable();
+  }),
 });
 
 const mapPayload = (item) => {
@@ -266,17 +277,17 @@ const ExceededContainer = ({
   return (
     <>
       <TitleContainer>
-        <ContainerTitle>Viršijamos reikšmės</ContainerTitle>
+        <ContainerTitle>Neatitiktys</ContainerTitle>
         {isDeclared
             ? <Description>Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas.</Description>
-            : <Description>Nurodytais laikotarpiais mėginių reikšmės viršijo nustatytas ribas. Įveskite pastabas.</Description>}
+            : <Description>Prašome pateikti papildomą informaciją prie rodiklių, kurių reikšmės viršija ribines vertes.</Description>}
         <TableContainer>
           <StyledTable tableData={mapValues} labels={labels} />
         </TableContainer>
       </TitleContainer>
       {isDeclared && exceededMapValues}
       <PopUpWithTitles
-        title={'Įvesti pastabas'}
+        title={'Papildoma informacija'}
         visible={showPopup}
         onClose={() => {
           setCurrentExceeded({});
@@ -292,6 +303,7 @@ const ExceededContainer = ({
           validateOnChange={false}
         >
           {({ values, errors, setFieldValue }) => {
+
             return (
               <FormContainer>
                 {isExtendedForm && (
@@ -328,7 +340,7 @@ const ExceededContainer = ({
                       value={values?.userCount}
                       label={'Viršijimo paveiktų žmonių skaičius'}
                       name="value"
-                      onChange={(value) => setFieldValue('userCount', value)}
+                      onChange={(value) => (setFieldValue('userCount', value), console.log(value))}
                       error={errors?.userCount}
                     />
                   )}
@@ -378,7 +390,7 @@ const ExceededContainer = ({
                     value={values?.reason}
                     label={'Priežastis'}
                     error={errors?.reason}
-                    onChange={(value) => setFieldValue('reason', value)}
+                    onChange={(value) => {setFieldValue('reason', value)}}
                   />
                   <SelectField
                     options={actionOptions}
@@ -427,6 +439,7 @@ const ExceededContainer = ({
                   <TextAreaField
                     label="Papildoma informacija"
                     value={values?.notes}
+                    name="notes"
                     error={errors?.notes}
                     onChange={(value) => setFieldValue('notes', value)}
                   />
