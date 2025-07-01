@@ -45,6 +45,10 @@ const Table = ({
           })}
         </TR>
       ));
+    }
+    else 
+    {
+      return null
     } 
   };
 
